@@ -39,6 +39,7 @@ export default function PieChartCustom({ title, data, field }: ChartProps) {
 
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { position: "right" as const },
       title: title ? { display: true, text: title } : { display: false },
@@ -46,5 +47,9 @@ export default function PieChartCustom({ title, data, field }: ChartProps) {
     },
   };
 
-  return <Pie data={chartData} options={options} />;
+  return (
+    <div className="w-full h-full">
+      <Pie data={chartData} options={options} />
+    </div>
+  );
 }

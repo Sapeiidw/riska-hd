@@ -67,7 +67,7 @@ export default function MainLayout({
               </Breadcrumb>
             </div>
           </header>
-          <div className="grid grid-cols-12 gap-4 w-full p-4 bg-neutral-200 min-h-screen content-start">
+          <div className="grid grid-cols-12 gap-4 w-full p-4 bg-gray-100 min-h-screen content-start">
             {children}
           </div>
         </SidebarInset>

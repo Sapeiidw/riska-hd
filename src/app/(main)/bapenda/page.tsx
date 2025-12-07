@@ -108,61 +108,85 @@ export default function Page() {
 
   return (
     <>
-      <div className="col-span-full bg-white flex justify-between items-center p-4 rounded-2xl shadow">
-        <h1 className="text-lg">Tahunan</h1>
+      {/* Tahunan Section Header */}
+      <div className="col-span-full bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 flex justify-between items-center p-5 rounded-2xl shadow-lg shadow-purple-500/20">
+        <h1 className="text-lg font-bold text-white">Data Tahunan</h1>
         <YearPicker value={year} onChange={setYear} />
       </div>
 
-      <div className="w-full h-96 col-span-full bg-white p-4 rounded-2xl shadow">
-        {dataKenaikanPangkat && (
-          <LineChartCustom
-            title="Jumlah Kenaikan Pangkat Pegawai"
-            data={dataKenaikanPangkat}
-          />
-        )}
+      {/* Line Chart */}
+      <div className="w-full h-96 col-span-full bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
+        <h2 className="text-lg font-bold text-gray-800 mb-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+          Jumlah Kenaikan Pangkat Pegawai
+        </h2>
+        <div className="flex-1 min-h-0">
+          {dataKenaikanPangkat && (
+            <LineChartCustom data={dataKenaikanPangkat} />
+          )}
+        </div>
       </div>
 
-      <div className="w-full h-96 col-span-full bg-white p-4 rounded-2xl shadow">
-        {dataStatusDokumen && (
-          <BarChartCustom
-            title="Status Dokumen Per Bulan"
-            data={dataStatusDokumen}
-          />
-        )}
+      {/* Bar Chart */}
+      <div className="w-full h-96 col-span-full bg-white p-6 rounded-2xl shadow-lg border border-gray-100 flex flex-col">
+        <h2 className="text-lg font-bold text-gray-800 mb-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+          Status Dokumen Per Bulan
+        </h2>
+        <div className="flex-1 min-h-0">
+          {dataStatusDokumen && (
+            <BarChartCustom data={dataStatusDokumen} />
+          )}
+        </div>
       </div>
 
-      <div className="col-span-full bg-white flex items-center p-4 rounded-2xl shadow">
-        <h1 className="text-lg">Bulanan</h1>
+      {/* Bulanan Section Header */}
+      <div className="col-span-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 flex items-center p-5 rounded-2xl shadow-lg shadow-teal-500/20">
+        <h1 className="text-lg font-bold text-white">Data Bulanan</h1>
         <MonthPicker value={month} onChange={setMonth} className="ml-auto" />
         <YearPicker value={year} onChange={setYear} />
       </div>
 
-      <div className="w-full h-100 col-span-4 flex justify-center items-center bg-white p-4 rounded-2xl shadow">
-        <PieChartCustom
-          title="Golongan Pegawai"
-          data={pieChartData.golongan}
-          field="value"
-        />
+      {/* Pie Charts */}
+      <div className="w-full h-80 col-span-4 flex flex-col bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 className="text-md font-bold text-gray-800 mb-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+          Golongan Pegawai
+        </h2>
+        <div className="flex-1 min-h-0">
+          <PieChartCustom
+            data={pieChartData.golongan}
+            field="value"
+          />
+        </div>
       </div>
 
-      <div className="w-full h-100 col-span-4 flex justify-center items-center bg-white p-4 rounded-2xl shadow">
-        <PieChartCustom
-          title="Status Kenaikan Pangkat"
-          data={pieChartData.statusKenaikan}
-          field="value"
-        />
+      <div className="w-full h-80 col-span-4 flex flex-col bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 className="text-md font-bold text-gray-800 mb-4 bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">
+          Status Kenaikan Pangkat
+        </h2>
+        <div className="flex-1 min-h-0">
+          <PieChartCustom
+            data={pieChartData.statusKenaikan}
+            field="value"
+          />
+        </div>
       </div>
 
-      <div className="w-full h-100 col-span-4 flex justify-center items-center bg-white p-4 rounded-2xl shadow">
-        <PieChartCustom
-          title="Status SK Kenaikan Pangkat"
-          data={pieChartData.statusSK}
-          field="value"
-        />
+      <div className="w-full h-80 col-span-4 flex flex-col bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 className="text-md font-bold text-gray-800 mb-4 bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+          Status SK Kenaikan Pangkat
+        </h2>
+        <div className="flex-1 min-h-0">
+          <PieChartCustom
+            data={pieChartData.statusSK}
+            field="value"
+          />
+        </div>
       </div>
 
-      <div className="w-full col-span-full flex flex-col bg-white p-4 rounded-2xl shadow">
-        <h1>Status Pegawai</h1>
+      {/* Data Table */}
+      <div className="w-full col-span-full flex flex-col bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <h2 className="text-lg font-bold text-gray-800 mb-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
+          Status Pegawai
+        </h2>
         {dataStatusPegawai && (
           <DataTable columns={columns} data={dataStatusPegawai} />
         )}

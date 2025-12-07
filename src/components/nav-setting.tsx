@@ -38,14 +38,14 @@ export function NavSetting({
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Setting</SidebarGroupLabel>
+      <SidebarGroupLabel className="text-gray-500 font-semibold uppercase text-xs tracking-wider">Setting</SidebarGroupLabel>
       <SidebarMenu>
         {data.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild className="text-gray-700 hover:bg-purple-50 hover:text-purple-700">
               <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
+                <item.icon className="text-purple-500" />
+                <span className="font-medium">{item.name}</span>
               </a>
             </SidebarMenuButton>
             <DropdownMenu>
@@ -78,8 +78,8 @@ export function NavSetting({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
+          <SidebarMenuButton className="text-gray-500 hover:bg-purple-50 hover:text-purple-700">
+            <MoreHorizontal className="text-gray-400" />
             <span>More</span>
           </SidebarMenuButton>
         </SidebarMenuItem>

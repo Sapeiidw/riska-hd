@@ -7,19 +7,19 @@ export function cn(...inputs: ClassValue[]) {
 
 // utils/chartColors.ts
 export const LIGHT_COLORS = [
-  "#2563eb", // blue-600
-  "#059669", // emerald-600
-  "#d97706", // amber-600
-  "#dc2626", // red-600
-  "#7c3aed", // violet-600
+  "#8b5cf6", // violet-500
+  "#14b8a6", // teal-500
+  "#f472b6", // pink-400
+  "#f59e0b", // amber-500
+  "#d946ef", // fuchsia-500
 ];
 
 export const DARK_COLORS = [
-  "#60a5fa", // blue-400
-  "#34d399", // emerald-400
-  "#fbbf24", // amber-400
-  "#f87171", // red-400
   "#a78bfa", // violet-400
+  "#2dd4bf", // teal-400
+  "#f9a8d4", // pink-300
+  "#fbbf24", // amber-400
+  "#e879f9", // fuchsia-400
 ];
 
 /**

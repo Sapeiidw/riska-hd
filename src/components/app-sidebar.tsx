@@ -353,14 +353,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-purple-50"
             >
-              <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                <AudioWaveform className="size-4" />
+              <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-sm shadow-lg shadow-purple-500/30">
+                SK
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Kenaikan Pangkat</span>
-                <span className="truncate text-xs">Enterprise</span>
+                <span className="truncate font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent">SIKEPAT</span>
+                <span className="truncate text-xs text-gray-500">Monitoring Kenaikan Pangkat</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -381,9 +381,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               userButtonTrigger: "!w-full",
               userButtonBox: cn(
                 state === "expanded"
-                  ? "py-2 px-4 bg-neutral-800"
+                  ? "py-2 px-4 bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100"
                   : "p-0 bg-transparent",
-                "!w-full flex !justify-between items-center  rounded-md text-white"
+                "!w-full flex !justify-between items-center rounded-xl text-gray-700 transition-colors border border-purple-100"
               ),
             },
           }}
