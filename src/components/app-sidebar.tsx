@@ -327,10 +327,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return data.navMain.map((section) => {
       const updatedItems = section.items.map((item) => ({
         ...item,
-        isActive: item.url.includes(pathname) || pathname === item.url, // highlight if exact match
+        isActive: pathname === item.url,
       }));
 
-      const isSectionActive = updatedItems.some((i) => i.isActive);
+      // Section is active if any sub-item is active OR pathname starts with the section's base path
+      const sectionBasePath = section.items[0]?.url.split("/")[1] || "";
+      const isSectionActive =
+        updatedItems.some((i) => i.isActive) ||
+        (sectionBasePath && pathname.startsWith(`/${sectionBasePath}`));
 
       return {
         ...section,
