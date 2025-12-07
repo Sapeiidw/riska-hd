@@ -327,7 +327,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     return data.navMain.map((section) => {
       const updatedItems = section.items.map((item) => ({
         ...item,
-        isActive: pathname === item.url,
+        isActive: pathname === item.url || undefined,
       }));
 
       // Section is active if any sub-item is active OR pathname starts with the section's base path
@@ -339,7 +339,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       return {
         ...section,
         items: updatedItems,
-        isActive: isSectionActive,
+        isActive: isSectionActive || undefined,
       };
     });
   }, [pathname]);
