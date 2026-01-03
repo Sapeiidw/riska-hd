@@ -1,9 +1,11 @@
 "use client";
 
 import { FormKenaikanPangkat } from "@/components/form/kenaikan-pangkat";
-import { CrudPage, KenaikanPangkat } from "../_lib";
+import { CrudPage, KenaikanPangkat } from "@/lib/opd";
 
-const columns = [{ key: "value", title: "Value", type: "numeric" as const }];
+const OPD_ID = 13;
+
+const columns = [{ key: "value", title: "Jumlah" }];
 
 const defaultData = {
   value: 0,
@@ -12,6 +14,7 @@ const defaultData = {
 export default function Page() {
   return (
     <CrudPage<KenaikanPangkat>
+      opdId={OPD_ID}
       title="Kenaikan Pangkat"
       description="Tambahkan data kenaikan pangkat"
       apiEndpoint="kenaikan-pangkat"

@@ -1,7 +1,9 @@
 "use client";
 
 import { FormStatusPegawai } from "@/components/form/status-pegawai";
-import { CrudPage, StatusPegawai } from "../_lib";
+import { CrudPage, StatusPegawai } from "@/lib/opd";
+
+const OPD_ID = 15;
 
 const columns = [
   { key: "nama", title: "Nama", type: "text" as const },
@@ -22,6 +24,7 @@ const defaultData = {
 export default function Page() {
   return (
     <CrudPage<StatusPegawai>
+      opdId={OPD_ID}
       title="Status Pegawai"
       description="Tambahkan data status pegawai"
       apiEndpoint="status-pegawai"

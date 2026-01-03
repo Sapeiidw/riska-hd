@@ -1,14 +1,16 @@
 "use client";
 
 import { FormStatusKenaikanPangkat } from "@/components/form/status-kenaikan-pangkat";
-import { CrudPage, StatusKenaikanPangkat } from "../_lib";
+import { CrudPage, StatusKenaikanPangkat } from "@/lib/opd";
+
+const OPD_ID = 13;
 
 const columns = [
-  { key: "input_berkas", title: "Input Berkas", type: "numeric" as const },
-  { key: "berkas_disimpan", title: "Berkas Disimpan", type: "numeric" as const },
-  { key: "bts", title: "BTS", type: "numeric" as const },
-  { key: "sudah_ttd_pertek", title: "Sudah TTD Pertek", type: "numeric" as const },
-  { key: "tms", title: "TMS", type: "numeric" as const },
+  { key: "input_berkas", title: "Input Berkas" },
+  { key: "berkas_disimpan", title: "Berkas Disimpan" },
+  { key: "bts", title: "BTS" },
+  { key: "sudah_ttd_pertek", title: "Sudah TTD" },
+  { key: "tms", title: "TMS" },
 ];
 
 const defaultData = {
@@ -22,6 +24,7 @@ const defaultData = {
 export default function Page() {
   return (
     <CrudPage<StatusKenaikanPangkat>
+      opdId={OPD_ID}
       title="Status Kenaikan Pangkat"
       description="Tambahkan data status kenaikan pangkat"
       apiEndpoint="status-kenaikan-pangkat"

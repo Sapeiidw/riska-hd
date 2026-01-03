@@ -1,7 +1,9 @@
 "use client";
 
 import { FormStatusDokumenWajib } from "@/components/form/status-dokumen-wajib";
-import { CrudPage, StatusDokumenWajib } from "../_lib";
+import { CrudPage, StatusDokumenWajib } from "@/lib/opd";
+
+const OPD_ID = 12;
 
 const columns = [
   { key: "berhasil", title: "Berhasil" },
@@ -16,6 +18,7 @@ const defaultData = {
 export default function Page() {
   return (
     <CrudPage<StatusDokumenWajib>
+      opdId={OPD_ID}
       title="Status Dokumen Wajib"
       description="Tambahkan data status dokumen wajib"
       apiEndpoint="status-dokumen-wajib"

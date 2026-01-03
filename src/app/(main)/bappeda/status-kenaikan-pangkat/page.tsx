@@ -1,7 +1,9 @@
 "use client";
 
 import { FormStatusKenaikanPangkat } from "@/components/form/status-kenaikan-pangkat";
-import { CrudPage, StatusKenaikanPangkat } from "../_lib";
+import { CrudPage, StatusKenaikanPangkat } from "@/lib/opd";
+
+const OPD_ID = 6;
 
 const columns = [
   { key: "input_berkas", title: "Input Berkas" },
@@ -22,6 +24,7 @@ const defaultData = {
 export default function Page() {
   return (
     <CrudPage<StatusKenaikanPangkat>
+      opdId={OPD_ID}
       title="Status Kenaikan Pangkat"
       description="Tambahkan data status kenaikan pangkat"
       apiEndpoint="status-kenaikan-pangkat"

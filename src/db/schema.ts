@@ -18,7 +18,9 @@ export const opd = pgTable("opd", {
   id: serial("id").primaryKey(),
   nama: text().notNull(),
   singkatan: text().notNull(),
+  slug: text(),
 });
+// .notNull().unique()
 
 export const kenaikan_pangkat = pgTable(
   "kenaikan_pangkat",

@@ -1,13 +1,15 @@
 "use client";
 
 import { FormGolonganPegawai } from "@/components/form/golongan-pegawai";
-import { CrudPage, GolonganPegawai } from "../_lib";
+import { CrudPage, GolonganPegawai } from "@/lib/opd";
+
+const OPD_ID = 13;
 
 const columns = [
-  { key: "golongan_i", title: "Golongan I", type: "numeric" as const },
-  { key: "golongan_ii", title: "Golongan II", type: "numeric" as const },
-  { key: "golongan_iii", title: "Golongan III", type: "numeric" as const },
-  { key: "golongan_iv", title: "Golongan IV", type: "numeric" as const },
+  { key: "golongan_i", title: "Golongan I" },
+  { key: "golongan_ii", title: "Golongan II" },
+  { key: "golongan_iii", title: "Golongan III" },
+  { key: "golongan_iv", title: "Golongan IV" },
 ];
 
 const defaultData = {
@@ -20,6 +22,7 @@ const defaultData = {
 export default function Page() {
   return (
     <CrudPage<GolonganPegawai>
+      opdId={OPD_ID}
       title="Golongan Pegawai"
       description="Tambahkan data golongan pegawai"
       apiEndpoint="golongan-pegawai"

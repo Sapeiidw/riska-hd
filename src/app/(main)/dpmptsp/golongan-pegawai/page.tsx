@@ -1,7 +1,9 @@
 "use client";
 
 import { FormGolonganPegawai } from "@/components/form/golongan-pegawai";
-import { CrudPage, GolonganPegawai } from "../_lib";
+import { CrudPage, GolonganPegawai } from "@/lib/opd";
+
+const OPD_ID = 18;
 
 const columns = [
   { key: "golongan_i", title: "Golongan I" },
@@ -20,6 +22,7 @@ const defaultData = {
 export default function Page() {
   return (
     <CrudPage<GolonganPegawai>
+      opdId={OPD_ID}
       title="Golongan Pegawai"
       description="Tambahkan data golongan pegawai"
       apiEndpoint="golongan-pegawai"
