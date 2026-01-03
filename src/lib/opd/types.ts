@@ -73,4 +73,5 @@ export interface OpdFormData {
   nama: string;
   singkatan: string;
   slug: string;
+  parent_id: number | null;
 }

@@ -16,6 +16,7 @@ export async function POST(request: NextRequest) {
       nama: body.nama,
       singkatan: body.singkatan,
       slug: body.slug,
+      parent_id: body.parent_id || null,
     })
     .returning();
 

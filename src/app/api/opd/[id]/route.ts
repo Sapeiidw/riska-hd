@@ -24,6 +24,7 @@ export async function PUT(
       nama: body.nama,
       singkatan: body.singkatan,
       slug: body.slug,
+      parent_id: body.parent_id || null,
     })
     .where(eq(opd.id, parsedId))
     .returning();

@@ -96,6 +96,22 @@ export default function AdminOpdPage() {
         ),
       },
       {
+        accessorKey: "parent_id",
+        header: ({ column }) => (
+          <DataTableColumnHeader column={column} title="Parent" />
+        ),
+        cell: ({ row }) => {
+          const parentId = row.original.parent_id;
+          if (!parentId) return <span className="text-gray-400">-</span>;
+          const parent = opdList?.find((o) => o.id === parentId);
+          return parent ? (
+            <span className="text-purple-600">{parent.singkatan}</span>
+          ) : (
+            <span className="text-gray-400">-</span>
+          );
+        },
+      },
+      {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
@@ -132,7 +148,7 @@ export default function AdminOpdPage() {
         ),
       },
     ],
-    [handleEdit, handleDelete, isAdmin]
+    [handleEdit, handleDelete, isAdmin, opdList]
   );
 
   if (isLoading) {

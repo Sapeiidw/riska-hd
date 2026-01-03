@@ -10,7 +10,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { OpdConfig } from "@/lib/opd";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { OpdConfig, useOpdList } from "@/lib/opd";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -26,6 +33,7 @@ export const formSchema = z4.object({
     .string()
     .min(1, "Slug tidak boleh kosong")
     .regex(/^[a-z0-9-]+$/, "Slug hanya boleh huruf kecil, angka, dan tanda hubung"),
+  parent_id: z4.number().nullish(),
 });
 
 type FormData = z4.infer<typeof formSchema>;
@@ -37,6 +45,12 @@ interface FormOpdProps {
 
 export function FormOpd({ initialData, onSuccess }: FormOpdProps) {
   const queryClient = useQueryClient();
+  const { data: opdList } = useOpdList();
+
+  // Filter out the current OPD and its children to prevent circular references
+  const availableParents = opdList?.filter(
+    (opd) => opd.id !== initialData?.id && opd.parent_id !== initialData?.id
+  );
 
   const mutation = useMutation({
     mutationFn: async (data: FormData) => {
@@ -72,6 +86,7 @@ export function FormOpd({ initialData, onSuccess }: FormOpdProps) {
       nama: "",
       singkatan: "",
       slug: "",
+      parent_id: null,
     },
   });
 
@@ -142,6 +157,37 @@ export function FormOpd({ initialData, onSuccess }: FormOpdProps) {
               <FormControl>
                 <Input placeholder="dinkes" {...field} />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="parent_id"
+          render={({ field }) => (
+            <FormItem className="col-span-full">
+              <FormLabel>Parent OPD (Opsional)</FormLabel>
+              <Select
+                onValueChange={(value) =>
+                  field.onChange(value === "none" ? null : parseInt(value))
+                }
+                value={field.value?.toString() ?? "none"}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Pilih parent OPD (opsional)" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="none">Tidak ada (OPD Induk)</SelectItem>
+                  {availableParents?.map((opd) => (
+                    <SelectItem key={opd.id} value={opd.id.toString()}>
+                      {opd.nama} ({opd.singkatan})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
