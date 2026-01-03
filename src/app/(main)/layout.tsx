@@ -1,5 +1,6 @@
 "use client";
 import { AppSidebar } from "@/components/app-sidebar";
+import { CommandMenu, CommandMenuTrigger } from "@/components/command-menu";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -32,7 +33,7 @@ export default function MainLayout({
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-            <div className="flex items-center gap-2 px-4">
+            <div className="flex flex-1 items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator
                 orientation="vertical"
@@ -66,7 +67,11 @@ export default function MainLayout({
                 </BreadcrumbList>
               </Breadcrumb>
             </div>
+            <div className="px-4">
+              <CommandMenuTrigger />
+            </div>
           </header>
+          <CommandMenu />
           <div className="grid grid-cols-12 gap-4 w-full p-4 bg-gray-100 min-h-screen content-start">
             {children}
           </div>

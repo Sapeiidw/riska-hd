@@ -1,8 +1,56 @@
 import { status_pegawai, opd } from "@/db/schema";
 import { db } from "@/lib/db";
-import { eq, getTableColumns, sql } from "drizzle-orm";
+import { and, eq, getTableColumns, sql } from "drizzle-orm";
+import { NextRequest } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams;
+  const forDashboard = searchParams.get("for") === "dashboard";
+  const idOpd = searchParams.get("id_opd");
+  const year = searchParams.get("year");
+  const month = searchParams.get("month");
+
+  // Dashboard query - filter by OPD, year, month
+  if (forDashboard && idOpd && year && month) {
+    const data = await db
+      .select({
+        ...getTableColumns(status_pegawai),
+        nama_opd: opd.nama,
+        tahun: sql<number>`extract(year from periode)`,
+        bulan: sql<number>`extract(month from periode)`,
+      })
+      .from(status_pegawai)
+      .leftJoin(opd, eq(status_pegawai.id_opd, opd.id))
+      .where(
+        and(
+          eq(status_pegawai.id_opd, parseInt(idOpd)),
+          sql`extract(year from periode) = ${parseInt(year)}`,
+          sql`extract(month from periode) = ${parseInt(month)}`
+        )
+      )
+      .orderBy(status_pegawai.id);
+
+    return Response.json(data);
+  }
+
+  // Default query - filter by id_opd if provided
+  if (idOpd) {
+    const data = await db
+      .select({
+        ...getTableColumns(status_pegawai),
+        nama_opd: opd.nama,
+        tahun: sql<number>`extract(year from periode)`,
+        bulan: sql<number>`extract(month from periode)`,
+      })
+      .from(status_pegawai)
+      .leftJoin(opd, eq(status_pegawai.id_opd, opd.id))
+      .where(eq(status_pegawai.id_opd, parseInt(idOpd)))
+      .orderBy(status_pegawai.id);
+
+    return Response.json(data);
+  }
+
+  // No filter - return all
   const data = await db
     .select({
       ...getTableColumns(status_pegawai),

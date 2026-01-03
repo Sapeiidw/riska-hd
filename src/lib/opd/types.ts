@@ -65,6 +65,7 @@ export interface OpdConfig {
   nama: string;
   singkatan: string;
   slug: string;
+  parent_id: number | null;
 }
 
 // Form data for creating/updating OPD

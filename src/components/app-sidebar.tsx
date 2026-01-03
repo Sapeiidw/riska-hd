@@ -1,13 +1,9 @@
 "use client";
 
-import {
-  BookOpen,
-  Settings,
-  User,
-} from "lucide-react";
+import { BookOpen, Settings, User } from "lucide-react";
 import * as React from "react";
 
-import { NavMain } from "@/components/nav-main";
+import { NavMain, NavItem, NavSubItem, NavChildOPD } from "@/components/nav-main";
 import {
   Sidebar,
   SidebarContent,
@@ -21,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 import { useOpdList } from "@/lib/opd";
+import { OpdConfig } from "@/lib/opd/types";
 import { UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { NavSetting } from "./nav-setting";
@@ -38,7 +35,7 @@ const settingData = [
   },
 ];
 
-function generateOpdNavItems(slug: string) {
+function generateOpdNavItems(slug: string): NavSubItem[] {
   return [
     { title: "Dashboard", url: `/${slug}` },
     { title: "Kenaikan Pangkat", url: `/${slug}/kenaikan-pangkat` },
@@ -50,32 +47,78 @@ function generateOpdNavItems(slug: string) {
   ];
 }
 
+function buildOpdTree(
+  opdList: OpdConfig[],
+  pathname: string
+): NavItem[] {
+  // Get parent OPDs (parent_id is null)
+  const parentOpds = opdList.filter((opd) => opd.parent_id === null);
+
+  // Group children by parent_id
+  const childrenMap = new Map<number, OpdConfig[]>();
+  opdList.forEach((opd) => {
+    if (opd.parent_id !== null) {
+      const existing = childrenMap.get(opd.parent_id) || [];
+      existing.push(opd);
+      childrenMap.set(opd.parent_id, existing);
+    }
+  });
+
+  return parentOpds.map((parent) => {
+    // Generate parent's sub-menu items
+    const parentItems = generateOpdNavItems(parent.slug);
+    const updatedParentItems = parentItems.map((item) => ({
+      ...item,
+      isActive: pathname === item.url || undefined,
+    }));
+
+    // Get children for this parent
+    const children = childrenMap.get(parent.id) || [];
+
+    // Generate children nav items
+    const childrenNav: NavChildOPD[] = children.map((child) => {
+      const childItems = generateOpdNavItems(child.slug);
+      const updatedChildItems = childItems.map((item) => ({
+        ...item,
+        isActive: pathname === item.url || undefined,
+      }));
+
+      const isChildActive =
+        updatedChildItems.some((i) => i.isActive) ||
+        pathname.startsWith(`/${child.slug}`);
+
+      return {
+        title: child.singkatan,
+        slug: child.slug,
+        isActive: isChildActive || undefined,
+        items: updatedChildItems,
+      };
+    });
+
+    // Check if parent section is active
+    const isParentActive =
+      updatedParentItems.some((i) => i.isActive) ||
+      pathname.startsWith(`/${parent.slug}`) ||
+      childrenNav.some((c) => c.isActive);
+
+    return {
+      title: parent.singkatan,
+      url: "#",
+      icon: BookOpen,
+      items: updatedParentItems,
+      children: childrenNav.length > 0 ? childrenNav : undefined,
+      isActive: isParentActive || undefined,
+    };
+  });
+}
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { data: opdList } = useOpdList();
 
   const navWithActive = React.useMemo(() => {
     if (!opdList) return [];
-
-    return opdList.map((opd) => {
-      const items = generateOpdNavItems(opd.slug);
-      const updatedItems = items.map((item) => ({
-        ...item,
-        isActive: pathname === item.url || undefined,
-      }));
-
-      const isSectionActive =
-        updatedItems.some((i) => i.isActive) ||
-        pathname.startsWith(`/${opd.slug}`);
-
-      return {
-        title: opd.singkatan,
-        url: "#",
-        icon: BookOpen,
-        items: updatedItems,
-        isActive: isSectionActive || undefined,
-      };
-    });
+    return buildOpdTree(opdList, pathname);
   }, [pathname, opdList]);
 
   const { state } = useSidebar();

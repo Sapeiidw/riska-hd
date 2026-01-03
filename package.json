@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "push": "drizzle-kit push",
+    "seed:opd": "tsx scripts/seed-opd.ts",
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",

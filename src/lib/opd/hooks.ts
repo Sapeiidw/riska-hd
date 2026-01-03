@@ -15,6 +15,20 @@ export function useOpdList() {
   });
 }
 
+// Get OPD by slug
+export function useOpdBySlug(slug: string) {
+  const { data: opdList, isLoading, error } = useOpdList();
+
+  const opd = opdList?.find((o) => o.slug === slug);
+
+  return {
+    data: opd,
+    isLoading,
+    error,
+    notFound: !isLoading && !opd,
+  };
+}
+
 export function useCreateOpd() {
   const queryClient = useQueryClient();
   return useMutation({

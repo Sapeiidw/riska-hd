@@ -14,12 +14,22 @@ export const testTable = pgTable("tests", {
   name: varchar({ length: 255 }).notNull(),
 });
 
-export const opd = pgTable("opd", {
-  id: serial("id").primaryKey(),
-  nama: text().notNull(),
-  singkatan: text().notNull(),
-  slug: text(),
-});
+export const opd = pgTable(
+  "opd",
+  {
+    id: serial("id").primaryKey(),
+    nama: text().notNull(),
+    singkatan: text().notNull(),
+    slug: text(),
+    parent_id: integer(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.parent_id],
+      foreignColumns: [table.id],
+    }),
+  ]
+);
 // .notNull().unique()
 
 export const kenaikan_pangkat = pgTable(
