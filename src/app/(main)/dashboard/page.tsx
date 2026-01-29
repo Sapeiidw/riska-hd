@@ -3,6 +3,7 @@ import {
   kenaikan_pangkat,
   opd,
   status_dokumen_wajib,
+  status_kenaikan_pangkat,
   status_pegawai,
 } from "@/db/schema";
 import { sql, eq } from "drizzle-orm";
@@ -21,15 +22,17 @@ export default async function DashboardPage() {
   // Get all OPD
   const opdList = await db.select().from(opd).orderBy(opd.nama);
 
-  // Total pegawai
-  const [totalPegawai] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(status_pegawai);
+  // Total Pengajuan
+  const [totalPengajuan] = await db
+    .select({ count: sql<number>`COALESCE(SUM(kenaikan_pangkat.value), 0)` })
+    .from(kenaikan_pangkat)
+    .groupBy(kenaikan_pangkat.periode);
 
-  // Total kenaikan pangkat
-  const [totalKenaikanPangkat] = await db
-    .select({ total: sql<number>`coalesce(sum(${kenaikan_pangkat.value}), 0)` })
-    .from(kenaikan_pangkat);
+  // Total Kenpa Berhasil
+  const [totalKenpaBerhasil] = await db
+    .select({ total: sql<number>`coalesce(sum(${status_kenaikan_pangkat.sudah_ttd_pertek}), 0)` })
+    .from(status_kenaikan_pangkat)
+    .groupBy(status_kenaikan_pangkat.periode);
 
   // Dokumen stats
   const [dokumenStats] = await db
@@ -101,9 +104,9 @@ export default async function DashboardPage() {
             <Users className="w-6 h-6" />
           </div>
           <div className="text-3xl font-black">
-            {totalPegawai.count.toLocaleString("id-ID")}
+            {totalPengajuan.count.toLocaleString("id-ID")}
           </div>
-          <div className="text-sm text-white/80 font-medium mt-1">Total Pegawai</div>
+          <div className="text-sm text-white/80 font-medium mt-1">Total Pengajuan</div>
         </div>
 
         {/* Kenaikan Pangkat */}
@@ -112,9 +115,9 @@ export default async function DashboardPage() {
             <TrendingUp className="w-6 h-6" />
           </div>
           <div className="text-3xl font-black">
-            {totalKenaikanPangkat.total.toLocaleString("id-ID")}
+            {totalKenpaBerhasil.total.toLocaleString("id-ID")}
           </div>
-          <div className="text-sm text-white/80 font-medium mt-1">Kenaikan Pangkat</div>
+          <div className="text-sm text-white/80 font-medium mt-1">Total Kenpa Berhasil</div>
         </div>
 
         {/* Dokumen Lengkap */}

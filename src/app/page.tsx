@@ -5,6 +5,7 @@ import {
   kenaikan_pangkat,
   opd,
   status_dokumen_wajib,
+  status_kenaikan_pangkat,
   status_pegawai,
 } from "@/db/schema";
 import { sql } from "drizzle-orm";
@@ -27,13 +28,17 @@ import {
 } from "lucide-react";
 
 export default async function Page() {
-  const [totalPegawai] = await db
-    .select({ count: sql<number>`count(*)` })
-    .from(status_pegawai);
+// Total Pengajuan
+  const [totalPengajuan] = await db
+    .select({ count: sql<number>`COALESCE(SUM(kenaikan_pangkat.value), 0)` })
+    .from(kenaikan_pangkat)
+    .groupBy(kenaikan_pangkat.periode);
 
-  const [totalKenaikanPangkat] = await db
-    .select({ total: sql<number>`coalesce(sum(${kenaikan_pangkat.value}), 0)` })
-    .from(kenaikan_pangkat);
+  // Total Kenpa Berhasil
+  const [totalKenpaBerhasil] = await db
+    .select({ total: sql<number>`coalesce(sum(${status_kenaikan_pangkat.sudah_ttd_pertek}), 0)` })
+    .from(status_kenaikan_pangkat)
+    .groupBy(status_kenaikan_pangkat.periode);
 
   const [dokumenStats] = await db
     .select({
@@ -209,10 +214,10 @@ export default async function Page() {
                     <Users className="w-7 h-7" />
                   </div>
                   <div className="text-4xl font-black">
-                    {totalPegawai.count.toLocaleString("id-ID")}
+                    {totalPengajuan.count.toLocaleString("id-ID")}
                   </div>
                   <div className="text-sm text-white/80 font-medium mt-1">
-                    Total Pegawai
+                    Total Pengajuan
                   </div>
                   <div className="mt-3 flex items-center gap-1 text-xs text-white/70">
                     <TrendingUp className="w-3 h-3" />
@@ -226,10 +231,10 @@ export default async function Page() {
                     <TrendingUp className="w-7 h-7" />
                   </div>
                   <div className="text-4xl font-black">
-                    {totalKenaikanPangkat.total.toLocaleString("id-ID")}
+                    {totalKenpaBerhasil.total.toLocaleString("id-ID")}
                   </div>
                   <div className="text-sm text-white/80 font-medium mt-1">
-                    Kenaikan Pangkat
+                    Total Kenpa Berhasil
                   </div>
                   <div className="mt-3 flex items-center gap-1 text-xs text-white/70">
                     <Sparkles className="w-3 h-3" />

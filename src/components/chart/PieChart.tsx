@@ -43,7 +43,7 @@ export default function PieChartCustom({ title, data, field }: ChartProps) {
     plugins: {
       legend: { position: "right" as const },
       title: title ? { display: true, text: title } : { display: false },
-      tooltip: { mode: "index" as const, intersect: false },
+      tooltip: { enabled: true },
     },
   };
 
