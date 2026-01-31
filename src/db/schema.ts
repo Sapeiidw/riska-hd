@@ -1,166 +1,59 @@
 import {
-  date,
-  foreignKey,
+  boolean,
   integer,
   pgTable,
-  serial,
   text,
-  unique,
-  varchar,
+  timestamp,
 } from "drizzle-orm/pg-core";
 
-export const testTable = pgTable("tests", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  name: varchar({ length: 255 }).notNull(),
+// Better Auth tables
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").notNull(),
+  image: text("image"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+  role: text("role").default("user"),
 });
 
-export const opd = pgTable(
-  "opd",
-  {
-    id: serial("id").primaryKey(),
-    nama: text().notNull(),
-    singkatan: text().notNull(),
-    slug: text(),
-    parent_id: integer(),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.parent_id],
-      foreignColumns: [table.id],
-    }),
-  ]
-);
-// .notNull().unique()
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull().unique(),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+});
 
-export const kenaikan_pangkat = pgTable(
-  "kenaikan_pangkat",
-  {
-    id: serial("id").primaryKey(),
-    periode: date().notNull(),
-    id_opd: integer().notNull(),
-    value: integer().notNull().default(0),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.id_opd],
-      foreignColumns: [opd.id],
-    }),
-    unique().on(table.periode, table.id_opd),
-  ]
-);
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+});
 
-export const status_dokumen_wajib = pgTable(
-  "status_dokumen_wajib",
-  {
-    id: serial("id").primaryKey(),
-    periode: date().notNull(),
-    id_opd: integer().notNull(),
-    berhasil: integer().notNull().default(0),
-    tidak_berhasil: integer().notNull().default(0),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.id_opd],
-      foreignColumns: [opd.id],
-    }),
-    unique().on(table.periode, table.id_opd),
-  ]
-);
-
-export const status_kenaikan_pangkat = pgTable(
-  "status_kenaikan_pangkat",
-  {
-    id: serial("id").primaryKey(),
-    periode: date().notNull(),
-    id_opd: integer().notNull(),
-    input_berkas: integer().notNull().default(0),
-    berkas_disimpan: integer().notNull().default(0),
-    bts: integer().notNull().default(0),
-    sudah_ttd_pertek: integer().notNull().default(0),
-    tms: integer().notNull().default(0),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.id_opd],
-      foreignColumns: [opd.id],
-    }),
-    unique().on(table.periode, table.id_opd),
-  ]
-);
-
-export const dokumen_terverifikasi = pgTable(
-  "dokumen_terverifikasi",
-  {
-    id: serial("id").primaryKey(),
-    tahun: integer().notNull(),
-    bulan: text().notNull(),
-    id_opd: integer().notNull(),
-    terverifikasi: integer().notNull().default(0),
-    tidak_terverifikasi: integer().notNull().default(0),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.id_opd],
-      foreignColumns: [opd.id],
-    }),
-    unique().on(table.tahun, table.bulan, table.id_opd),
-  ]
-);
-
-export const status_sk_kenaikan_pangkat = pgTable(
-  "status_sk_kenaikan_pangkat",
-  {
-    id: serial("id").primaryKey(),
-    periode: date().notNull(),
-    id_opd: integer().notNull(),
-    sudah_ttd_pertek: integer().notNull().default(0),
-    belum_ttd_pertek: integer().notNull().default(0),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.id_opd],
-      foreignColumns: [opd.id],
-    }),
-    unique().on(table.periode, table.id_opd),
-  ]
-);
-
-export const golongan_pegawai = pgTable(
-  "golongan_pegawai",
-  {
-    id: serial("id").primaryKey(),
-    periode: date().notNull(),
-    id_opd: integer().notNull(),
-    golongan_i: integer().notNull().default(0),
-    golongan_ii: integer().notNull().default(0),
-    golongan_iii: integer().notNull().default(0),
-    golongan_iv: integer().notNull().default(0),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.id_opd],
-      foreignColumns: [opd.id],
-    }),
-    unique().on(table.periode, table.id_opd),
-  ]
-);
-
-export const status_pegawai = pgTable(
-  "status_pegawai",
-  {
-    id: serial("id").primaryKey(),
-    periode: date().notNull(),
-    id_opd: integer().notNull(),
-    nama: text().notNull(),
-    nip: text().notNull().unique(),
-    golongan: text().notNull(),
-    status: text().notNull(),
-    keterangan: text().notNull(),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.id_opd],
-      foreignColumns: [opd.id],
-    }),
-  ]
-);
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at"),
+  updatedAt: timestamp("updated_at"),
+});
