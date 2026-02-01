@@ -79,6 +79,12 @@ export const metadata: Metadata = {
     canonical: BASE_URL,
   },
   category: "healthcare",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "RISKA HD",
+  },
 };
 
 export default function RootLayout({
