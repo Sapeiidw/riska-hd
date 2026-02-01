@@ -19,6 +19,9 @@ import {
   X,
   Loader2,
   TrendingUp,
+  Share2,
+  Link2,
+  MessageCircle,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -343,73 +346,180 @@ function SearchAutocomplete({
 }
 
 function ContentCard({ item }: { item: RuangInformasi }) {
+  const [showShareMenu, setShowShareMenu] = useState(false);
   const Icon = categoryIcons[item.category] || FileText;
   const categoryLabel =
     RUANG_INFORMASI_CATEGORIES.find((c) => c.value === item.category)?.label ||
     item.category;
 
-  return (
-    <Link
-      href={`/informasi/${item.slug}`}
-      className="group bg-white rounded-xl overflow-hidden shadow-sm border hover:shadow-md transition-shadow"
-    >
-      {/* Image */}
-      <div className="relative aspect-video bg-gray-100">
-        {item.imageUrl ? (
-          <Image
-            src={item.imageUrl}
-            alt={item.title}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-sky-100 to-cyan-100">
-            <Icon className="h-12 w-12 text-sky-400" />
-          </div>
-        )}
-        <div className="absolute top-3 left-3">
-          <Badge className={`${categoryColors[item.category]} gap-1 border-0`}>
-            <Icon className="h-3 w-3" />
-            {categoryLabel}
-          </Badge>
-        </div>
-      </div>
+  const articleUrl = typeof window !== "undefined"
+    ? `${window.location.origin}/informasi/${item.slug}`
+    : `/informasi/${item.slug}`;
 
-      {/* Content */}
-      <div className="p-4">
-        <h2 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-sky-600 transition-colors">
-          {item.title}
-        </h2>
-        {item.excerpt && (
-          <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-            {item.excerpt}
-          </p>
-        )}
-        <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
-          {item.authorName && (
-            <div className="flex items-center gap-1">
-              <User className="h-3 w-3" />
-              {item.authorName}
+  const handleShare = async (e: React.MouseEvent, type: "copy" | "whatsapp" | "twitter" | "facebook") => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const shareText = `${item.title} - RISKA HD`;
+
+    switch (type) {
+      case "copy":
+        await navigator.clipboard.writeText(articleUrl);
+        setShowShareMenu(false);
+        break;
+      case "whatsapp":
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + "\n" + articleUrl)}`, "_blank");
+        break;
+      case "twitter":
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(articleUrl)}`, "_blank");
+        break;
+      case "facebook":
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`, "_blank");
+        break;
+    }
+  };
+
+  return (
+    <div className="group bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-all duration-300 relative">
+      {/* Image */}
+      <Link href={`/informasi/${item.slug}`}>
+        <div className="relative aspect-[16/10] bg-gray-100 overflow-hidden">
+          {item.imageUrl ? (
+            <Image
+              src={item.imageUrl}
+              alt={item.title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50">
+              <div className="p-4 rounded-2xl bg-white/80 shadow-sm">
+                <Icon className="h-10 w-10 text-sky-500" />
+              </div>
             </div>
           )}
-          {item.publishedAt && (
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
-              <time dateTime={item.publishedAt}>
-                {formatDistanceToNow(new Date(item.publishedAt), {
-                  addSuffix: true,
-                  locale: id,
-                })}
-              </time>
-            </div>
-          )}
-          <div className="flex items-center gap-1">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
+
+          {/* Category badge */}
+          <div className="absolute top-3 left-3">
+            <Badge className={`${categoryColors[item.category]} gap-1.5 border-0 shadow-sm px-2.5 py-1`}>
+              <Icon className="h-3 w-3" />
+              {categoryLabel}
+            </Badge>
+          </div>
+
+          {/* View count on image */}
+          <div className="absolute bottom-3 right-3 flex items-center gap-1 text-white/90 text-xs bg-black/30 backdrop-blur-sm rounded-full px-2 py-1">
             <Eye className="h-3 w-3" />
             {item.viewCount}
           </div>
         </div>
+      </Link>
+
+      {/* Content */}
+      <div className="p-4">
+        <Link href={`/informasi/${item.slug}`}>
+          <h2 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-sky-600 transition-colors leading-snug">
+            {item.title}
+          </h2>
+        </Link>
+
+        {item.excerpt && (
+          <p className="mt-2 text-sm text-gray-500 line-clamp-2 leading-relaxed">
+            {item.excerpt}
+          </p>
+        )}
+
+        {/* Footer */}
+        <div className="mt-4 pt-3 border-t flex items-center justify-between">
+          <div className="flex items-center gap-3 text-xs text-gray-400">
+            {item.authorName && (
+              <div className="flex items-center gap-1">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-sky-400 to-cyan-500 flex items-center justify-center">
+                  <User className="h-3 w-3 text-white" />
+                </div>
+                <span className="text-gray-600 font-medium">{item.authorName}</span>
+              </div>
+            )}
+            {item.publishedAt && (
+              <div className="flex items-center gap-1">
+                <Calendar className="h-3 w-3" />
+                <time dateTime={item.publishedAt}>
+                  {formatDistanceToNow(new Date(item.publishedAt), {
+                    addSuffix: true,
+                    locale: id,
+                  })}
+                </time>
+              </div>
+            )}
+          </div>
+
+          {/* Share button */}
+          <div className="relative">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setShowShareMenu(!showShareMenu);
+              }}
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+              aria-label="Share artikel"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
+
+            {/* Share dropdown */}
+            {showShareMenu && (
+              <>
+                <div
+                  className="fixed inset-0 z-10"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowShareMenu(false);
+                  }}
+                />
+                <div className="absolute bottom-full right-0 mb-2 bg-white rounded-xl shadow-lg border p-2 z-20 min-w-[140px]">
+                  <button
+                    onClick={(e) => handleShare(e, "copy")}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                  >
+                    <Link2 className="h-4 w-4" />
+                    Salin Link
+                  </button>
+                  <button
+                    onClick={(e) => handleShare(e, "whatsapp")}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-lg transition-colors"
+                  >
+                    <MessageCircle className="h-4 w-4" />
+                    WhatsApp
+                  </button>
+                  <button
+                    onClick={(e) => handleShare(e, "twitter")}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-lg transition-colors"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    Twitter
+                  </button>
+                  <button
+                    onClick={(e) => handleShare(e, "facebook")}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                    Facebook
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
 
