@@ -106,19 +106,19 @@ const MACHINES_DATA = [
 ];
 
 const DOCTORS_DATA = [
-  { name: "dr. Ahmad Faisal, Sp.PD-KGH", email: "dr.ahmad@riskahd.com", nip: "19800515200901001", sip: "SIP-PD-KGH-001", specialization: "Konsultan Ginjal Hipertensi" },
-  { name: "dr. Siti Rahma, Sp.PD", email: "dr.siti@riskahd.com", nip: "19850320201001002", sip: "SIP-PD-002", specialization: "Penyakit Dalam - Nefrologi" },
-  { name: "dr. Budi Santoso, Sp.PD-KGH", email: "dr.budi@riskahd.com", nip: "19780812199901003", sip: "SIP-PD-KGH-003", specialization: "Konsultan Ginjal Hipertensi" },
-  { name: "dr. Dewi Kartika, Sp.PD", email: "dr.dewi@riskahd.com", nip: "19900105201501004", sip: "SIP-PD-004", specialization: "Penyakit Dalam - Transplantasi" },
+  { name: "dr. Ahmad Faisal, Sp.PD-KGH", email: "dr.ahmad@test.com", nip: "19800515200901001", sip: "SIP-PD-KGH-001", specialization: "Konsultan Ginjal Hipertensi" },
+  { name: "dr. Siti Rahma, Sp.PD", email: "dr.siti@test.com", nip: "19850320201001002", sip: "SIP-PD-002", specialization: "Penyakit Dalam - Nefrologi" },
+  { name: "dr. Budi Santoso, Sp.PD-KGH", email: "dr.budi@test.com", nip: "19780812199901003", sip: "SIP-PD-KGH-003", specialization: "Konsultan Ginjal Hipertensi" },
+  { name: "dr. Dewi Kartika, Sp.PD", email: "dr.dewi@test.com", nip: "19900105201501004", sip: "SIP-PD-004", specialization: "Penyakit Dalam - Transplantasi" },
 ];
 
 const NURSES_DATA = [
-  { name: "Ns. Ratna Sari, S.Kep", email: "ns.ratna@riskahd.com", nip: "19880315201001001", sip: "SIP-NS-001", certification: "Certified Dialysis Nurse (CDN)" },
-  { name: "Ns. Yusuf Rahman, S.Kep", email: "ns.yusuf@riskahd.com", nip: "19850720200901002", sip: "SIP-NS-002", certification: "Vascular Access Care Specialist" },
-  { name: "Ns. Linda Permata, S.Kep", email: "ns.linda@riskahd.com", nip: "19920101201501003", sip: "SIP-NS-003", certification: "Certified Dialysis Nurse (CDN)" },
-  { name: "Ns. Andi Wijaya, S.Kep", email: "ns.andi@riskahd.com", nip: "19870610200801004", sip: "SIP-NS-004", certification: "Emergency & Critical Care" },
-  { name: "Ns. Maya Kusuma, S.Kep", email: "ns.maya@riskahd.com", nip: "19930505201701005", sip: "SIP-NS-005", certification: "Certified Dialysis Nurse (CDN)" },
-  { name: "Ns. Doni Prasetyo, S.Kep", email: "ns.doni@riskahd.com", nip: "19890825201201006", sip: "SIP-NS-006", certification: "Hemodialysis Technician" },
+  { name: "Ns. Ratna Sari, S.Kep", email: "ns.ratna@test.com", nip: "19880315201001001", sip: "SIP-NS-001", certification: "Certified Dialysis Nurse (CDN)" },
+  { name: "Ns. Yusuf Rahman, S.Kep", email: "ns.yusuf@test.com", nip: "19850720200901002", sip: "SIP-NS-002", certification: "Vascular Access Care Specialist" },
+  { name: "Ns. Linda Permata, S.Kep", email: "ns.linda@test.com", nip: "19920101201501003", sip: "SIP-NS-003", certification: "Certified Dialysis Nurse (CDN)" },
+  { name: "Ns. Andi Wijaya, S.Kep", email: "ns.andi@test.com", nip: "19870610200801004", sip: "SIP-NS-004", certification: "Emergency & Critical Care" },
+  { name: "Ns. Maya Kusuma, S.Kep", email: "ns.maya@test.com", nip: "19930505201701005", sip: "SIP-NS-005", certification: "Certified Dialysis Nurse (CDN)" },
+  { name: "Ns. Doni Prasetyo, S.Kep", email: "ns.doni@test.com", nip: "19890825201201006", sip: "SIP-NS-006", certification: "Hemodialysis Technician" },
 ];
 
 const RUANG_INFORMASI_DATA = [
@@ -715,7 +715,7 @@ async function seedMachines(roomIds: Record<string, string>) {
 }
 
 async function createUserWithAccount(
-  userData: { name: string; email: string; role: string },
+  userData: { name: string; email: string; role: string; nik?: string },
   password: string
 ): Promise<string> {
   const existing = await db.select().from(user).where(eq(user.email, userData.email)).limit(1);
@@ -735,6 +735,8 @@ async function createUserWithAccount(
     email: userData.email,
     emailVerified: true,
     role: userData.role,
+    nik: userData.nik || null,
+    isActivated: !!userData.nik,
     createdAt: now,
     updatedAt: now,
   });
@@ -756,14 +758,17 @@ async function createUserWithAccount(
 async function seedDoctors() {
   console.log("\n👨‍⚕️ Seeding doctors...");
   const doctorIds: string[] = [];
-  const defaultPassword = "password123";
+  const defaultPassword = "test123";
 
-  for (const data of DOCTORS_DATA) {
+  for (let i = 0; i < DOCTORS_DATA.length; i++) {
+    const data = DOCTORS_DATA[i];
     const existing = await db.select().from(doctor).where(eq(doctor.nip, data.nip!)).limit(1);
 
     if (existing.length === 0) {
+      // Generate unique NIK for doctor
+      const doctorNik = `3175020101${String(80 + i).padStart(2, "0")}00${String(10 + i).padStart(2, "0")}`;
       const userId = await createUserWithAccount(
-        { name: data.name, email: data.email, role: "doctor" },
+        { name: data.name, email: data.email, role: "dokter", nik: doctorNik },
         defaultPassword
       );
 
@@ -794,14 +799,17 @@ async function seedDoctors() {
 
 async function seedNurses() {
   console.log("\n👩‍⚕️ Seeding nurses...");
-  const defaultPassword = "password123";
+  const defaultPassword = "test123";
 
-  for (const data of NURSES_DATA) {
+  for (let i = 0; i < NURSES_DATA.length; i++) {
+    const data = NURSES_DATA[i];
     const existing = await db.select().from(nurse).where(eq(nurse.nip, data.nip!)).limit(1);
 
     if (existing.length === 0) {
+      // Generate unique NIK for nurse
+      const nurseNik = `3175030101${String(85 + i).padStart(2, "0")}00${String(20 + i).padStart(2, "0")}`;
       const userId = await createUserWithAccount(
-        { name: data.name, email: data.email, role: "nurse" },
+        { name: data.name, email: data.email, role: "perawat", nik: nurseNik },
         defaultPassword
       );
 
@@ -1077,11 +1085,11 @@ async function seedSchedules() {
 
 async function seedAdminUser() {
   console.log("\n👤 Seeding admin user...");
-  const adminEmail = "admin@riskahd.com";
-  const defaultPassword = "admin123";
+  const adminEmail = "admin@test.com";
+  const defaultPassword = "test123";
 
   const userId = await createUserWithAccount(
-    { name: "Administrator", email: adminEmail, role: "admin" },
+    { name: "Administrator", email: adminEmail, role: "admin", nik: "3175010101800001" },
     defaultPassword
   );
 
@@ -1124,6 +1132,56 @@ async function seedRuangInformasi(authorId: string) {
   console.log(`✅ Ruang Informasi seeded: ${RUANG_INFORMASI_DATA.length}`);
 }
 
+async function seedEdukatorUser() {
+  console.log("\n📚 Seeding edukator user...");
+  const edukatorEmail = "edukator@test.com";
+  const defaultPassword = "test123";
+
+  const userId = await createUserWithAccount(
+    { name: "Tim Edukasi HD", email: edukatorEmail, role: "edukator", nik: "3175010101850002" },
+    defaultPassword
+  );
+
+  console.log(`✅ Edukator user created: ${edukatorEmail} / ${defaultPassword}`);
+  return userId;
+}
+
+async function seedPatientUsers() {
+  console.log("\n👥 Seeding patient user accounts...");
+  const defaultPassword = "test123";
+  let createdCount = 0;
+
+  // Get first 3 patients to create user accounts for demo
+  const demoPatients = await db.select().from(patient).where(eq(patient.isActive, true)).limit(3);
+
+  for (const p of demoPatients) {
+    // Skip if patient already has userId
+    if (p.userId) {
+      console.log(`  - Patient ${p.name} already has account`);
+      continue;
+    }
+
+    // Create email from patient name
+    const emailName = p.name.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z.]/g, '');
+    const patientEmail = `${emailName}@test.com`;
+
+    // Use patient's NIK for activation
+    const userId = await createUserWithAccount(
+      { name: p.name, email: patientEmail, role: "pasien", nik: p.nik || undefined },
+      defaultPassword
+    );
+
+    // Update patient with userId
+    await db.update(patient).set({ userId }).where(eq(patient.id, p.id));
+
+    console.log(`  ✓ Created patient account: ${patientEmail}`);
+    createdCount++;
+  }
+
+  console.log(`✅ Patient accounts created: ${createdCount}`);
+  return createdCount;
+}
+
 async function main() {
   console.log("🚀 Starting RISKA HD Demo Seeder...\n");
   console.log("=".repeat(50));
@@ -1137,8 +1195,9 @@ async function main() {
     await seedShifts();
     await seedMachines(roomIds);
 
-    // Seed users (doctors, nurses, admin)
+    // Seed users (doctors, nurses, admin, edukator)
     const adminUserId = await seedAdminUser();
+    await seedEdukatorUser();
     const doctorIds = await seedDoctors();
     await seedNurses();
 
@@ -1147,6 +1206,9 @@ async function main() {
 
     // Seed patients with diagnoses and medications
     await seedPatients(doctorIds, diagnosisIds, medicationIds);
+
+    // Create patient user accounts for demo
+    await seedPatientUsers();
 
     // Seed schedules for nurses and patients
     const scheduleStats = await seedSchedules();
@@ -1168,10 +1230,18 @@ async function main() {
     console.log(`   - Nurse Schedules: ${scheduleStats.nurseScheduleCount}`);
     console.log(`   - Patient Schedules: ${scheduleStats.patientScheduleCount}`);
 
-    console.log("\n🔐 Demo Login Accounts:");
-    console.log("   Admin:  admin@riskahd.com / admin123");
-    console.log("   Doctor: dr.ahmad@riskahd.com / password123");
-    console.log("   Nurse:  ns.ratna@riskahd.com / password123");
+    console.log("\n🔐 Demo Login Accounts (Password: test123):");
+    console.log("   ┌─────────────┬──────────────────────────┐");
+    console.log("   │ Role        │ Email                    │");
+    console.log("   ├─────────────┼──────────────────────────┤");
+    console.log("   │ Admin       │ admin@test.com           │");
+    console.log("   │ Dokter      │ dr.ahmad@test.com        │");
+    console.log("   │ Perawat     │ ns.ratna@test.com        │");
+    console.log("   │ Edukator    │ edukator@test.com        │");
+    console.log("   │ Pasien      │ siti.aminah@test.com     │");
+    console.log("   │ Pasien      │ ahmad.wijaya@test.com    │");
+    console.log("   │ Pasien      │ dewi.lestari@test.com    │");
+    console.log("   └─────────────┴──────────────────────────┘");
 
   } catch (error) {
     console.error("\n❌ Error during seeding:", error);

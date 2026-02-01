@@ -19,6 +19,9 @@ import {
   ScrollText,
   CalendarDays,
   Newspaper,
+  Droplets,
+  FlaskConical,
+  UserCircle,
 } from "lucide-react";
 import * as React from "react";
 
@@ -45,7 +48,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut } from "lucide-react";
+import { LogOut, UserCog } from "lucide-react";
+import Link from "next/link";
 
 const settingData = [
   {
@@ -71,6 +75,25 @@ const navItems = [
     url: "/dashboard",
     icon: Home,
     items: [{ title: "Overview", url: "/dashboard" }],
+  },
+  {
+    title: "Sesi HD",
+    url: "/hd-sessions",
+    icon: Droplets,
+    items: [
+      { title: "Sesi Hari Ini", url: "/hd-sessions" },
+      { title: "Hasil Lab", url: "/patient-labs" },
+    ],
+  },
+  {
+    title: "Portal Pasien",
+    url: "/portal",
+    icon: UserCircle,
+    items: [
+      { title: "Dashboard", url: "/portal" },
+      { title: "Riwayat Sesi", url: "/portal/sessions" },
+      { title: "Hasil Lab", url: "/portal/labs" },
+    ],
   },
   {
     title: "Ruang Informasi",
@@ -186,6 +209,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem asChild>
+                <Link href="/profile" className="cursor-pointer">
+                  <UserCog className="mr-2 h-4 w-4" />
+                  Profil Saya
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => signOut()}
                 className="text-red-600"

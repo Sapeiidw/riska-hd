@@ -41,6 +41,12 @@ const DOKTER_PERMISSIONS = [
   PERMISSIONS.COMPLICATION_READ,
   PERMISSIONS.RUANG_INFORMASI_READ, // Can view educational content
   PERMISSIONS.RUANG_INFORMASI_CREATE, // Can create educational content
+  // HD Session - view only (for review)
+  PERMISSIONS.HD_SESSION_READ,
+  // Patient Lab - full access
+  PERMISSIONS.PATIENT_LAB_READ,
+  PERMISSIONS.PATIENT_LAB_CREATE,
+  PERMISSIONS.PATIENT_LAB_UPDATE,
 ];
 
 // Perawat permissions
@@ -58,6 +64,17 @@ const PERAWAT_PERMISSIONS = [
   PERMISSIONS.HD_PROTOCOL_READ,
   PERMISSIONS.COMPLICATION_READ,
   PERMISSIONS.RUANG_INFORMASI_READ, // Can view educational content
+  // HD Session - full CRUD (main role for recording sessions)
+  PERMISSIONS.HD_SESSION_CREATE,
+  PERMISSIONS.HD_SESSION_READ,
+  PERMISSIONS.HD_SESSION_UPDATE,
+  // Patient Schedule - need to update status
+  PERMISSIONS.PATIENT_SCHEDULE_READ,
+  PERMISSIONS.PATIENT_SCHEDULE_UPDATE,
+  // Patient Lab - create and view
+  PERMISSIONS.PATIENT_LAB_CREATE,
+  PERMISSIONS.PATIENT_LAB_READ,
+  PERMISSIONS.PATIENT_LAB_UPDATE,
 ];
 
 // Pasien permissions (limited view only)
@@ -67,6 +84,12 @@ const PASIEN_PERMISSIONS = [
   PERMISSIONS.DIAGNOSIS_READ,
   PERMISSIONS.MEDICATION_READ,
   PERMISSIONS.RUANG_INFORMASI_READ, // Can view educational content
+  // HD Session - view own sessions only (enforced in API)
+  PERMISSIONS.HD_SESSION_READ,
+  // Patient Schedule - view own schedule only (enforced in API)
+  PERMISSIONS.PATIENT_SCHEDULE_READ,
+  // Patient Lab - view own labs only (enforced in API)
+  PERMISSIONS.PATIENT_LAB_READ,
 ];
 
 // Edukator permissions

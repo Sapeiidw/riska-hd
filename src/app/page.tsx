@@ -478,14 +478,19 @@ export default function HomePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  Kelola Layanan
+                  Ruang Informasi &
+                  <br />
+                  <span className="text-white/90">Sistem Kelola</span>
+                  <br />
+                  <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text">Aktivitas Hemodialisa</span>
+                      {/* Kelola Layanan
                   <br />
                   <span className="text-white/90">Hemodialisa</span>
                   <br />
-                  <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text">Lebih Mudah</span>
+                  <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text">Lebih Mudah</span> */}
                 </motion.h1>
 
-                <motion.div
+                {/* <motion.div
                   className="text-white/70 text-sm max-w-lg"
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -499,7 +504,7 @@ export default function HomePage() {
                   <span className="font-bold text-white">H</span>emo
                   <span className="font-bold text-white">d</span>ialisa
                 </motion.div>
-
+ */}
                 <motion.p
                   className="text-white/80 text-lg max-w-lg leading-relaxed"
                   initial={{ opacity: 0, x: -30 }}
@@ -507,7 +512,7 @@ export default function HomePage() {
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
                   Platform digital terintegrasi untuk dokter, perawat, dan pasien.
-                  Terstruktur, aman, dan mudah digunakan.
+                  Terstruktur, aman, dan mudah digunakan. 
                 </motion.p>
 
                 <motion.div
@@ -751,18 +756,19 @@ export default function HomePage() {
             viewBox="0 0 1440 120"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="w-full"
+            className="w-full block"
+            preserveAspectRatio="none"
           >
             <path
               d="M0 120L1440 120L1440 60C1440 60 1320 0 720 0C120 0 0 60 0 60L0 120Z"
-              fill="#f9fafb"
+              className="fill-gray-50"
             />
           </svg>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-gray-50 -mt-px">
         <div className="container mx-auto px-6">
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"

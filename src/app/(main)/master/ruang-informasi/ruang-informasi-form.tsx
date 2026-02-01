@@ -4,7 +4,8 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Trash2, Link as LinkIcon, Image as ImageIcon } from "lucide-react";
+import { Plus, Trash2, Link as LinkIcon, Image as ImageIcon, Upload, Loader2, X } from "lucide-react";
+import { useRef, useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +42,7 @@ import {
 } from "@/lib/validations/ruang-informasi";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface RuangInformasiFormProps {
   data?: {
@@ -67,9 +69,79 @@ function generateSlug(title: string): string {
     .trim();
 }
 
+// Compress image using canvas
+async function compressImage(
+  file: File,
+  maxWidth = 1200,
+  maxHeight = 800,
+  quality = 0.8
+): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target?.result as string;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(new File([blob], file.name, { type: "image/jpeg" }));
+            } else {
+              reject(new Error("Gagal mengkompresi gambar"));
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => reject(new Error("Gagal memuat gambar"));
+    };
+    reader.onerror = () => reject(new Error("Gagal membaca file"));
+  });
+}
+
+async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("image", file);
+  const res = await fetch("/api/upload/image", {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.error?.message || "Gagal mengupload gambar");
+  }
+  const data = await res.json();
+  return data.data.url;
+}
+
 export function RuangInformasiForm({ data, onSuccess }: RuangInformasiFormProps) {
   const [linksOpen, setLinksOpen] = useState(false);
   const [featuredImageOpen, setFeaturedImageOpen] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageTab, setImageTab] = useState<string>(data?.imageUrl?.startsWith("data:") ? "upload" : "url");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Parse existing external links
   let existingLinks: ExternalLink[] = [];
@@ -129,6 +201,47 @@ export function RuangInformasiForm({ data, onSuccess }: RuangInformasiFormProps)
   });
 
   const watchImageUrl = form.watch("imageUrl");
+
+  const handleFileChange = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Format file harus JPG, PNG, WebP, atau GIF");
+        return;
+      }
+
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Ukuran file maksimal 5MB");
+        return;
+      }
+
+      setIsUploading(true);
+      try {
+        const compressedFile = await compressImage(file);
+        const url = await uploadImage(compressedFile);
+        form.setValue("imageUrl", url);
+        toast.success("Gambar berhasil diupload");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Gagal mengupload gambar");
+      } finally {
+        setIsUploading(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }
+    },
+    [form]
+  );
+
+  const handleRemoveImage = () => {
+    form.setValue("imageUrl", "");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
 
   // Auto-generate slug from title
   const handleTitleChange = (value: string) => {
@@ -296,29 +409,94 @@ export function RuangInformasiForm({ data, onSuccess }: RuangInformasiFormProps)
             </CollapsibleTrigger>
             <CollapsibleContent>
               <CardContent className="pt-0">
-                <FormField
-                  control={form.control}
-                  name="imageUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>URL Gambar</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="https://example.com/image.jpg"
-                          {...field}
-                          value={field.value || ""}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Gambar thumbnail yang ditampilkan di daftar konten
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Tabs value={imageTab} onValueChange={setImageTab}>
+                  <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsTrigger value="upload">
+                      <Upload className="h-4 w-4 mr-2" />
+                      Upload
+                    </TabsTrigger>
+                    <TabsTrigger value="url">
+                      <LinkIcon className="h-4 w-4 mr-2" />
+                      URL
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="upload" className="space-y-4">
+                    <div className="flex flex-col items-center justify-center border-2 border-dashed rounded-lg p-6 hover:border-sky-400 transition-colors">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        disabled={isUploading}
+                      />
+                      {isUploading ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+                          <p className="text-sm text-muted-foreground">Mengupload...</p>
+                        </div>
+                      ) : (
+                        <>
+                          <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                          <p className="text-sm text-muted-foreground mb-2">
+                            Klik atau drag & drop gambar di sini
+                          </p>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            Pilih Gambar
+                          </Button>
+                          <p className="text-xs text-muted-foreground mt-2">
+                            JPG, PNG, WebP, GIF (max 5MB)
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="url">
+                    <FormField
+                      control={form.control}
+                      name="imageUrl"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>URL Gambar</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="https://example.com/image.jpg"
+                              {...field}
+                              value={field.value || ""}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Masukkan URL gambar dari internet
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </TabsContent>
+                </Tabs>
+
                 {watchImageUrl && (
                   <div className="mt-4">
-                    <p className="text-sm text-muted-foreground mb-2">Preview:</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-muted-foreground">Preview:</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-destructive hover:text-destructive"
+                        onClick={handleRemoveImage}
+                      >
+                        <X className="h-4 w-4 mr-1" />
+                        Hapus
+                      </Button>
+                    </div>
                     <img
                       src={watchImageUrl}
                       alt="Preview"
