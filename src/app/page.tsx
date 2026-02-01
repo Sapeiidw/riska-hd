@@ -285,20 +285,20 @@ function FAQItem({
   return (
     <motion.div className="border-b border-gray-100 last:border-0" initial={false}>
       <button
-        className="w-full py-5 flex items-center justify-between text-left group"
+        className="w-full py-4 md:py-5 flex items-center justify-between text-left group"
         onClick={onClick}
       >
-        <span className="font-medium text-gray-700 group-hover:text-sky-500 transition-colors pr-4">
+        <span className="font-medium text-gray-700 group-hover:text-sky-500 transition-colors pr-3 md:pr-4 text-sm md:text-base">
           {question}
         </span>
         <div
-          className={`size-10 rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${
+          className={`size-8 md:size-10 rounded-lg md:rounded-xl flex items-center justify-center transition-all flex-shrink-0 ${
             isOpen
               ? "bg-sky-500 text-white shadow-lg"
               : "bg-gray-100 text-gray-400 group-hover:bg-sky-50"
           }`}
         >
-          {isOpen ? <Minus className="size-4" /> : <Plus className="size-4" />}
+          {isOpen ? <Minus className="size-3.5 md:size-4" /> : <Plus className="size-3.5 md:size-4" />}
         </div>
       </button>
       <motion.div
@@ -307,7 +307,7 @@ function FAQItem({
         transition={{ duration: 0.25 }}
         className="overflow-hidden"
       >
-        <p className="pb-5 text-gray-500 leading-relaxed">{answer}</p>
+        <p className="pb-4 md:pb-5 text-gray-500 leading-relaxed text-sm md:text-base">{answer}</p>
       </motion.div>
     </motion.div>
   );
@@ -977,33 +977,33 @@ export default function HomePage() {
       </section>
 
       {/* Education Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+      <section className="py-12 md:py-20 bg-white">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center max-w-6xl mx-auto">
             <motion.div
-              className="space-y-6"
+              className="space-y-4 md:space-y-6"
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5 }}
             >
-              <Badge className="bg-purple-100 text-purple-600 border-0 px-4 py-1.5 rounded-full text-xs font-medium">
-                <BookOpen className="size-3.5 mr-1.5" />
+              <Badge className="bg-purple-100 text-purple-600 border-0 px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs font-medium">
+                <BookOpen className="size-3 md:size-3.5 mr-1 md:mr-1.5" />
                 Edukasi Pasien
               </Badge>
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-800">
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-800">
                 Materi Edukasi Berkualitas
               </h2>
-              <p className="text-gray-500 leading-relaxed">
+              <p className="text-gray-500 text-sm md:text-base leading-relaxed">
                 Konten edukasi yang dikurasi oleh tim medis profesional untuk membantu pasien
                 memahami proses hemodialisa dan menjaga kesehatan mereka.
               </p>
 
-              <div className="space-y-4 pt-4">
+              <div className="space-y-3 md:space-y-4 pt-2 md:pt-4">
                 {[
-                  { icon: Video, title: "Video Tutorial", desc: "Penjelasan visual yang mudah dipahami", bg: "bg-violet-500", href: "/informasi?category=video" },
-                  { icon: FileText, title: "Dokumen PDF", desc: "Materi lengkap untuk dibaca offline", bg: "bg-pink-400", href: "/informasi?category=panduan" },
-                  { icon: GraduationCap, title: "Quiz Interaktif", desc: "Uji pemahaman dengan cara menyenangkan", bg: "bg-purple-500", href: "/informasi" },
+                  { icon: Video, title: "Video Tutorial", desc: "Penjelasan visual mudah dipahami", bg: "bg-violet-500", href: "/informasi?category=video" },
+                  { icon: FileText, title: "Dokumen PDF", desc: "Materi lengkap untuk dibaca", bg: "bg-pink-400", href: "/informasi?category=panduan" },
+                  { icon: GraduationCap, title: "Quiz Interaktif", desc: "Uji pemahaman dengan menyenangkan", bg: "bg-purple-500", href: "/informasi" },
                 ].map((item, index) => (
                   <Link key={index} href={item.href}>
                     <motion.div
@@ -1012,18 +1012,18 @@ export default function HomePage() {
                       viewport={{ once: true, margin: "-50px" }}
                       transition={{ duration: 0.5, delay: index * 0.1 }}
                       whileHover={{ x: 8 }}
-                      className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all cursor-pointer group"
+                      className="flex items-center gap-3 md:gap-4 p-3 md:p-4 rounded-xl md:rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all cursor-pointer group"
                     >
                       <div
-                        className={`size-12 rounded-xl ${item.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}
+                        className={`size-10 md:size-12 rounded-lg md:rounded-xl ${item.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform flex-shrink-0`}
                       >
-                        <item.icon className="size-6 text-white" />
+                        <item.icon className="size-5 md:size-6 text-white" />
                       </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-800">{item.title}</h4>
-                        <p className="text-sm text-gray-400">{item.desc}</p>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-semibold text-gray-800 text-sm md:text-base">{item.title}</h4>
+                        <p className="text-xs md:text-sm text-gray-400 truncate">{item.desc}</p>
                       </div>
-                      <ArrowRight className="size-5 text-gray-300 ml-auto group-hover:text-sky-500 transition-colors" />
+                      <ArrowRight className="size-4 md:size-5 text-gray-300 group-hover:text-sky-500 transition-colors flex-shrink-0" />
                     </motion.div>
                   </Link>
                 ))}
@@ -1038,29 +1038,29 @@ export default function HomePage() {
             >
               <Link href="/informasi">
                 <motion.div
-                  className="rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 p-8 shadow-2xl cursor-pointer"
+                  className="rounded-2xl md:rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 p-5 md:p-8 shadow-2xl cursor-pointer"
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <div className="aspect-video rounded-2xl bg-white/10 flex items-center justify-center mb-6 group relative overflow-hidden">
+                  <div className="aspect-video rounded-xl md:rounded-2xl bg-white/10 flex items-center justify-center mb-4 md:mb-6 group relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
                     <motion.div
-                      className="size-20 rounded-3xl bg-white shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform z-10"
+                      className="size-14 md:size-20 rounded-2xl md:rounded-3xl bg-white shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform z-10"
                       whileTap={{ scale: 0.95 }}
                     >
-                      <TrendingUp className="size-10 text-violet-500" />
+                      <TrendingUp className="size-7 md:size-10 text-violet-500" />
                     </motion.div>
                   </div>
-                  <h4 className="text-xl font-bold text-white mb-2">Panduan Lengkap Hemodialisa</h4>
-                  <p className="text-white/70 mb-4">Edukasi komprehensif untuk pasien baru dan keluarga</p>
-                  <div className="flex flex-wrap gap-2">
-                    <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
+                  <h4 className="text-base md:text-xl font-bold text-white mb-1 md:mb-2">Panduan Lengkap Hemodialisa</h4>
+                  <p className="text-white/70 text-sm md:text-base mb-3 md:mb-4">Edukasi komprehensif untuk pasien baru</p>
+                  <div className="flex flex-wrap gap-1.5 md:gap-2">
+                    <Badge className="bg-white/20 text-white border-0 rounded-full px-2 md:px-3 py-0.5 md:py-1 text-xs">
                       12 Video
                     </Badge>
-                    <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
+                    <Badge className="bg-white/20 text-white border-0 rounded-full px-2 md:px-3 py-0.5 md:py-1 text-xs">
                       8 PDF
                     </Badge>
-                    <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
+                    <Badge className="bg-white/20 text-white border-0 rounded-full px-2 md:px-3 py-0.5 md:py-1 text-xs">
                       5 Quiz
                     </Badge>
                   </div>
@@ -1072,8 +1072,8 @@ export default function HomePage() {
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6">
+      <section id="faq" className="py-12 md:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="FAQ"
             badgeIcon={HelpCircle}
@@ -1089,7 +1089,7 @@ export default function HomePage() {
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.5 }}
           >
-            <div className="bg-white rounded-3xl shadow-xl p-8">
+            <div className="bg-white rounded-2xl md:rounded-3xl shadow-xl p-4 md:p-8">
               {faqs.map((faq, index) => (
                 <FAQItem
                   key={index}
@@ -1105,8 +1105,8 @@ export default function HomePage() {
       </section>
 
       {/* Security Section */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-6">
+      <section className="py-12 md:py-20 bg-white">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="Keamanan"
             badgeIcon={Lock}
@@ -1115,29 +1115,29 @@ export default function HomePage() {
             subtitle="Keamanan data pasien adalah prioritas utama kami."
           />
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 max-w-4xl mx-auto">
             {[
-              { icon: Shield, label: "Role-Based Access Control", desc: "Akses terkontrol", bg: "bg-emerald-500" },
-              { icon: FileText, label: "Audit Log Lengkap", desc: "Tracking aktivitas", bg: "bg-teal-500" },
+              { icon: Shield, label: "Role-Based Access", desc: "Akses terkontrol", bg: "bg-emerald-500" },
+              { icon: FileText, label: "Audit Log", desc: "Tracking aktivitas", bg: "bg-teal-500" },
               { icon: Lock, label: "Enkripsi Data", desc: "Data terenkripsi", bg: "bg-cyan-500" },
-              { icon: Clock, label: "Auto Session Timeout", desc: "Logout otomatis", bg: "bg-sky-500" },
+              { icon: Clock, label: "Auto Timeout", desc: "Logout otomatis", bg: "bg-sky-500" },
             ].map((item, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
                 whileHover={{ y: -8 }}
-                className="p-6 rounded-3xl bg-gray-50 hover:bg-gray-100 text-center transition-all cursor-pointer group"
+                className="p-4 md:p-6 rounded-2xl md:rounded-3xl bg-gray-50 hover:bg-gray-100 text-center transition-all cursor-pointer group"
               >
                 <div
-                  className={`size-14 rounded-2xl ${item.bg} flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform`}
+                  className={`size-10 md:size-14 rounded-xl md:rounded-2xl ${item.bg} flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-lg group-hover:scale-110 transition-transform`}
                 >
-                  <item.icon className="size-7 text-white" />
+                  <item.icon className="size-5 md:size-7 text-white" />
                 </div>
-                <p className="font-semibold text-gray-800 mb-1">{item.label}</p>
-                <p className="text-xs text-gray-400">{item.desc}</p>
+                <p className="font-semibold text-gray-800 text-xs md:text-base mb-0.5 md:mb-1">{item.label}</p>
+                <p className="text-[10px] md:text-xs text-gray-400">{item.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -1145,17 +1145,17 @@ export default function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-24 bg-gradient-to-br from-sky-500 via-sky-600 to-cyan-600 relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-gradient-to-br from-sky-500 via-sky-600 to-cyan-600 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 left-10 size-72 rounded-full bg-white/10 blur-3xl" />
-          <div className="absolute bottom-10 right-10 size-96 rounded-full bg-white/10 blur-3xl" />
-          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[25vw] font-black text-white/5 tracking-tighter select-none">
+          <div className="absolute top-10 left-10 size-48 md:size-72 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute bottom-10 right-10 size-64 md:size-96 rounded-full bg-white/10 blur-3xl" />
+          <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[30vw] md:text-[25vw] font-black text-white/5 tracking-tighter select-none">
             HD
           </span>
         </div>
 
-        <div className="relative z-10 container mx-auto px-6">
+        <div className="relative z-10 container mx-auto px-4 md:px-6">
           <motion.div
             className="text-center max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 20 }}
@@ -1165,18 +1165,18 @@ export default function HomePage() {
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 3, repeat: Infinity }}
-              className="mb-8"
+              className="mb-6 md:mb-8"
             >
-              <LogoIcon variant="light" size="xl" className="mx-auto" />
+              <LogoIcon variant="light" size="xl" className="mx-auto scale-75 md:scale-100" />
             </motion.div>
 
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white mb-3 md:mb-4">
               Siap Kelola Hemodialisa
               <br />
               Lebih Baik?
             </h2>
 
-            <p className="text-white/60 text-sm mb-4">
+            <p className="text-white/60 text-xs md:text-sm mb-3 md:mb-4 hidden sm:block">
               <span className="font-bold text-white">R</span>uang{" "}
               <span className="font-bold text-white">I</span>nformasi &{" "}
               <span className="font-bold text-white">S</span>istem{" "}
@@ -1186,21 +1186,21 @@ export default function HomePage() {
               <span className="font-bold text-white">d</span>ialisa
             </p>
 
-            <p className="text-white/80 mb-10 text-lg">
+            <p className="text-white/80 mb-8 md:mb-10 text-sm md:text-lg px-2">
               Mulai gunakan RISKA HD sekarang dan rasakan kemudahan dalam
-              mengelola layanan hemodialisa di fasilitas kesehatan Anda.
+              mengelola layanan hemodialisa.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/sign-in">
-                <Button className="bg-white text-sky-600 hover:bg-white/90 h-12 px-6 rounded-full shadow-xl group font-medium">
+                <Button className="w-full sm:w-auto bg-white text-sky-600 hover:bg-white/90 h-11 md:h-12 px-5 md:px-6 rounded-full shadow-xl group font-medium text-sm md:text-base">
                   Mulai Sekarang
                   <ArrowUpRight className="ml-2 size-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 </Button>
               </Link>
               <Button
                 variant="outline"
-                className="border border-white/30 text-white hover:bg-white/10 h-12 px-6 rounded-full bg-transparent font-medium"
+                className="w-full sm:w-auto border border-white/30 text-white hover:bg-white/10 h-11 md:h-12 px-5 md:px-6 rounded-full bg-transparent font-medium text-sm md:text-base"
               >
                 Hubungi Kami
                 <ArrowRight className="ml-2 size-4" />
@@ -1211,13 +1211,13 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="py-16 bg-slate-900">
-        <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-4 gap-10 mb-12">
+      <footer className="py-10 md:py-16 bg-slate-900">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-10 mb-8 md:mb-12">
             {/* Brand */}
-            <div className="md:col-span-1">
-              <Logo variant="light" size="md" className="mb-2" />
-              <p className="text-gray-500 text-xs mb-3">
+            <div className="col-span-2 md:col-span-1">
+              <Logo variant="light" size="md" className="mb-2 scale-90 md:scale-100 origin-left" />
+              <p className="text-gray-500 text-[10px] md:text-xs mb-2 md:mb-3 hidden md:block">
                 <span className="font-semibold text-gray-300">R</span>uang{" "}
                 <span className="font-semibold text-gray-300">I</span>nformasi &{" "}
                 <span className="font-semibold text-gray-300">S</span>istem{" "}
@@ -1226,43 +1226,43 @@ export default function HomePage() {
                 <span className="font-semibold text-gray-300">H</span>emo
                 <span className="font-semibold text-gray-300">d</span>ialisa
               </p>
-              <p className="text-gray-400 text-sm leading-relaxed mb-4">
+              <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-3 md:mb-4">
                 Platform manajemen hemodialisa terintegrasi untuk fasilitas kesehatan di Indonesia.
               </p>
-              <div className="flex items-center gap-3">
-                <a href="#" className="size-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                  <Mail className="size-5 text-white" />
+              <div className="flex items-center gap-2 md:gap-3">
+                <a href="#" className="size-8 md:size-10 rounded-lg md:rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                  <Mail className="size-4 md:size-5 text-white" />
                 </a>
-                <a href="#" className="size-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                  <Phone className="size-5 text-white" />
+                <a href="#" className="size-8 md:size-10 rounded-lg md:rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                  <Phone className="size-4 md:size-5 text-white" />
                 </a>
-                <a href="#" className="size-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
-                  <MapPin className="size-5 text-white" />
+                <a href="#" className="size-8 md:size-10 rounded-lg md:rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors">
+                  <MapPin className="size-4 md:size-5 text-white" />
                 </a>
               </div>
             </div>
 
             {/* Links */}
             <div>
-              <h4 className="font-semibold text-white mb-4">Produk</h4>
-              <ul className="space-y-3">
+              <h4 className="font-semibold text-white text-sm md:text-base mb-3 md:mb-4">Produk</h4>
+              <ul className="space-y-2 md:space-y-3">
                 <li>
-                  <a href="#fitur" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <a href="#fitur" className="text-gray-400 hover:text-white text-xs md:text-sm transition-colors">
                     Fitur
                   </a>
                 </li>
                 <li>
-                  <a href="#tim" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <a href="#tim" className="text-gray-400 hover:text-white text-xs md:text-sm transition-colors">
                     Tim Medis
                   </a>
                 </li>
                 <li>
-                  <Link href="/informasi" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <Link href="/informasi" className="text-gray-400 hover:text-white text-xs md:text-sm transition-colors">
                     Ruang Informasi
                   </Link>
                 </li>
                 <li>
-                  <a href="#faq" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <a href="#faq" className="text-gray-400 hover:text-white text-xs md:text-sm transition-colors">
                     FAQ
                   </a>
                 </li>
@@ -1270,33 +1270,20 @@ export default function HomePage() {
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-4">Perusahaan</h4>
-              <ul className="space-y-3">
-                {["Tentang Kami", "Karir", "Blog", "Kontak"].map((item) => (
-                  <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
-                      {item}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-3">
+              <h4 className="font-semibold text-white text-sm md:text-base mb-3 md:mb-4">Legal</h4>
+              <ul className="space-y-2 md:space-y-3">
                 <li>
-                  <Link href="/privasi" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <Link href="/privasi" className="text-gray-400 hover:text-white text-xs md:text-sm transition-colors">
                     Kebijakan Privasi
                   </Link>
                 </li>
                 <li>
-                  <Link href="/bantuan" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <Link href="/bantuan" className="text-gray-400 hover:text-white text-xs md:text-sm transition-colors">
                     Pusat Bantuan
                   </Link>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
+                  <a href="#" className="text-gray-400 hover:text-white text-xs md:text-sm transition-colors">
                     Syarat & Ketentuan
                   </a>
                 </li>
@@ -1305,12 +1292,12 @@ export default function HomePage() {
           </div>
 
           {/* Copyright */}
-          <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500">
+          <div className="pt-6 md:pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4">
+            <p className="text-xs md:text-sm text-gray-500">
               &copy; {new Date().getFullYear()} RISKA HD. All rights reserved.
             </p>
-            <p className="text-sm text-gray-500">
-              Made with <Heart className="size-4 inline text-rose-400 fill-rose-400" /> in Indonesia
+            <p className="text-xs md:text-sm text-gray-500">
+              Made with <Heart className="size-3 md:size-4 inline text-rose-400 fill-rose-400" /> in Indonesia
             </p>
           </div>
         </div>

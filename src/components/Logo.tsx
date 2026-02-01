@@ -137,9 +137,9 @@ export function LogoIcon({
   const c = colors[variant];
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative inline-flex ${className}`}>
       <div
-        className={`${s} rounded-2xl bg-gradient-to-br ${c.icon} flex items-center justify-center shadow-xl`}
+        className={`${s} rounded-full bg-gradient-to-br ${c.icon} flex items-center justify-center shadow-xl`}
       >
         <svg
           viewBox="0 0 24 24"
@@ -157,7 +157,7 @@ export function LogoIcon({
         </svg>
       </div>
       <div
-        className={`absolute -top-1 -right-1 size-3 rounded-full ${c.iconAccent} shadow-sm border-2 border-white`}
+        className={`absolute -top-0.5 -right-0.5 size-3 rounded-full ${c.iconAccent} shadow-sm border-2 border-white/50`}
       />
     </div>
   );
