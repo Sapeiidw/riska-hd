@@ -18,6 +18,8 @@ import {
   hdProtocol,
   patientDiagnosis,
   patientMedication,
+  nurseSchedule,
+  patientSchedule,
 } from "../src/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
@@ -512,6 +514,151 @@ async function seedPatients(doctorIds: string[], diagnosisIds: Record<string, st
   console.log(`✅ Patients seeded: ${PATIENTS_DATA.length}`);
 }
 
+async function seedSchedules() {
+  console.log("\n📅 Seeding schedules...");
+
+  // Get all nurses
+  const allNurses = await db.select().from(nurse).where(eq(nurse.isActive, true));
+  if (allNurses.length === 0) {
+    console.log("  ⚠️ No nurses found, skipping schedules");
+    return { nurseScheduleCount: 0, patientScheduleCount: 0 };
+  }
+
+  // Get all patients
+  const allPatients = await db.select().from(patient).where(eq(patient.isActive, true));
+  if (allPatients.length === 0) {
+    console.log("  ⚠️ No patients found, skipping schedules");
+    return { nurseScheduleCount: 0, patientScheduleCount: 0 };
+  }
+
+  // Get all shifts
+  const allShifts = await db.select().from(shift).where(eq(shift.isActive, true));
+  if (allShifts.length === 0) {
+    console.log("  ⚠️ No shifts found, skipping schedules");
+    return { nurseScheduleCount: 0, patientScheduleCount: 0 };
+  }
+
+  // Get all rooms
+  const allRooms = await db.select().from(room).where(eq(room.isActive, true));
+
+  // Get all machines
+  const allMachines = await db.select().from(hdMachine).where(eq(hdMachine.isActive, true));
+
+  let nurseScheduleCount = 0;
+  let patientScheduleCount = 0;
+
+  // Generate schedules for the next 14 days
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
+    const scheduleDate = new Date(today);
+    scheduleDate.setDate(scheduleDate.getDate() + dayOffset);
+
+    // Skip Sundays (day 0)
+    if (scheduleDate.getDay() === 0) continue;
+
+    // Seed nurse schedules - assign nurses to shifts
+    for (let shiftIndex = 0; shiftIndex < allShifts.length; shiftIndex++) {
+      const currentShift = allShifts[shiftIndex];
+
+      // Assign 2 nurses per shift (round-robin based on day and shift)
+      const nursesPerShift = 2;
+      for (let n = 0; n < nursesPerShift; n++) {
+        const nurseIndex = (dayOffset * allShifts.length + shiftIndex + n) % allNurses.length;
+        const selectedNurse = allNurses[nurseIndex];
+        const selectedRoom = allRooms.length > 0 ? allRooms[shiftIndex % allRooms.length] : null;
+
+        // Check if schedule already exists
+        const existingNurseSchedule = await db
+          .select()
+          .from(nurseSchedule)
+          .where(eq(nurseSchedule.nurseId, selectedNurse.id))
+          .limit(1);
+
+        // Only create if no schedules exist for this nurse (to avoid duplicates on re-run)
+        if (existingNurseSchedule.length === 0 || dayOffset > 0) {
+          try {
+            await db.insert(nurseSchedule).values({
+              id: createId(),
+              nurseId: selectedNurse.id,
+              shiftId: currentShift.id,
+              scheduleDate,
+              roomId: selectedRoom?.id || null,
+              status: dayOffset < 0 ? "present" : "scheduled",
+              notes: null,
+            });
+            nurseScheduleCount++;
+          } catch {
+            // Ignore duplicate key errors
+          }
+        }
+      }
+    }
+
+    // Seed patient schedules - patients typically have 3 sessions per week
+    // Most HD patients are scheduled Monday-Wednesday-Friday or Tuesday-Thursday-Saturday
+    const dayOfWeek = scheduleDate.getDay();
+    const isMWF = dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 5; // Mon, Wed, Fri
+    const isTTS = dayOfWeek === 2 || dayOfWeek === 4 || dayOfWeek === 6; // Tue, Thu, Sat
+
+    for (let patientIndex = 0; patientIndex < allPatients.length; patientIndex++) {
+      const currentPatient = allPatients[patientIndex];
+
+      // Assign patients to MWF or TTS based on index (odd/even)
+      const shouldSchedule = patientIndex % 2 === 0 ? isMWF : isTTS;
+      if (!shouldSchedule) continue;
+
+      // Assign shift based on patient index (distribute across shifts)
+      const shiftIndex = patientIndex % Math.max(allShifts.length - 1, 1); // Exclude night shift for regular patients
+      const selectedShift = allShifts[shiftIndex];
+
+      // Assign room and machine
+      const roomIndex = patientIndex % allRooms.length;
+      const selectedRoom = allRooms.length > 0 ? allRooms[roomIndex] : null;
+
+      // Assign machine (if available)
+      const machineIndex = patientIndex % allMachines.length;
+      const selectedMachine = allMachines.length > 0 ? allMachines[machineIndex] : null;
+
+      // Assign nurse (from the shift)
+      const nurseIndex = patientIndex % allNurses.length;
+      const selectedNurse = allNurses[nurseIndex];
+
+      // Determine status based on date
+      let status = "scheduled";
+      if (dayOffset < 0) {
+        status = Math.random() > 0.1 ? "completed" : "no_show";
+      } else if (dayOffset === 0) {
+        status = "confirmed";
+      }
+
+      try {
+        await db.insert(patientSchedule).values({
+          id: createId(),
+          patientId: currentPatient.id,
+          shiftId: selectedShift.id,
+          scheduleDate,
+          roomId: selectedRoom?.id || null,
+          machineId: selectedMachine?.id || null,
+          nurseId: selectedNurse.id,
+          status,
+          notes: null,
+        });
+        patientScheduleCount++;
+      } catch {
+        // Ignore duplicate key errors
+      }
+    }
+  }
+
+  console.log(`  ✓ Created ${nurseScheduleCount} nurse schedules`);
+  console.log(`  ✓ Created ${patientScheduleCount} patient schedules`);
+  console.log(`✅ Schedules seeded`);
+
+  return { nurseScheduleCount, patientScheduleCount };
+}
+
 async function seedAdminUser() {
   console.log("\n👤 Seeding admin user...");
   const adminEmail = "admin@riskahd.com";
@@ -546,6 +693,9 @@ async function main() {
     // Seed patients with diagnoses and medications
     await seedPatients(doctorIds, diagnosisIds, medicationIds);
 
+    // Seed schedules for nurses and patients
+    const scheduleStats = await seedSchedules();
+
     console.log("\n" + "=".repeat(50));
     console.log("🎉 Demo seeding completed successfully!\n");
 
@@ -559,6 +709,8 @@ async function main() {
     console.log(`   - Doctors: ${DOCTORS_DATA.length}`);
     console.log(`   - Nurses: ${NURSES_DATA.length}`);
     console.log(`   - Patients: ${PATIENTS_DATA.length}`);
+    console.log(`   - Nurse Schedules: ${scheduleStats.nurseScheduleCount}`);
+    console.log(`   - Patient Schedules: ${scheduleStats.patientScheduleCount}`);
 
     console.log("\n🔐 Demo Login Accounts:");
     console.log("   Admin:  admin@riskahd.com / admin123");
