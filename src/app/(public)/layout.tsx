@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Newspaper } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function PublicLayout({
   children,
@@ -12,14 +12,8 @@ export default function PublicLayout({
       <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/informasi" className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-sky-400 to-cyan-500 text-white">
-                <Newspaper className="h-5 w-5" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">RISKA HD</h1>
-                <p className="text-xs text-muted-foreground">Ruang Informasi</p>
-              </div>
+            <Link href="/informasi">
+              <Logo size="sm" showTagline />
             </Link>
             <nav className="flex items-center gap-4">
               <Link

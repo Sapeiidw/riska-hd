@@ -333,7 +333,7 @@ export default function HomePage() {
   const navLinks = [
     { href: "#fitur", label: "Fitur" },
     { href: "#tim", label: "Tim Medis" },
-    { href: "#testimoni", label: "Testimoni" },
+    { href: "/informasi", label: "Artikel" },
     { href: "#faq", label: "FAQ" },
   ];
 
@@ -994,30 +994,31 @@ export default function HomePage() {
 
               <div className="space-y-4 pt-4">
                 {[
-                  { icon: Video, title: "Video Tutorial", desc: "Penjelasan visual yang mudah dipahami", bg: "bg-violet-500" },
-                  { icon: FileText, title: "Dokumen PDF", desc: "Materi lengkap untuk dibaca offline", bg: "bg-pink-400" },
-                  { icon: GraduationCap, title: "Quiz Interaktif", desc: "Uji pemahaman dengan cara menyenangkan", bg: "bg-purple-500" },
+                  { icon: Video, title: "Video Tutorial", desc: "Penjelasan visual yang mudah dipahami", bg: "bg-violet-500", href: "/informasi?category=video" },
+                  { icon: FileText, title: "Dokumen PDF", desc: "Materi lengkap untuk dibaca offline", bg: "bg-pink-400", href: "/informasi?category=panduan" },
+                  { icon: GraduationCap, title: "Quiz Interaktif", desc: "Uji pemahaman dengan cara menyenangkan", bg: "bg-purple-500", href: "/informasi" },
                 ].map((item, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-50px" }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                    whileHover={{ x: 8 }}
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all cursor-pointer group"
-                  >
-                    <div
-                      className={`size-12 rounded-xl ${item.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}
+                  <Link key={index} href={item.href}>
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      whileHover={{ x: 8 }}
+                      className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all cursor-pointer group"
                     >
-                      <item.icon className="size-6 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-800">{item.title}</h4>
-                      <p className="text-sm text-gray-400">{item.desc}</p>
-                    </div>
-                    <ArrowRight className="size-5 text-gray-300 ml-auto group-hover:text-sky-500 transition-colors" />
-                  </motion.div>
+                      <div
+                        className={`size-12 rounded-xl ${item.bg} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}
+                      >
+                        <item.icon className="size-6 text-white" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-800">{item.title}</h4>
+                        <p className="text-sm text-gray-400">{item.desc}</p>
+                      </div>
+                      <ArrowRight className="size-5 text-gray-300 ml-auto group-hover:text-sky-500 transition-colors" />
+                    </motion.div>
+                  </Link>
                 ))}
               </div>
             </motion.div>
@@ -1028,34 +1029,36 @@ export default function HomePage() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5 }}
             >
-              <motion.div
-                className="rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 p-8 shadow-2xl"
-                whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="aspect-video rounded-2xl bg-white/10 flex items-center justify-center mb-6 cursor-pointer group relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
-                  <motion.div
-                    className="size-20 rounded-3xl bg-white shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform z-10"
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <TrendingUp className="size-10 text-violet-500" />
-                  </motion.div>
-                </div>
-                <h4 className="text-xl font-bold text-white mb-2">Panduan Lengkap Hemodialisa</h4>
-                <p className="text-white/70 mb-4">Edukasi komprehensif untuk pasien baru dan keluarga</p>
-                <div className="flex flex-wrap gap-2">
-                  <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
-                    12 Video
-                  </Badge>
-                  <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
-                    8 PDF
-                  </Badge>
-                  <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
-                    5 Quiz
-                  </Badge>
-                </div>
-              </motion.div>
+              <Link href="/informasi">
+                <motion.div
+                  className="rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 p-8 shadow-2xl cursor-pointer"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="aspect-video rounded-2xl bg-white/10 flex items-center justify-center mb-6 group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
+                    <motion.div
+                      className="size-20 rounded-3xl bg-white shadow-2xl flex items-center justify-center group-hover:scale-110 transition-transform z-10"
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <TrendingUp className="size-10 text-violet-500" />
+                    </motion.div>
+                  </div>
+                  <h4 className="text-xl font-bold text-white mb-2">Panduan Lengkap Hemodialisa</h4>
+                  <p className="text-white/70 mb-4">Edukasi komprehensif untuk pasien baru dan keluarga</p>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
+                      12 Video
+                    </Badge>
+                    <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
+                      8 PDF
+                    </Badge>
+                    <Badge className="bg-white/20 text-white border-0 rounded-full px-3 py-1">
+                      5 Quiz
+                    </Badge>
+                  </div>
+                </motion.div>
+              </Link>
             </motion.div>
           </div>
         </div>
@@ -1236,13 +1239,26 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold text-white mb-4">Produk</h4>
               <ul className="space-y-3">
-                {["Fitur", "Tim Medis", "Testimoni", "FAQ"].map((item) => (
-                  <li key={item}>
-                    <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors">
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <a href="#fitur" className="text-gray-400 hover:text-white text-sm transition-colors">
+                    Fitur
+                  </a>
+                </li>
+                <li>
+                  <a href="#tim" className="text-gray-400 hover:text-white text-sm transition-colors">
+                    Tim Medis
+                  </a>
+                </li>
+                <li>
+                  <Link href="/informasi" className="text-gray-400 hover:text-white text-sm transition-colors">
+                    Ruang Informasi
+                  </Link>
+                </li>
+                <li>
+                  <a href="#faq" className="text-gray-400 hover:text-white text-sm transition-colors">
+                    FAQ
+                  </a>
+                </li>
               </ul>
             </div>
 

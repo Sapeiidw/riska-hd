@@ -20,6 +20,7 @@ import {
   patientMedication,
   nurseSchedule,
   patientSchedule,
+  ruangInformasi,
 } from "../src/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
@@ -118,6 +119,421 @@ const NURSES_DATA = [
   { name: "Ns. Andi Wijaya, S.Kep", email: "ns.andi@riskahd.com", nip: "19870610200801004", sip: "SIP-NS-004", certification: "Emergency & Critical Care" },
   { name: "Ns. Maya Kusuma, S.Kep", email: "ns.maya@riskahd.com", nip: "19930505201701005", sip: "SIP-NS-005", certification: "Certified Dialysis Nurse (CDN)" },
   { name: "Ns. Doni Prasetyo, S.Kep", email: "ns.doni@riskahd.com", nip: "19890825201201006", sip: "SIP-NS-006", certification: "Hemodialysis Technician" },
+];
+
+const RUANG_INFORMASI_DATA = [
+  {
+    title: "Mengenal Hemodialisis: Panduan Lengkap untuk Pasien Baru",
+    slug: "mengenal-hemodialisis-panduan-lengkap",
+    category: "panduan",
+    excerpt: "Panduan komprehensif tentang hemodialisis untuk pasien yang baru memulai terapi cuci darah. Pelajari prosedur, persiapan, dan tips menjalani HD dengan nyaman.",
+    imageUrl: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800",
+    content: `<h2>Apa itu Hemodialisis?</h2>
+<p>Hemodialisis (HD) adalah prosedur medis untuk membersihkan darah dari racun dan kelebihan cairan ketika ginjal tidak lagi mampu melakukan fungsi ini secara alami. Prosedur ini menggunakan mesin dialisis dan filter khusus yang disebut dialyzer.</p>
+
+<h2>Mengapa Hemodialisis Diperlukan?</h2>
+<p>Ketika fungsi ginjal menurun hingga kurang dari 15% (stadium 5 atau gagal ginjal), tubuh tidak mampu:</p>
+<ul>
+  <li>Membuang racun dan produk sisa metabolisme</li>
+  <li>Mengatur keseimbangan cairan</li>
+  <li>Mengontrol tekanan darah</li>
+  <li>Memproduksi hormon untuk pembentukan sel darah merah</li>
+</ul>
+
+<h2>Persiapan Sebelum HD</h2>
+<p>Beberapa hal yang perlu dipersiapkan:</p>
+<ol>
+  <li><strong>Akses Vaskular:</strong> Dokter akan membuat akses ke pembuluh darah Anda (AV Fistula, AV Graft, atau Kateter)</li>
+  <li><strong>Pemeriksaan Rutin:</strong> Lakukan pemeriksaan darah secara berkala</li>
+  <li><strong>Atur Pola Makan:</strong> Ikuti diet khusus yang direkomendasikan ahli gizi</li>
+</ol>
+
+<h2>Proses Hemodialisis</h2>
+<p>Setiap sesi HD biasanya berlangsung 4-5 jam dan dilakukan 2-3 kali seminggu. Selama proses:</p>
+<ul>
+  <li>Darah dialirkan ke mesin dialisis melalui akses vaskular</li>
+  <li>Darah melewati dialyzer untuk dibersihkan</li>
+  <li>Darah bersih dikembalikan ke tubuh</li>
+</ul>
+
+<blockquote>
+<p><strong>Tips:</strong> Bawa buku, musik, atau aktivitas ringan untuk mengisi waktu selama sesi HD.</p>
+</blockquote>`,
+    externalLinks: JSON.stringify([
+      { title: "PERNEFRI - Perhimpunan Nefrologi Indonesia", url: "https://pernefri.or.id" },
+      { title: "National Kidney Foundation", url: "https://www.kidney.org" }
+    ]),
+  },
+  {
+    title: "Diet Sehat untuk Pasien Hemodialisis",
+    slug: "diet-sehat-pasien-hemodialisis",
+    category: "artikel",
+    excerpt: "Panduan nutrisi dan pola makan yang tepat untuk pasien cuci darah. Ketahui makanan yang boleh dan tidak boleh dikonsumsi.",
+    imageUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800",
+    content: `<h2>Pentingnya Diet bagi Pasien HD</h2>
+<p>Diet yang tepat sangat penting bagi pasien hemodialisis untuk:</p>
+<ul>
+  <li>Mengontrol penumpukan racun di antara sesi dialisis</li>
+  <li>Menjaga keseimbangan elektrolit</li>
+  <li>Mencegah komplikasi seperti hiperkalemia dan hiperfosfatemia</li>
+  <li>Mempertahankan status gizi yang optimal</li>
+</ul>
+
+<h2>Pembatasan Cairan</h2>
+<p>Pasien HD perlu membatasi asupan cairan karena ginjal tidak dapat membuang kelebihan cairan. Umumnya dibatasi 500-1000 ml per hari ditambah volume urin.</p>
+
+<h3>Tips Mengurangi Rasa Haus:</h3>
+<ul>
+  <li>Kumur dengan air dingin tanpa menelan</li>
+  <li>Hisap es batu kecil</li>
+  <li>Kunyah permen karet tanpa gula</li>
+  <li>Hindari makanan asin yang memicu haus</li>
+</ul>
+
+<h2>Makanan yang Perlu Dibatasi</h2>
+<h3>Tinggi Kalium (Potasium)</h3>
+<p>Hindari atau batasi: pisang, jeruk, tomat, kentang, bayam, alpukat.</p>
+
+<h3>Tinggi Fosfor</h3>
+<p>Hindari atau batasi: susu, keju, kacang-kacangan, minuman bersoda.</p>
+
+<h3>Tinggi Natrium (Garam)</h3>
+<p>Hindari: makanan olahan, makanan kaleng, makanan cepat saji, kecap asin.</p>
+
+<h2>Makanan yang Dianjurkan</h2>
+<ul>
+  <li><strong>Protein berkualitas:</strong> Putih telur, ikan, daging tanpa lemak</li>
+  <li><strong>Sayuran rendah kalium:</strong> Wortel, mentimun, kubis</li>
+  <li><strong>Buah rendah kalium:</strong> Apel, pir, semangka</li>
+</ul>
+
+<blockquote>
+<p><strong>Penting:</strong> Konsultasikan dengan ahli gizi untuk mendapatkan rencana makan yang disesuaikan dengan kondisi Anda.</p>
+</blockquote>`,
+    externalLinks: JSON.stringify([
+      { title: "Panduan Diet Ginjal - RSUP Dr. Sardjito", url: "https://sardjito.co.id" }
+    ]),
+  },
+  {
+    title: "Mengenal Akses Vaskular: AV Fistula vs AV Graft vs Kateter",
+    slug: "mengenal-akses-vaskular-hemodialisis",
+    category: "artikel",
+    excerpt: "Pelajari berbagai jenis akses vaskular untuk hemodialisis, kelebihan dan kekurangan masing-masing, serta cara perawatannya.",
+    imageUrl: "https://images.unsplash.com/photo-1631815588090-d4bfec5b1ccb?w=800",
+    content: `<h2>Apa itu Akses Vaskular?</h2>
+<p>Akses vaskular adalah jalur masuk ke pembuluh darah yang memungkinkan darah mengalir ke mesin dialisis dan kembali ke tubuh. Akses yang baik sangat penting untuk keberhasilan hemodialisis.</p>
+
+<h2>Jenis-Jenis Akses Vaskular</h2>
+
+<h3>1. AV Fistula (Arteriovenous Fistula)</h3>
+<p>AV Fistula dibuat dengan menghubungkan arteri dan vena, biasanya di lengan. Ini adalah jenis akses yang paling direkomendasikan.</p>
+<p><strong>Kelebihan:</strong></p>
+<ul>
+  <li>Risiko infeksi paling rendah</li>
+  <li>Aliran darah yang baik</li>
+  <li>Bertahan paling lama (bisa bertahun-tahun)</li>
+</ul>
+<p><strong>Kekurangan:</strong></p>
+<ul>
+  <li>Butuh waktu 2-3 bulan untuk matang sebelum bisa digunakan</li>
+  <li>Tidak semua pasien memiliki pembuluh darah yang cocok</li>
+</ul>
+
+<h3>2. AV Graft (Arteriovenous Graft)</h3>
+<p>AV Graft menggunakan tabung sintetis untuk menghubungkan arteri dan vena.</p>
+<p><strong>Kelebihan:</strong></p>
+<ul>
+  <li>Bisa digunakan lebih cepat (2-3 minggu)</li>
+  <li>Alternatif jika fistula tidak memungkinkan</li>
+</ul>
+<p><strong>Kekurangan:</strong></p>
+<ul>
+  <li>Risiko infeksi lebih tinggi dari fistula</li>
+  <li>Lebih mudah menyumbat</li>
+  <li>Umumnya tidak bertahan selama fistula</li>
+</ul>
+
+<h3>3. Kateter Vena Sentral (CVC)</h3>
+<p>Kateter dimasukkan ke vena besar di leher, dada, atau paha.</p>
+<p><strong>Kelebihan:</strong></p>
+<ul>
+  <li>Bisa langsung digunakan</li>
+  <li>Pilihan untuk dialisis darurat</li>
+</ul>
+<p><strong>Kekurangan:</strong></p>
+<ul>
+  <li>Risiko infeksi tertinggi</li>
+  <li>Tidak untuk penggunaan jangka panjang</li>
+  <li>Membatasi aktivitas tertentu</li>
+</ul>
+
+<h2>Perawatan Akses Vaskular</h2>
+<ul>
+  <li>Jaga kebersihan area akses</li>
+  <li>Hindari mengangkat beban berat dengan lengan yang ada aksesnya</li>
+  <li>Jangan biarkan pengukuran tekanan darah atau pengambilan darah di lengan dengan akses</li>
+  <li>Periksa getaran (thrill) fistula setiap hari</li>
+  <li>Segera hubungi dokter jika ada tanda infeksi atau masalah</li>
+</ul>`,
+    externalLinks: null,
+  },
+  {
+    title: "Video: Prosedur Hemodialisis dari Awal hingga Akhir",
+    slug: "video-prosedur-hemodialisis",
+    category: "video",
+    excerpt: "Video edukasi yang menjelaskan langkah demi langkah prosedur hemodialisis, dari persiapan hingga selesai.",
+    imageUrl: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=800",
+    content: `<h2>Prosedur Hemodialisis</h2>
+<p>Video berikut menjelaskan prosedur hemodialisis secara lengkap:</p>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;">
+  <iframe
+    src="https://www.youtube.com/embed/RA9vu3pXDng"
+    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+</div>
+
+<h2>Tahapan Prosedur HD</h2>
+<ol>
+  <li><strong>Persiapan:</strong> Perawat memeriksa tanda vital dan berat badan</li>
+  <li><strong>Pemasangan akses:</strong> Jarum dialisis dipasang ke akses vaskular</li>
+  <li><strong>Proses dialisis:</strong> Darah dibersihkan selama 4-5 jam</li>
+  <li><strong>Penyelesaian:</strong> Jarum dilepas dan luka ditekan</li>
+  <li><strong>Evaluasi:</strong> Pengukuran berat badan dan tanda vital akhir</li>
+</ol>
+
+<h2>Yang Perlu Diperhatikan</h2>
+<ul>
+  <li>Datang tepat waktu sesuai jadwal</li>
+  <li>Informasikan jika ada keluhan atau perubahan kondisi</li>
+  <li>Bawa obat-obatan yang perlu diminum saat HD</li>
+  <li>Gunakan pakaian yang nyaman dengan lengan mudah digulung</li>
+</ul>`,
+    externalLinks: JSON.stringify([
+      { title: "YouTube: Kidney Research UK", url: "https://youtube.com/@KidneyResearchUK" }
+    ]),
+  },
+  {
+    title: "Pengumuman: Jadwal Libur Lebaran 2025",
+    slug: "pengumuman-jadwal-libur-lebaran-2025",
+    category: "pengumuman",
+    excerpt: "Informasi penting mengenai jadwal pelayanan hemodialisis selama periode libur Hari Raya Idul Fitri 2025.",
+    imageUrl: "https://images.unsplash.com/photo-1564769625905-50e93615e769?w=800",
+    content: `<h2>Pengumuman Penting</h2>
+<p>Dengan hormat, kami informasikan jadwal pelayanan Unit Hemodialisis selama periode Hari Raya Idul Fitri 1446 H / 2025 M.</p>
+
+<h2>Jadwal Libur</h2>
+<ul>
+  <li><strong>H-2 s/d H+4 Lebaran:</strong> Pelayanan HD tetap berjalan dengan penyesuaian jadwal</li>
+  <li><strong>H+1 Lebaran:</strong> Unit HD TUTUP (kecuali emergensi)</li>
+</ul>
+
+<h2>Penyesuaian Jadwal</h2>
+<p>Pasien yang jadwal HD-nya bertepatan dengan H+1 Lebaran akan dijadwalkan ulang ke:</p>
+<ul>
+  <li>H-1 Lebaran (sore), atau</li>
+  <li>H+2 Lebaran (pagi)</li>
+</ul>
+
+<h2>Hal yang Perlu Diperhatikan</h2>
+<ol>
+  <li>Pasien akan dihubungi oleh petugas untuk konfirmasi jadwal baru</li>
+  <li>Tetap patuhi pembatasan cairan dan diet selama libur</li>
+  <li>Segera ke IGD jika mengalami sesak napas, bengkak berlebih, atau keluhan darurat lainnya</li>
+  <li>Simpan nomor darurat unit HD: <strong>021-xxxx-xxxx</strong></li>
+</ol>
+
+<blockquote>
+<p><strong>Catatan:</strong> Untuk pasien dengan kondisi khusus, silakan hubungi perawat penanggung jawab Anda untuk pengaturan jadwal yang lebih fleksibel.</p>
+</blockquote>
+
+<p>Kami mengucapkan Selamat Hari Raya Idul Fitri 1446 H. Mohon Maaf Lahir dan Batin.</p>
+
+<p><em>Tim Unit Hemodialisis<br>RISKA HD</em></p>`,
+    externalLinks: null,
+  },
+  {
+    title: "Olahraga Aman untuk Pasien Cuci Darah",
+    slug: "olahraga-aman-pasien-cuci-darah",
+    category: "artikel",
+    excerpt: "Panduan aktivitas fisik dan olahraga yang aman dilakukan oleh pasien hemodialisis untuk menjaga kebugaran tubuh.",
+    imageUrl: "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800",
+    content: `<h2>Pentingnya Olahraga bagi Pasien HD</h2>
+<p>Banyak pasien hemodialisis menghindari olahraga karena khawatir membahayakan kondisi mereka. Padahal, aktivitas fisik yang tepat memberikan banyak manfaat:</p>
+<ul>
+  <li>Meningkatkan kekuatan otot dan stamina</li>
+  <li>Membantu mengontrol tekanan darah</li>
+  <li>Memperbaiki kualitas tidur</li>
+  <li>Mengurangi stres dan depresi</li>
+  <li>Meningkatkan nafsu makan</li>
+  <li>Membantu mengontrol gula darah (bagi diabetisi)</li>
+</ul>
+
+<h2>Olahraga yang Direkomendasikan</h2>
+
+<h3>1. Jalan Kaki</h3>
+<p>Aktivitas paling sederhana dan aman. Mulai dengan 10-15 menit dan tingkatkan bertahap.</p>
+
+<h3>2. Bersepeda Statis</h3>
+<p>Latihan kardio yang rendah dampak. Bisa dilakukan bahkan selama sesi HD di beberapa fasilitas.</p>
+
+<h3>3. Senam Ringan</h3>
+<p>Gerakan peregangan dan penguatan otot yang lembut.</p>
+
+<h3>4. Berenang</h3>
+<p>Olahraga yang sangat baik untuk kardiovaskular dan persendian. Catatan: hanya jika akses vaskular sudah sembuh sempurna dan tidak menggunakan kateter.</p>
+
+<h3>5. Yoga dan Tai Chi</h3>
+<p>Membantu fleksibilitas, keseimbangan, dan relaksasi.</p>
+
+<h2>Tips Olahraga Aman</h2>
+<ul>
+  <li>Konsultasikan dengan dokter sebelum memulai program olahraga</li>
+  <li>Hindari olahraga berat pada hari HD</li>
+  <li>Jangan berolahraga jika merasa tidak enak badan</li>
+  <li>Lindungi lengan dengan akses vaskular dari benturan</li>
+  <li>Jaga hidrasi sesuai batasan cairan Anda</li>
+  <li>Berhenti jika merasa pusing, sesak, atau nyeri dada</li>
+</ul>
+
+<h2>Yang Perlu Dihindari</h2>
+<ul>
+  <li>Angkat beban berat dengan lengan yang ada aksesnya</li>
+  <li>Olahraga kontak fisik (tinju, bela diri)</li>
+  <li>Aktivitas dengan risiko jatuh tinggi</li>
+  <li>Olahraga intensitas tinggi tanpa adaptasi bertahap</li>
+</ul>`,
+    externalLinks: JSON.stringify([
+      { title: "Exercise for CKD Patients - Kidney.org", url: "https://www.kidney.org/atoz/content/stayfit" }
+    ]),
+  },
+  {
+    title: "Panduan Perjalanan untuk Pasien Hemodialisis",
+    slug: "panduan-perjalanan-pasien-hemodialisis",
+    category: "panduan",
+    excerpt: "Tips dan persiapan yang perlu dilakukan pasien cuci darah saat bepergian jauh atau berlibur.",
+    imageUrl: "https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=800",
+    content: `<h2>Bepergian dengan Hemodialisis</h2>
+<p>Menjadi pasien hemodialisis bukan berarti Anda tidak bisa bepergian. Dengan persiapan yang matang, Anda tetap bisa menikmati perjalanan dan liburan.</p>
+
+<h2>Persiapan Sebelum Perjalanan</h2>
+
+<h3>1. Konsultasi dengan Dokter</h3>
+<ul>
+  <li>Diskusikan rencana perjalanan minimal 4-6 minggu sebelumnya</li>
+  <li>Minta surat keterangan medis dan rekam medis ringkas</li>
+  <li>Tanyakan obat-obatan yang perlu dibawa</li>
+</ul>
+
+<h3>2. Atur Jadwal HD di Tempat Tujuan</h3>
+<ul>
+  <li>Cari unit HD di kota tujuan</li>
+  <li>Hubungi untuk reservasi jadwal</li>
+  <li>Konfirmasi ketersediaan dan biaya</li>
+  <li>Kirim data medis yang diperlukan</li>
+</ul>
+
+<h3>3. Siapkan Dokumen Penting</h3>
+<ul>
+  <li>Kartu identitas dan asuransi</li>
+  <li>Surat rujukan/pengantar dari dokter</li>
+  <li>Hasil lab terbaru</li>
+  <li>Daftar obat-obatan dan dosisnya</li>
+  <li>Kontak darurat (dokter, keluarga)</li>
+</ul>
+
+<h2>Tips Selama Perjalanan</h2>
+
+<h3>Naik Pesawat</h3>
+<ul>
+  <li>Pilih kursi dekat lorong untuk kemudahan bergerak</li>
+  <li>Pakai pakaian longgar dan nyaman</li>
+  <li>Gerakkan kaki secara berkala untuk mencegah pembekuan darah</li>
+  <li>Bawa obat-obatan di tas kabin, bukan bagasi</li>
+</ul>
+
+<h3>Perjalanan Darat</h3>
+<ul>
+  <li>Berhenti setiap 2-3 jam untuk peregangan</li>
+  <li>Bawa camilan sehat sesuai diet</li>
+  <li>Hindari perjalanan terlalu lama di hari HD</li>
+</ul>
+
+<h2>Menjaga Diet Saat Liburan</h2>
+<ul>
+  <li>Tetap patuhi pembatasan cairan</li>
+  <li>Pilih makanan yang aman (rendah kalium, fosfor, garam)</li>
+  <li>Bawa camilan dari rumah jika perlu</li>
+  <li>Informasikan kebutuhan diet khusus saat memesan makanan</li>
+</ul>
+
+<blockquote>
+<p><strong>Ingat:</strong> Jangan pernah melewatkan jadwal HD hanya karena sedang berlibur. Kesehatan adalah prioritas utama!</p>
+</blockquote>`,
+    externalLinks: JSON.stringify([
+      { title: "Global Dialysis - Find Dialysis Centers Worldwide", url: "https://www.globaldialysis.com" }
+    ]),
+  },
+  {
+    title: "Mengatasi Kram Otot Saat dan Setelah Hemodialisis",
+    slug: "mengatasi-kram-otot-hemodialisis",
+    category: "artikel",
+    excerpt: "Penyebab dan cara mengatasi kram otot yang sering dialami pasien selama atau setelah sesi cuci darah.",
+    imageUrl: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800",
+    content: `<h2>Mengapa Kram Otot Terjadi?</h2>
+<p>Kram otot adalah salah satu komplikasi paling umum selama hemodialisis. Kondisi ini terjadi karena:</p>
+<ul>
+  <li><strong>Ultrafiltrasi berlebih:</strong> Penarikan cairan terlalu cepat atau terlalu banyak</li>
+  <li><strong>Ketidakseimbangan elektrolit:</strong> Terutama natrium, kalium, dan magnesium</li>
+  <li><strong>Hipotensi:</strong> Penurunan tekanan darah saat HD</li>
+  <li><strong>Berat kering terlalu rendah:</strong> Target berat setelah HD yang kurang tepat</li>
+</ul>
+
+<h2>Pencegahan Kram</h2>
+
+<h3>Sebelum HD</h3>
+<ul>
+  <li>Batasi kenaikan berat badan antar sesi HD (idealnya &lt;3-4% berat kering)</li>
+  <li>Hindari makanan sangat asin yang memicu haus berlebih</li>
+  <li>Konsumsi makanan tinggi karbohidrat kompleks</li>
+</ul>
+
+<h3>Selama HD</h3>
+<ul>
+  <li>Informasikan perawat jika mulai terasa kram</li>
+  <li>Lakukan peregangan ringan secara berkala</li>
+  <li>Jangan tidur sepanjang sesi (agar bisa merasakan tanda awal kram)</li>
+</ul>
+
+<h2>Penanganan Saat Kram Terjadi</h2>
+<ol>
+  <li><strong>Peregangan otot:</strong> Regangkan otot yang kram perlahan-lahan</li>
+  <li><strong>Pijat ringan:</strong> Pijat area yang kram dengan lembut</li>
+  <li><strong>Kompres hangat:</strong> Dapat membantu melemaskan otot</li>
+  <li><strong>Infus saline:</strong> Perawat mungkin memberikan cairan saline jika perlu</li>
+  <li><strong>Penyesuaian UF:</strong> Kecepatan penarikan cairan mungkin dikurangi</li>
+</ol>
+
+<h2>Kapan Harus Khawatir?</h2>
+<p>Segera hubungi tenaga medis jika:</p>
+<ul>
+  <li>Kram sangat parah dan tidak mereda</li>
+  <li>Disertai mati rasa atau kesemutan yang menetap</li>
+  <li>Terjadi perubahan warna kulit</li>
+  <li>Kram terjadi berulang setiap sesi HD</li>
+</ul>
+
+<h2>Tips Tambahan</h2>
+<ul>
+  <li>Diskusikan dengan dokter tentang target berat kering yang tepat</li>
+  <li>Tanyakan tentang penggunaan dialisat dengan kandungan natrium yang disesuaikan</li>
+  <li>Pertimbangkan suplementasi magnesium jika direkomendasikan dokter</li>
+</ul>`,
+    externalLinks: null,
+  },
 ];
 
 const PATIENTS_DATA = [
@@ -664,12 +1080,48 @@ async function seedAdminUser() {
   const adminEmail = "admin@riskahd.com";
   const defaultPassword = "admin123";
 
-  await createUserWithAccount(
+  const userId = await createUserWithAccount(
     { name: "Administrator", email: adminEmail, role: "admin" },
     defaultPassword
   );
 
   console.log(`✅ Admin user created: ${adminEmail} / ${defaultPassword}`);
+  return userId;
+}
+
+async function seedRuangInformasi(authorId: string) {
+  console.log("\n📰 Seeding ruang informasi...");
+
+  for (const data of RUANG_INFORMASI_DATA) {
+    const existing = await db.select().from(ruangInformasi).where(eq(ruangInformasi.slug, data.slug)).limit(1);
+
+    if (existing.length === 0) {
+      const publishedAt = new Date();
+      publishedAt.setDate(publishedAt.getDate() - Math.floor(Math.random() * 30));
+
+      await db.insert(ruangInformasi).values({
+        id: createId(),
+        title: data.title,
+        slug: data.slug,
+        category: data.category,
+        content: data.content,
+        excerpt: data.excerpt,
+        imageUrl: data.imageUrl,
+        videoUrl: null,
+        externalLinks: data.externalLinks,
+        authorId,
+        publishedAt,
+        isPublished: true,
+        isActive: true,
+        viewCount: Math.floor(Math.random() * 500) + 50,
+      });
+      console.log(`  ✓ Created content: ${data.title}`);
+    } else {
+      console.log(`  - Content exists: ${data.title}`);
+    }
+  }
+
+  console.log(`✅ Ruang Informasi seeded: ${RUANG_INFORMASI_DATA.length}`);
 }
 
 async function main() {
@@ -686,9 +1138,12 @@ async function main() {
     await seedMachines(roomIds);
 
     // Seed users (doctors, nurses, admin)
-    await seedAdminUser();
+    const adminUserId = await seedAdminUser();
     const doctorIds = await seedDoctors();
     await seedNurses();
+
+    // Seed ruang informasi content
+    await seedRuangInformasi(adminUserId);
 
     // Seed patients with diagnoses and medications
     await seedPatients(doctorIds, diagnosisIds, medicationIds);
@@ -709,6 +1164,7 @@ async function main() {
     console.log(`   - Doctors: ${DOCTORS_DATA.length}`);
     console.log(`   - Nurses: ${NURSES_DATA.length}`);
     console.log(`   - Patients: ${PATIENTS_DATA.length}`);
+    console.log(`   - Ruang Informasi: ${RUANG_INFORMASI_DATA.length}`);
     console.log(`   - Nurse Schedules: ${scheduleStats.nurseScheduleCount}`);
     console.log(`   - Patient Schedules: ${scheduleStats.patientScheduleCount}`);
 
