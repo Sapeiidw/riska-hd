@@ -131,46 +131,47 @@ function TeamCard({
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
       whileHover={{ y: -8, transition: { duration: 0.3 } }}
       className="group"
     >
-      <div className="bg-white rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
+      <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
         {/* Image placeholder with gradient */}
-        <div className={`h-48 bg-gradient-to-br ${color} relative overflow-hidden`}>
+        <div className={`h-32 md:h-48 bg-gradient-to-br ${color} relative overflow-hidden`}>
           <div className="absolute inset-0 bg-black/5" />
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-20 md:h-32 bg-gradient-to-t from-black/20 to-transparent" />
           {/* Avatar circle */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div className="size-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-4 border-white/30">
-              <User className="size-12 text-white/80" />
+            <div className="size-16 md:size-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 md:border-4 border-white/30">
+              <User className="size-8 md:size-12 text-white/80" />
             </div>
           </div>
           {/* Status badge */}
-          <div className="absolute top-4 right-4">
-            <div className="px-3 py-1 rounded-full bg-white/90 backdrop-blur-sm text-xs font-medium text-gray-700 flex items-center gap-1">
-              <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="absolute top-2 md:top-4 right-2 md:right-4">
+            <div className="px-2 md:px-3 py-0.5 md:py-1 rounded-full bg-white/90 backdrop-blur-sm text-[10px] md:text-xs font-medium text-gray-700 flex items-center gap-1">
+              <div className="size-1.5 md:size-2 rounded-full bg-emerald-500 animate-pulse" />
               Aktif
             </div>
           </div>
         </div>
         {/* Content */}
-        <div className="p-5">
-          <h3 className="text-lg font-bold text-gray-800 mb-1">{name}</h3>
-          <p className="text-sm text-sky-500 font-medium mb-2">{role}</p>
-          <p className="text-xs text-gray-400 flex items-center gap-1.5">
-            <Award className="size-3.5" />
-            {specialization}
+        <div className="p-3 md:p-5">
+          <h3 className="text-sm md:text-lg font-bold text-gray-800 mb-0.5 md:mb-1 truncate">{name}</h3>
+          <p className="text-xs md:text-sm text-sky-500 font-medium mb-1 md:mb-2">{role}</p>
+          <p className="text-[10px] md:text-xs text-gray-400 flex items-center gap-1 md:gap-1.5">
+            <Award className="size-3 md:size-3.5 flex-shrink-0" />
+            <span className="truncate">{specialization}</span>
           </p>
-          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-            <div className="flex items-center gap-1">
+          <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-100 flex items-center justify-between">
+            <div className="flex items-center gap-0.5 md:gap-1">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="size-3.5 text-amber-400 fill-amber-400" />
+                <Star key={i} className="size-2.5 md:size-3.5 text-amber-400 fill-amber-400" />
               ))}
             </div>
-            <Button variant="ghost" size="sm" className="text-sky-500 hover:text-sky-600 hover:bg-sky-50 rounded-xl text-xs h-8 px-3">
-              Lihat Profil
-              <ArrowRight className="size-3 ml-1" />
+            <Button variant="ghost" size="sm" className="text-sky-500 hover:text-sky-600 hover:bg-sky-50 rounded-lg md:rounded-xl text-[10px] md:text-xs h-6 md:h-8 px-2 md:px-3">
+              <span className="hidden sm:inline">Lihat Profil</span>
+              <span className="sm:hidden">Profil</span>
+              <ArrowRight className="size-2.5 md:size-3 ml-1" />
             </Button>
           </div>
         </div>
@@ -198,39 +199,39 @@ function TestimonialCard({
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
       whileHover={{ y: -8, transition: { duration: 0.3 } }}
       className="group"
     >
-      <div className="bg-white rounded-3xl p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 relative">
+      <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 relative">
         {/* Quote icon */}
-        <div className="absolute -top-4 -left-2">
-          <div className="size-10 rounded-2xl bg-sky-500 flex items-center justify-center shadow-lg">
-            <Quote className="size-5 text-white" />
+        <div className="absolute -top-3 md:-top-4 -left-1 md:-left-2">
+          <div className="size-8 md:size-10 rounded-xl md:rounded-2xl bg-sky-500 flex items-center justify-center shadow-lg">
+            <Quote className="size-4 md:size-5 text-white" />
           </div>
         </div>
 
         {/* Rating */}
-        <div className="flex items-center gap-1 mb-4 pt-2">
+        <div className="flex items-center gap-0.5 md:gap-1 mb-3 md:mb-4 pt-1 md:pt-2">
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
-              className={`size-4 ${i < rating ? "text-amber-400 fill-amber-400" : "text-gray-200"}`}
+              className={`size-3 md:size-4 ${i < rating ? "text-amber-400 fill-amber-400" : "text-gray-200"}`}
             />
           ))}
         </div>
 
         {/* Content */}
-        <p className="text-gray-600 text-sm leading-relaxed mb-6 italic">&ldquo;{content}&rdquo;</p>
+        <p className="text-gray-600 text-xs md:text-sm leading-relaxed mb-4 md:mb-6 italic">&ldquo;{content}&rdquo;</p>
 
         {/* Author */}
-        <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
-          <div className="size-12 rounded-xl bg-gradient-to-br from-sky-400 to-cyan-400 flex items-center justify-center">
-            <User className="size-6 text-white" />
+        <div className="flex items-center gap-2 md:gap-3 pt-3 md:pt-4 border-t border-gray-100">
+          <div className="size-10 md:size-12 rounded-lg md:rounded-xl bg-gradient-to-br from-sky-400 to-cyan-400 flex items-center justify-center flex-shrink-0">
+            <User className="size-5 md:size-6 text-white" />
           </div>
-          <div>
-            <h4 className="font-semibold text-gray-800 text-sm">{name}</h4>
-            <p className="text-xs text-gray-400">{role}</p>
+          <div className="min-w-0">
+            <h4 className="font-semibold text-gray-800 text-xs md:text-sm truncate">{name}</h4>
+            <p className="text-[10px] md:text-xs text-gray-400 truncate">{role}</p>
           </div>
         </div>
       </div>
@@ -844,10 +845,10 @@ export default function HomePage() {
       </section>
 
       {/* Our Doctors Section */}
-      <section id="tim" className="py-20 bg-gradient-to-b from-white to-sky-50/50 relative">
+      <section id="tim" className="py-12 md:py-20 bg-gradient-to-b from-white to-sky-50/50 relative">
         {/* Top divider */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-200 to-transparent" />
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="Tim Dokter"
             badgeIcon={Stethoscope}
@@ -856,7 +857,7 @@ export default function HomePage() {
             subtitle="Tim dokter berpengalaman dan tersertifikasi dalam penanganan hemodialisa."
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-6xl mx-auto">
             {doctors.map((doctor, index) => (
               <TeamCard key={index} {...doctor} index={index} />
             ))}
@@ -865,8 +866,8 @@ export default function HomePage() {
       </section>
 
       {/* Our Nurses Section */}
-      <section className="py-20 bg-gradient-to-b from-rose-50/50 to-white relative">
-        <div className="container mx-auto px-6">
+      <section className="py-12 md:py-20 bg-gradient-to-b from-rose-50/50 to-white relative">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="Tim Perawat"
             badgeIcon={Activity}
@@ -875,7 +876,7 @@ export default function HomePage() {
             subtitle="Perawat tersertifikasi dengan pengalaman dalam perawatan hemodialisa."
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-6xl mx-auto">
             {nurses.map((nurse, index) => (
               <TeamCard key={index} {...nurse} index={index} />
             ))}
