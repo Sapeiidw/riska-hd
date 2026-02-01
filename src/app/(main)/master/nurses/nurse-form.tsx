@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,23 +32,13 @@ interface NurseFormProps {
 }
 
 async function createNurse(data: CreateNurseInput) {
-  const res = await fetch("/api/master/nurses", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create nurse");
-  return res.json();
+  const res = await api.post("/api/master/nurses", data);
+  return res.data;
 }
 
 async function updateNurse(id: string, data: Partial<CreateNurseInput>) {
-  const res = await fetch(`/api/master/nurses/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to update nurse");
-  return res.json();
+  const res = await api.put(`/api/master/nurses/${id}`, data);
+  return res.data;
 }
 
 export function NurseForm({ nurse, onSuccess }: NurseFormProps) {

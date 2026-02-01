@@ -6,6 +6,7 @@ import { Pencil, Trash2, Users, UserCheck, UserX, ShieldCheck } from "lucide-rea
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, MasterPageSkeleton, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -51,15 +52,13 @@ async function fetchUsers(page: number, search: string) {
     limit: "10",
     ...(search && { search }),
   });
-  const res = await fetch(`/api/settings/users?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch users");
-  return res.json();
+  const res = await api.get(`/api/settings/users?${params}`);
+  return res.data;
 }
 
 async function deleteUser(id: string) {
-  const res = await fetch(`/api/settings/users/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete user");
-  return res.json();
+  const res = await api.delete(`/api/settings/users/${id}`);
+  return res.data;
 }
 
 export default function UsersPage() {

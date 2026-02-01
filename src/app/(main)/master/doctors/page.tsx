@@ -6,6 +6,7 @@ import { Pencil, Trash2, Stethoscope, UserCheck, UserX, AlertCircle } from "luci
 import { toast } from "sonner";
 import { format, isBefore, addMonths } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -46,15 +47,13 @@ async function fetchDoctors(page: number, search: string) {
     limit: "10",
     ...(search && { search }),
   });
-  const res = await fetch(`/api/master/doctors?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch doctors");
-  return res.json();
+  const res = await api.get(`/api/master/doctors?${params}`);
+  return res.data;
 }
 
 async function deleteDoctor(id: string) {
-  const res = await fetch(`/api/master/doctors/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete doctor");
-  return res.json();
+  const res = await api.delete(`/api/master/doctors/${id}`);
+  return res.data;
 }
 
 export default function DoctorsPage() {

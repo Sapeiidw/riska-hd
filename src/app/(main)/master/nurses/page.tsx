@@ -6,6 +6,7 @@ import { Pencil, Trash2, HeartPulse, UserCheck, UserX, AlertCircle, Award } from
 import { toast } from "sonner";
 import { format, isBefore, addMonths } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -46,15 +47,13 @@ async function fetchNurses(page: number, search: string) {
     limit: "10",
     ...(search && { search }),
   });
-  const res = await fetch(`/api/master/nurses?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch nurses");
-  return res.json();
+  const res = await api.get(`/api/master/nurses?${params}`);
+  return res.data;
 }
 
 async function deleteNurse(id: string) {
-  const res = await fetch(`/api/master/nurses/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete nurse");
-  return res.json();
+  const res = await api.delete(`/api/master/nurses/${id}`);
+  return res.data;
 }
 
 export default function NursesPage() {

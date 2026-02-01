@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,22 +28,13 @@ const addMedicationSchema = z.object({
 type AddMedicationFormData = z.infer<typeof addMedicationSchema>;
 
 async function fetchMedications() {
-  const res = await fetch("/api/master/medications?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch medications");
-  return res.json();
+  const res = await api.get("/api/master/medications?limit=100");
+  return res.data;
 }
 
 async function addMedication(sessionId: string, data: Record<string, unknown>) {
-  const res = await fetch(`/api/hd-sessions/${sessionId}/medications`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to add medication");
-  }
-  return res.json();
+  const res = await api.post(`/api/hd-sessions/${sessionId}/medications`, data);
+  return res.data;
 }
 
 export function AddMedicationForm({

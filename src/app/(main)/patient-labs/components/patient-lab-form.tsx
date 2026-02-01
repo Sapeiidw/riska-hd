@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
 import { format } from "date-fns";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,35 +63,18 @@ type PatientLab = {
 };
 
 async function fetchPatients() {
-  const res = await fetch("/api/master/patients?limit=500");
-  if (!res.ok) throw new Error("Failed to fetch patients");
-  return res.json();
+  const res = await api.get("/api/master/patients?limit=500");
+  return res.data;
 }
 
 async function createLab(data: Record<string, unknown>) {
-  const res = await fetch("/api/patient-labs", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to create lab");
-  }
-  return res.json();
+  const res = await api.post("/api/patient-labs", data);
+  return res.data;
 }
 
 async function updateLab(id: string, data: Record<string, unknown>) {
-  const res = await fetch(`/api/patient-labs/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to update lab");
-  }
-  return res.json();
+  const res = await api.put(`/api/patient-labs/${id}`, data);
+  return res.data;
 }
 
 export function PatientLabForm({

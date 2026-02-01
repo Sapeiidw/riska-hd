@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
+import api from "@/lib/api/axios";
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table/data-table";
@@ -60,21 +61,18 @@ type PatientLab = {
 };
 
 async function fetchPatientLabs(params: URLSearchParams) {
-  const res = await fetch(`/api/patient-labs?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch patient labs");
-  return res.json();
+  const { data } = await api.get(`/api/patient-labs?${params}`);
+  return data;
 }
 
 async function fetchPatients() {
-  const res = await fetch("/api/master/patients?limit=500");
-  if (!res.ok) throw new Error("Failed to fetch patients");
-  return res.json();
+  const { data } = await api.get("/api/master/patients?limit=500");
+  return data;
 }
 
 async function deleteLab(id: string) {
-  const res = await fetch(`/api/patient-labs/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete lab");
-  return res.json();
+  const { data } = await api.delete(`/api/patient-labs/${id}`);
+  return data;
 }
 
 export default function PatientLabsPage() {

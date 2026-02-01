@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { format } from "date-fns";
 
+import api from "@/lib/api/axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,28 +52,18 @@ type Schedule = {
 };
 
 async function fetchMachines() {
-  const res = await fetch("/api/master/machines?limit=100&status=available");
-  if (!res.ok) throw new Error("Failed to fetch machines");
-  return res.json();
+  const { data } = await api.get("/api/master/machines?limit=100&status=available");
+  return data;
 }
 
 async function fetchProtocols() {
-  const res = await fetch("/api/master/protocols?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch protocols");
-  return res.json();
+  const { data } = await api.get("/api/master/protocols?limit=100");
+  return data;
 }
 
-async function createSession(data: Record<string, unknown>) {
-  const res = await fetch("/api/hd-sessions", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to create session");
-  }
-  return res.json();
+async function createSession(payload: Record<string, unknown>) {
+  const { data } = await api.post("/api/hd-sessions", payload);
+  return data;
 }
 
 export function StartSessionForm({

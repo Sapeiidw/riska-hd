@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -33,9 +34,8 @@ export function MedicationForm({ medication, onSuccess }: MedicationFormProps) {
   const mutation = useMutation({
     mutationFn: async (data: CreateMedicationInput) => {
       const url = medication ? `/api/master/medications/${medication.id}` : "/api/master/medications";
-      const res = await fetch(url, { method: medication ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-      if (!res.ok) throw new Error("Failed to save");
-      return res.json();
+      const res = medication ? await api.put(url, data) : await api.post(url, data);
+      return res.data;
     },
     onSuccess: () => { toast.success(medication ? "Obat berhasil diperbarui" : "Obat berhasil ditambahkan"); onSuccess(); },
     onError: () => toast.error("Gagal menyimpan obat"),

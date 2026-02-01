@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { z } from "zod";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -25,22 +26,13 @@ const addComplicationSchema = z.object({
 type AddComplicationFormData = z.infer<typeof addComplicationSchema>;
 
 async function fetchComplications() {
-  const res = await fetch("/api/master/complications?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch complications");
-  return res.json();
+  const res = await api.get("/api/master/complications?limit=100");
+  return res.data;
 }
 
 async function addComplication(sessionId: string, data: Record<string, unknown>) {
-  const res = await fetch(`/api/hd-sessions/${sessionId}/complications`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to add complication");
-  }
-  return res.json();
+  const res = await api.post(`/api/hd-sessions/${sessionId}/complications`, data);
+  return res.data;
 }
 
 export function AddComplicationForm({

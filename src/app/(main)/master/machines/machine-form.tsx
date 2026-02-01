@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -21,9 +22,8 @@ export function MachineForm({ machine, onSuccess }: MachineFormProps) {
   const { data: roomsData } = useQuery({
     queryKey: ["rooms-select"],
     queryFn: async () => {
-      const res = await fetch("/api/master/rooms?limit=100");
-      if (!res.ok) throw new Error("Failed to fetch rooms");
-      return res.json();
+      const res = await api.get("/api/master/rooms?limit=100");
+      return res.data;
     },
   });
 
@@ -42,9 +42,8 @@ export function MachineForm({ machine, onSuccess }: MachineFormProps) {
   const mutation = useMutation({
     mutationFn: async (data: unknown) => {
       const url = machine ? `/api/master/machines/${machine.id}` : "/api/master/machines";
-      const res = await fetch(url, { method: machine ? "PUT" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
-      if (!res.ok) throw new Error("Failed to save");
-      return res.json();
+      const res = machine ? await api.put(url, data) : await api.post(url, data);
+      return res.data;
     },
     onSuccess: () => { toast.success(machine ? "Mesin berhasil diperbarui" : "Mesin berhasil ditambahkan"); onSuccess(); },
     onError: () => toast.error("Gagal menyimpan mesin"),

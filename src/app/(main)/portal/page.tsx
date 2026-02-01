@@ -14,6 +14,7 @@ import {
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import Link from "next/link";
+import api from "@/lib/api/axios";
 
 import { PageHeader } from "@/components/shared";
 import { StatCard } from "@/components/shared/stat-card";
@@ -30,20 +31,13 @@ import LineChartCustom from "@/components/chart/LineChart";
 
 async function fetchPortalData() {
   const [profileRes, trendsRes] = await Promise.all([
-    fetch("/api/portal/profile"),
-    fetch("/api/portal/trends?sessionsLimit=10&labsLimit=5"),
+    api.get("/api/portal/profile"),
+    api.get("/api/portal/trends?sessionsLimit=10&labsLimit=5"),
   ]);
 
-  if (!profileRes.ok || !trendsRes.ok) {
-    throw new Error("Failed to fetch portal data");
-  }
-
-  const profileData = await profileRes.json();
-  const trendsData = await trendsRes.json();
-
   return {
-    profile: profileData.data,
-    trends: trendsData.data,
+    profile: profileRes.data.data,
+    trends: trendsRes.data.data,
   };
 }
 

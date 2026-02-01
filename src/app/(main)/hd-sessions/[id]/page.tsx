@@ -20,6 +20,7 @@ import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api/axios";
 
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -43,9 +44,8 @@ import { AddComplicationForm } from "../components/add-complication-form";
 import { AddMedicationForm } from "../components/add-medication-form";
 
 async function fetchSession(id: string) {
-  const res = await fetch(`/api/hd-sessions/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch session");
-  return res.json();
+  const res = await api.get(`/api/hd-sessions/${id}`);
+  return res.data;
 }
 
 export default function HdSessionDetailPage({

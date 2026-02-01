@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import Link from "next/link";
 
+import api from "@/lib/api/axios";
 import { PageHeader } from "@/components/shared";
 import { StatCard } from "@/components/shared/stat-card";
 import { Button } from "@/components/ui/button";
@@ -75,9 +76,8 @@ type ActiveSession = {
 };
 
 async function fetchActiveData() {
-  const res = await fetch("/api/hd-sessions/active");
-  if (!res.ok) throw new Error("Failed to fetch active sessions");
-  return res.json();
+  const { data } = await api.get("/api/hd-sessions/active");
+  return data;
 }
 
 export default function HdSessionsPage() {

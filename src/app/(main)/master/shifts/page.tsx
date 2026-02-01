@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Pencil, Trash2, Clock, CheckCircle, XCircle, Users } from "lucide-react";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -29,15 +30,13 @@ type Shift = {
 };
 
 async function fetchShifts(page: number) {
-  const res = await fetch(`/api/master/shifts?page=${page}&limit=10`);
-  if (!res.ok) throw new Error("Failed to fetch shifts");
-  return res.json();
+  const res = await api.get(`/api/master/shifts?page=${page}&limit=10`);
+  return res.data;
 }
 
 async function deleteShift(id: string) {
-  const res = await fetch(`/api/master/shifts/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete shift");
-  return res.json();
+  const res = await api.delete(`/api/master/shifts/${id}`);
+  return res.data;
 }
 
 export default function ShiftsPage() {

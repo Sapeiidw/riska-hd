@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,23 +32,13 @@ interface RoomFormProps {
 }
 
 async function createRoom(data: CreateRoomInput) {
-  const res = await fetch("/api/master/rooms", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create room");
-  return res.json();
+  const res = await api.post("/api/master/rooms", data);
+  return res.data;
 }
 
 async function updateRoom(id: string, data: Partial<CreateRoomInput>) {
-  const res = await fetch(`/api/master/rooms/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to update room");
-  return res.json();
+  const res = await api.put(`/api/master/rooms/${id}`, data);
+  return res.data;
 }
 
 export function RoomForm({ room, onSuccess }: RoomFormProps) {

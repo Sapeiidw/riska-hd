@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import api from "@/lib/api/axios";
 
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -94,9 +95,8 @@ async function fetchAuditLogs(
     ...(action && { action }),
     ...(resource && { resource }),
   });
-  const res = await fetch(`/api/settings/audit-log?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch audit logs");
-  return res.json();
+  const res = await api.get(`/api/settings/audit-log?${params}`);
+  return res.data;
 }
 
 export default function AuditLogPage() {

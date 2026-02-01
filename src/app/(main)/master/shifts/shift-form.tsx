@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,13 +45,8 @@ export function ShiftForm({ shift, onSuccess }: ShiftFormProps) {
       const url = shift
         ? `/api/master/shifts/${shift.id}`
         : "/api/master/shifts";
-      const res = await fetch(url, {
-        method: shift ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to save shift");
-      return res.json();
+      const res = shift ? await api.put(url, data) : await api.post(url, data);
+      return res.data;
     },
     onSuccess: () => {
       toast.success(shift ? "Shift berhasil diperbarui" : "Shift berhasil ditambahkan");

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import api from "@/lib/api/axios";
 import {
   Search,
   Calendar,
@@ -108,12 +109,10 @@ function SearchAutocomplete({
     queryKey: ["search-suggestions", query],
     queryFn: async () => {
       if (query.length < 2) return [];
-      const res = await fetch(
+      const res = await api.get(
         `/api/public/ruang-informasi/suggestions?q=${encodeURIComponent(query)}`
       );
-      if (!res.ok) throw new Error("Failed to fetch");
-      const json = await res.json();
-      return json.data as Suggestion[];
+      return res.data.data as Suggestion[];
     },
     enabled: query.length >= 2,
     staleTime: 1000 * 60, // Cache for 1 minute
@@ -560,9 +559,8 @@ export function InformasiList() {
       const params = new URLSearchParams({ page: page.toString(), limit: "12" });
       if (search) params.append("search", search);
       if (category) params.append("category", category);
-      const res = await fetch(`/api/public/ruang-informasi?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      return res.json();
+      const res = await api.get(`/api/public/ruang-informasi?${params}`);
+      return res.data;
     },
   });
 

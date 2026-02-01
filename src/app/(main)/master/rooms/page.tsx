@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Pencil, Trash2, DoorOpen, CheckCircle, XCircle, Bed, Building } from "lucide-react";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -42,15 +43,13 @@ async function fetchRooms(page: number, search: string) {
     limit: "10",
     ...(search && { search }),
   });
-  const res = await fetch(`/api/master/rooms?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch rooms");
-  return res.json();
+  const res = await api.get(`/api/master/rooms?${params}`);
+  return res.data;
 }
 
 async function deleteRoom(id: string) {
-  const res = await fetch(`/api/master/rooms/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete room");
-  return res.json();
+  const res = await api.delete(`/api/master/rooms/${id}`);
+  return res.data;
 }
 
 export default function RoomsPage() {

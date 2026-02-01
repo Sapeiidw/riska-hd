@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -51,35 +52,23 @@ type Permission = {
 };
 
 async function fetchPermissions() {
-  const res = await fetch("/api/settings/permissions");
-  if (!res.ok) throw new Error("Failed to fetch permissions");
-  return res.json();
+  const res = await api.get("/api/settings/permissions");
+  return res.data;
 }
 
 async function fetchRoleDetail(id: string) {
-  const res = await fetch(`/api/settings/roles/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch role");
-  return res.json();
+  const res = await api.get(`/api/settings/roles/${id}`);
+  return res.data;
 }
 
 async function createRole(data: RoleFormValues) {
-  const res = await fetch("/api/settings/roles", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create role");
-  return res.json();
+  const res = await api.post("/api/settings/roles", data);
+  return res.data;
 }
 
 async function updateRole(id: string, data: Partial<RoleFormValues>) {
-  const res = await fetch(`/api/settings/roles/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to update role");
-  return res.json();
+  const res = await api.put(`/api/settings/roles/${id}`, data);
+  return res.data;
 }
 
 const resourceLabels: Record<string, string> = {

@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Users, UserCheck, UserX, Activity } from "lucide-react";
 import Link from "next/link";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -17,9 +18,8 @@ async function fetchPatients(page: number, search: string) {
     limit: "10",
     ...(search && { search }),
   });
-  const res = await fetch(`/api/master/patients?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch patients");
-  return res.json();
+  const res = await api.get(`/api/master/patients?${params}`);
+  return res.data;
 }
 
 type Patient = {

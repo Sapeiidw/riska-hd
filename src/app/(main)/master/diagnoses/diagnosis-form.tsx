@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -30,13 +31,8 @@ export function DiagnosisForm({ diagnosis, onSuccess }: DiagnosisFormProps) {
   const mutation = useMutation({
     mutationFn: async (data: CreateDiagnosisInput) => {
       const url = diagnosis ? `/api/master/diagnoses/${diagnosis.id}` : "/api/master/diagnoses";
-      const res = await fetch(url, {
-        method: diagnosis ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) throw new Error("Failed to save");
-      return res.json();
+      const res = diagnosis ? await api.put(url, data) : await api.post(url, data);
+      return res.data;
     },
     onSuccess: () => {
       toast.success(diagnosis ? "Diagnosa berhasil diperbarui" : "Diagnosa berhasil ditambahkan");

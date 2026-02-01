@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { RefreshCw, Unlink, Link2 } from "lucide-react";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,34 +30,23 @@ interface GoogleSyncButtonProps {
 }
 
 async function checkSyncStatus() {
-  const res = await fetch("/api/google/sync");
-  if (!res.ok) throw new Error("Failed to check status");
-  return res.json();
+  const res = await api.get("/api/google/sync");
+  return res.data;
 }
 
 async function getAuthUrl(returnUrl: string) {
-  const res = await fetch(`/api/google/auth?returnUrl=${encodeURIComponent(returnUrl)}`);
-  if (!res.ok) throw new Error("Failed to get auth URL");
-  return res.json();
+  const res = await api.get(`/api/google/auth?returnUrl=${encodeURIComponent(returnUrl)}`);
+  return res.data;
 }
 
 async function syncToGoogle(type: string) {
-  const res = await fetch("/api/google/sync", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ type }),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Sync failed");
-  }
-  return res.json();
+  const res = await api.post("/api/google/sync", { type });
+  return res.data;
 }
 
 async function disconnectGoogle() {
-  const res = await fetch("/api/google/sync", { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to disconnect");
-  return res.json();
+  const res = await api.delete("/api/google/sync");
+  return res.data;
 }
 
 export function GoogleSyncButton({ type }: GoogleSyncButtonProps) {

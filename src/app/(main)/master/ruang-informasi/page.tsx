@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api/axios";
 import {
   Pencil,
   Trash2,
@@ -83,19 +84,15 @@ export default function RuangInformasiPage() {
       const params = new URLSearchParams({ page: page.toString(), limit: "10" });
       if (search) params.append("search", search);
       if (categoryFilter) params.append("category", categoryFilter);
-      const res = await fetch(`/api/master/ruang-informasi?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      return res.json();
+      const res = await api.get(`/api/master/ruang-informasi?${params}`);
+      return res.data;
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/master/ruang-informasi/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) throw new Error("Failed to delete");
-      return res.json();
+      const res = await api.delete(`/api/master/ruang-informasi/${id}`);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ruang-informasi"] });

@@ -6,14 +6,15 @@ import { useQuery } from "@tanstack/react-query";
 import { Users, Stethoscope, Heart, MonitorCog, Building2, Activity, Info } from "lucide-react";
 import { StatCard } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
+import api from "@/lib/api/axios";
 
 async function fetchDashboardStats() {
   const [patients, doctors, nurses, machines, rooms] = await Promise.all([
-    fetch("/api/master/patients?limit=1").then(r => r.ok ? r.json() : { meta: { total: 0 } }),
-    fetch("/api/master/doctors?limit=1").then(r => r.ok ? r.json() : { meta: { total: 0 } }).catch(() => ({ meta: { total: 0 } })),
-    fetch("/api/master/nurses?limit=1").then(r => r.ok ? r.json() : { meta: { total: 0 } }).catch(() => ({ meta: { total: 0 } })),
-    fetch("/api/master/machines?limit=1").then(r => r.ok ? r.json() : { meta: { total: 0 } }),
-    fetch("/api/master/rooms?limit=1").then(r => r.ok ? r.json() : { meta: { total: 0 } }),
+    api.get("/api/master/patients?limit=1").then(r => r.data).catch(() => ({ meta: { total: 0 } })),
+    api.get("/api/master/doctors?limit=1").then(r => r.data).catch(() => ({ meta: { total: 0 } })),
+    api.get("/api/master/nurses?limit=1").then(r => r.data).catch(() => ({ meta: { total: 0 } })),
+    api.get("/api/master/machines?limit=1").then(r => r.data).catch(() => ({ meta: { total: 0 } })),
+    api.get("/api/master/rooms?limit=1").then(r => r.data).catch(() => ({ meta: { total: 0 } })),
   ]);
 
   return {

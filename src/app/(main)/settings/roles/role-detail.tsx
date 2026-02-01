@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Shield, Check } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import api from "@/lib/api/axios";
 
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/shared/loading-state";
@@ -28,9 +29,8 @@ type RoleDetailData = {
 };
 
 async function fetchRoleDetail(id: string) {
-  const res = await fetch(`/api/settings/roles/${id}`);
-  if (!res.ok) throw new Error("Failed to fetch role");
-  return res.json();
+  const res = await api.get(`/api/settings/roles/${id}`);
+  return res.data;
 }
 
 const resourceLabels: Record<string, string> = {

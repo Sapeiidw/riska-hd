@@ -6,6 +6,7 @@ import { Pencil, Trash2, Shield, Eye, Key, Users } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -44,15 +45,13 @@ async function fetchRoles(page: number, search: string) {
     limit: "10",
     ...(search && { search }),
   });
-  const res = await fetch(`/api/settings/roles?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch roles");
-  return res.json();
+  const res = await api.get(`/api/settings/roles?${params}`);
+  return res.data;
 }
 
 async function deleteRole(id: string) {
-  const res = await fetch(`/api/settings/roles/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete role");
-  return res.json();
+  const res = await api.delete(`/api/settings/roles/${id}`);
+  return res.data;
 }
 
 export default function RolesPage() {

@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Pencil, Trash2, ScrollText, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -39,17 +40,15 @@ export default function ProtocolsPage() {
     queryFn: async () => {
       const params = new URLSearchParams({ page: page.toString(), limit: "10" });
       if (search) params.append("search", search);
-      const res = await fetch(`/api/master/protocols?${params}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      return res.json();
+      const res = await api.get(`/api/master/protocols?${params}`);
+      return res.data;
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/master/protocols/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to delete");
-      return res.json();
+      const res = await api.delete(`/api/master/protocols/${id}`);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["protocols"] });

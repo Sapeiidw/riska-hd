@@ -27,6 +27,7 @@ import {
 import { id as localeId } from "date-fns/locale";
 import dynamic from "next/dynamic";
 
+import api from "@/lib/api/axios";
 import { MasterPageLayout, TableSkeleton } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table/data-table";
@@ -111,31 +112,23 @@ async function fetchSchedules(startDate?: string, endDate?: string, shiftId?: st
   if (shiftId) params.set("shiftId", shiftId);
   if (status) params.set("status", status);
 
-  const res = await fetch(`/api/schedules/patients?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch schedules");
-  return res.json();
+  const { data } = await api.get(`/api/schedules/patients?${params}`);
+  return data;
 }
 
 async function fetchShifts() {
-  const res = await fetch("/api/master/shifts?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch shifts");
-  return res.json();
+  const { data } = await api.get("/api/master/shifts?limit=100");
+  return data;
 }
 
 async function deleteSchedule(id: string) {
-  const res = await fetch(`/api/schedules/patients/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete schedule");
-  return res.json();
+  const { data } = await api.delete(`/api/schedules/patients/${id}`);
+  return data;
 }
 
 async function updateScheduleDate(id: string, newDate: string) {
-  const res = await fetch(`/api/schedules/patients/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ scheduleDate: newDate }),
-  });
-  if (!res.ok) throw new Error("Failed to update schedule");
-  return res.json();
+  const { data } = await api.put(`/api/schedules/patients/${id}`, { scheduleDate: newDate });
+  return data;
 }
 
 export default function PatientSchedulesPage() {

@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,23 +32,13 @@ interface DoctorFormProps {
 }
 
 async function createDoctor(data: CreateDoctorInput) {
-  const res = await fetch("/api/master/doctors", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create doctor");
-  return res.json();
+  const res = await api.post("/api/master/doctors", data);
+  return res.data;
 }
 
 async function updateDoctor(id: string, data: Partial<CreateDoctorInput>) {
-  const res = await fetch(`/api/master/doctors/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to update doctor");
-  return res.json();
+  const res = await api.put(`/api/master/doctors/${id}`, data);
+  return res.data;
 }
 
 export function DoctorForm({ doctor, onSuccess }: DoctorFormProps) {

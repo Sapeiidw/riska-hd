@@ -3,6 +3,7 @@
 import { useRouter, useParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Newspaper, Loader2 } from "lucide-react";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { RuangInformasiForm } from "../../ruang-informasi-form";
@@ -16,9 +17,8 @@ export default function EditRuangInformasiPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["ruang-informasi", id],
     queryFn: async () => {
-      const res = await fetch(`/api/master/ruang-informasi/${id}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      return res.json();
+      const res = await api.get(`/api/master/ruang-informasi/${id}`);
+      return res.data;
     },
   });
 

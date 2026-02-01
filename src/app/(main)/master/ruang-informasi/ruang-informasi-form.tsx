@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Plus, Trash2, Link as LinkIcon, Image as ImageIcon, Upload, Loader2, X } from "lucide-react";
+import api from "@/lib/api/axios";
 import { useRef, useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -124,16 +125,10 @@ async function compressImage(
 async function uploadImage(file: File): Promise<string> {
   const formData = new FormData();
   formData.append("image", file);
-  const res = await fetch("/api/upload/image", {
-    method: "POST",
-    body: formData,
+  const res = await api.post("/api/upload/image", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Gagal mengupload gambar");
-  }
-  const data = await res.json();
-  return data.data.url;
+  return res.data.data.url;
 }
 
 export function RuangInformasiForm({ data, onSuccess }: RuangInformasiFormProps) {
@@ -178,16 +173,10 @@ export function RuangInformasiForm({ data, onSuccess }: RuangInformasiFormProps)
       const url = data
         ? `/api/master/ruang-informasi/${data.id}`
         : "/api/master/ruang-informasi";
-      const res = await fetch(url, {
-        method: data ? "PUT" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error?.message || "Failed to save");
-      }
-      return res.json();
+      const res = data
+        ? await api.put(url, formData)
+        : await api.post(url, formData);
+      return res.data;
     },
     onSuccess: () => {
       toast.success(

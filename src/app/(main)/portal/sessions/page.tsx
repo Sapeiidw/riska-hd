@@ -6,6 +6,7 @@ import { Activity, ArrowLeft, Calendar, Clock, Droplets, Heart, Scale } from "lu
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import Link from "next/link";
+import api from "@/lib/api/axios";
 
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -44,9 +45,8 @@ type Session = {
 };
 
 async function fetchSessions(params: URLSearchParams) {
-  const res = await fetch(`/api/portal/sessions?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch sessions");
-  return res.json();
+  const res = await api.get(`/api/portal/sessions?${params}`);
+  return res.data;
 }
 
 export default function PatientSessionsPage() {

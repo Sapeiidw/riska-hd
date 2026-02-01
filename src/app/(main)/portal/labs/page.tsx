@@ -6,6 +6,7 @@ import { FlaskConical, ArrowLeft, TrendingUp } from "lucide-react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import Link from "next/link";
+import api from "@/lib/api/axios";
 
 import { PageHeader } from "@/components/shared";
 import { Button } from "@/components/ui/button";
@@ -42,9 +43,8 @@ type Lab = {
 };
 
 async function fetchLabs(params: URLSearchParams) {
-  const res = await fetch(`/api/portal/labs?${params}`);
-  if (!res.ok) throw new Error("Failed to fetch labs");
-  return res.json();
+  const res = await api.get(`/api/portal/labs?${params}`);
+  return res.data;
 }
 
 export default function PatientLabsPage() {

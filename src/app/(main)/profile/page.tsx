@@ -9,6 +9,7 @@ import { z } from "zod/v4";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
+import api from "@/lib/api/axios";
 import {
   User,
   Mail,
@@ -104,50 +105,18 @@ interface SessionData {
   isCurrent: boolean;
 }
 
-function redirectToLogin() {
-  if (typeof window !== "undefined") {
-    window.location.href = "/sign-in";
-  }
-}
-
 async function fetchProfile() {
-  const res = await fetch("/api/profile");
-  const data = await res.json();
-  if (!res.ok) {
-    if (data.error?.code === "UNAUTHORIZED") {
-      redirectToLogin();
-      throw new Error("Authentication required");
-    }
-    throw new Error("Gagal memuat profil");
-  }
+  const { data } = await api.get("/api/profile");
   return data.data;
 }
 
 async function fetchSessions(): Promise<SessionData[]> {
-  const res = await fetch("/api/profile/sessions");
-  const data = await res.json();
-  if (!res.ok) {
-    if (data.error?.code === "UNAUTHORIZED") {
-      redirectToLogin();
-      throw new Error("Authentication required");
-    }
-    throw new Error("Gagal memuat sesi");
-  }
+  const { data } = await api.get("/api/profile/sessions");
   return data.data;
 }
 
 async function deleteSession(sessionId: string) {
-  const res = await fetch(`/api/profile/sessions?sessionId=${sessionId}`, {
-    method: "DELETE",
-  });
-  const data = await res.json();
-  if (!res.ok) {
-    if (data.error?.code === "UNAUTHORIZED") {
-      redirectToLogin();
-      throw new Error("Authentication required");
-    }
-    throw new Error(data.error?.message || "Gagal menghapus sesi");
-  }
+  const { data } = await api.delete(`/api/profile/sessions?sessionId=${sessionId}`);
   return data;
 }
 
@@ -180,56 +149,27 @@ function parseUserAgent(userAgent: string | null): { device: string; browser: st
 }
 
 async function updateProfile(data: ProfileFormData) {
-  const res = await fetch("/api/profile", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Gagal mengupdate profil");
-  }
-  return res.json();
+  const { data: res } = await api.patch("/api/profile", data);
+  return res;
 }
 
 async function uploadPhoto(file: File) {
   const formData = new FormData();
   formData.append("photo", file);
-  const res = await fetch("/api/profile/upload-photo", {
-    method: "POST",
-    body: formData,
+  const { data: res } = await api.post("/api/profile/upload-photo", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
   });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Gagal mengupload foto");
-  }
-  return res.json();
+  return res;
 }
 
 async function changePassword(data: ChangePasswordFormData) {
-  const res = await fetch("/api/profile/change-password", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Gagal mengubah password");
-  }
-  return res.json();
+  const { data: res } = await api.post("/api/profile/change-password", data);
+  return res;
 }
 
 async function activateAccount(data: ActivateFormData) {
-  const res = await fetch("/api/profile/activate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Gagal mengaktivasi akun");
-  }
-  return res.json();
+  const { data: res } = await api.post("/api/profile/activate", data);
+  return res;
 }
 
 // Compress image using canvas

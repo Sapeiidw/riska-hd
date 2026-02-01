@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { z } from "zod";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,16 +23,8 @@ const completeSessionSchema = z.object({
 type CompleteSessionFormData = z.infer<typeof completeSessionSchema>;
 
 async function completeSession(sessionId: string, data: Record<string, unknown>) {
-  const res = await fetch(`/api/hd-sessions/${sessionId}/complete`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to complete session");
-  }
-  return res.json();
+  const res = await api.post(`/api/hd-sessions/${sessionId}/complete`, data);
+  return res.data;
 }
 
 export function CompleteSessionForm({

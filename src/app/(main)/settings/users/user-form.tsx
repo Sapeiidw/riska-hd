@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { z } from "zod";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -51,23 +52,13 @@ const roles = [
 ];
 
 async function createUser(data: UserFormValues) {
-  const res = await fetch("/api/settings/users", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create user");
-  return res.json();
+  const res = await api.post("/api/settings/users", data);
+  return res.data;
 }
 
 async function updateUser(id: string, data: Partial<UserFormValues>) {
-  const res = await fetch(`/api/settings/users/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to update user");
-  return res.json();
+  const res = await api.put(`/api/settings/users/${id}`, data);
+  return res.data;
 }
 
 export function UserForm({ user, onSuccess }: UserFormProps) {

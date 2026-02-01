@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -77,62 +78,41 @@ type Nurse = {
 };
 
 async function fetchPatients() {
-  const res = await fetch("/api/master/patients?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch patients");
-  return res.json();
+  const res = await api.get("/api/master/patients?limit=100");
+  return res.data;
 }
 
 async function fetchShifts() {
-  const res = await fetch("/api/master/shifts?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch shifts");
-  return res.json();
+  const res = await api.get("/api/master/shifts?limit=100");
+  return res.data;
 }
 
 async function fetchRooms() {
-  const res = await fetch("/api/master/rooms?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch rooms");
-  return res.json();
+  const res = await api.get("/api/master/rooms?limit=100");
+  return res.data;
 }
 
 async function fetchMachines() {
-  const res = await fetch("/api/master/machines?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch machines");
-  return res.json();
+  const res = await api.get("/api/master/machines?limit=100");
+  return res.data;
 }
 
 async function fetchNurses() {
-  const res = await fetch("/api/master/nurses?limit=100");
-  if (!res.ok) throw new Error("Failed to fetch nurses");
-  return res.json();
+  const res = await api.get("/api/master/nurses?limit=100");
+  return res.data;
 }
 
 async function createSchedule(data: CreatePatientScheduleInput) {
-  const res = await fetch("/api/schedules/patients", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to create schedule");
-  }
-  return res.json();
+  const res = await api.post("/api/schedules/patients", data);
+  return res.data;
 }
 
 async function updateSchedule(
   id: string,
   data: Partial<CreatePatientScheduleInput>
 ) {
-  const res = await fetch(`/api/schedules/patients/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.error?.message || "Failed to update schedule");
-  }
-  return res.json();
+  const res = await api.put(`/api/schedules/patients/${id}`, data);
+  return res.data;
 }
 
 const STATUS_OPTIONS = [

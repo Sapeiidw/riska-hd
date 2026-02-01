@@ -216,7 +216,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={() => signOut()}
+                onClick={async () => {
+                  await signOut();
+                  window.location.replace("/sign-in");
+                }}
                 className="text-red-600"
               >
                 <LogOut className="mr-2 h-4 w-4" />
