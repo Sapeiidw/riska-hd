@@ -885,10 +885,10 @@ export default function HomePage() {
       </section>
 
       {/* Testimonials Section */}
-      <section id="testimoni" className="py-20 bg-gradient-to-b from-amber-50/30 to-white relative">
+      <section id="testimoni" className="py-12 md:py-20 bg-gradient-to-b from-amber-50/30 to-white relative">
         {/* Top divider */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-200 to-transparent" />
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="Testimoni"
             badgeIcon={Quote}
@@ -897,7 +897,7 @@ export default function HomePage() {
             subtitle="Dengarkan pengalaman dari pasien, dokter, dan perawat yang menggunakan RISKA HD."
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 max-w-6xl mx-auto">
             {testimonials.map((testimonial, index) => (
               <TestimonialCard key={index} {...testimonial} index={index} />
             ))}
@@ -906,8 +906,8 @@ export default function HomePage() {
       </section>
 
       {/* Role-Based Access */}
-      <section className="py-20 bg-gray-50">
-        <div className="container mx-auto px-6">
+      <section className="py-12 md:py-20 bg-gray-50">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="Multi-Role Access"
             badgeIcon={Users}
@@ -916,19 +916,19 @@ export default function HomePage() {
             subtitle="Setiap pengguna mendapat akses fitur sesuai dengan peran dan tanggung jawabnya."
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-6xl mx-auto">
             {[
               {
                 icon: UserCog,
                 title: "Admin",
                 bgColor: "bg-rose-400",
-                features: ["Kelola seluruh pengguna", "Konfigurasi sistem", "Audit log & laporan"],
+                features: ["Kelola pengguna", "Konfigurasi sistem", "Audit & laporan"],
               },
               {
                 icon: Stethoscope,
                 title: "Dokter",
                 bgColor: "bg-sky-500",
-                features: ["Order & instruksi", "Evaluasi pasien", "Monitoring kondisi"],
+                features: ["Order & instruksi", "Evaluasi pasien", "Monitoring"],
               },
               {
                 icon: Activity,
@@ -940,7 +940,7 @@ export default function HomePage() {
                 icon: User,
                 title: "Pasien",
                 bgColor: "bg-emerald-500",
-                features: ["Lihat jadwal", "Akses edukasi", "Riwayat kesehatan"],
+                features: ["Lihat jadwal", "Akses edukasi", "Riwayat"],
               },
             ].map((role, index) => (
               <motion.div
@@ -948,24 +948,24 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
                 whileHover={{ y: -8, transition: { duration: 0.3 } }}
                 className="group"
               >
-                <div className="bg-white rounded-3xl p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
+                <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
                   <div
-                    className={`size-14 rounded-2xl ${role.bgColor} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+                    className={`size-10 md:size-14 rounded-xl md:rounded-2xl ${role.bgColor} flex items-center justify-center mb-3 md:mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}
                   >
-                    <role.icon className="size-7 text-white" />
+                    <role.icon className="size-5 md:size-7 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">{role.title}</h3>
-                  <ul className="space-y-3">
+                  <h3 className="text-base md:text-xl font-bold text-gray-800 mb-2 md:mb-4">{role.title}</h3>
+                  <ul className="space-y-2 md:space-y-3">
                     {role.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3 text-sm text-gray-500">
-                        <div className="size-5 rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                          <Check className="size-3 text-emerald-500" />
+                      <li key={i} className="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-gray-500">
+                        <div className="size-4 md:size-5 rounded-md md:rounded-lg bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                          <Check className="size-2.5 md:size-3 text-emerald-500" />
                         </div>
-                        {feature}
+                        <span className="truncate">{feature}</span>
                       </li>
                     ))}
                   </ul>
