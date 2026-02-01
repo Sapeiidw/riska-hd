@@ -12,7 +12,7 @@ export default function PublicLayout({
       <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/informasi">
+            <Link href="/">
               <Logo size="sm" showTagline />
             </Link>
             <nav className="flex items-center gap-4">

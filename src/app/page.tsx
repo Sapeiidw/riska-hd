@@ -60,18 +60,18 @@ function SectionHeader({
 }) {
   return (
     <motion.div
-      className="text-center mb-12"
+      className="text-center mb-8 md:mb-12 px-2"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5 }}
     >
-      <Badge className={`${badgeColor} border-0 px-4 py-1.5 mb-4 rounded-full text-xs font-medium`}>
-        <BadgeIcon className="size-3.5 mr-1.5" />
+      <Badge className={`${badgeColor} border-0 px-3 md:px-4 py-1 md:py-1.5 mb-3 md:mb-4 rounded-full text-xs font-medium`}>
+        <BadgeIcon className="size-3 md:size-3.5 mr-1 md:mr-1.5" />
         {badge}
       </Badge>
-      <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-3">{title}</h2>
-      {subtitle && <p className="text-gray-500 max-w-2xl mx-auto">{subtitle}</p>}
+      <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-800 mb-2 md:mb-3">{title}</h2>
+      {subtitle && <p className="text-gray-500 text-sm md:text-base max-w-2xl mx-auto">{subtitle}</p>}
     </motion.div>
   );
 }
@@ -95,18 +95,18 @@ function FeatureCard({
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
+      transition={{ duration: 0.5, delay: index * 0.05 }}
       whileHover={{ y: -8, transition: { duration: 0.3 } }}
       className="group"
     >
-      <div className="bg-white rounded-3xl p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
+      <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 h-full shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
         <div
-          className={`size-14 rounded-2xl ${bgColor} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}
+          className={`size-11 md:size-14 rounded-xl md:rounded-2xl ${bgColor} flex items-center justify-center mb-3 md:mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}
         >
-          <Icon className="size-7 text-white" />
+          <Icon className="size-5 md:size-7 text-white" />
         </div>
-        <h3 className="text-lg font-bold text-gray-800 mb-2">{title}</h3>
-        <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
+        <h3 className="text-base md:text-lg font-bold text-gray-800 mb-1.5 md:mb-2">{title}</h3>
+        <p className="text-gray-500 text-xs md:text-sm leading-relaxed">{description}</p>
       </div>
     </motion.div>
   );
@@ -260,11 +260,11 @@ function StatCard({
       transition={{ duration: 0.5, delay: index * 0.1 }}
       className="text-center"
     >
-      <div className={`size-16 rounded-2xl ${color} flex items-center justify-center mx-auto mb-4 shadow-lg`}>
-        <Icon className="size-8 text-white" />
+      <div className={`size-12 md:size-16 rounded-xl md:rounded-2xl ${color} flex items-center justify-center mx-auto mb-3 md:mb-4 shadow-lg`}>
+        <Icon className="size-6 md:size-8 text-white" />
       </div>
-      <div className="text-3xl md:text-4xl font-bold text-gray-800 mb-1">{value}</div>
-      <p className="text-gray-500 text-sm">{label}</p>
+      <div className="text-2xl md:text-4xl font-bold text-gray-800 mb-1">{value}</div>
+      <p className="text-gray-500 text-xs md:text-sm">{label}</p>
     </motion.div>
   );
 }
@@ -458,7 +458,7 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               {/* Left - Text Content */}
               <motion.div
-                className="space-y-8 z-10"
+                className="space-y-6 md:space-y-8 z-10 pt-24 md:pt-0"
                 style={{ y: bigTextY, opacity: bigTextOpacity }}
               >
                 <motion.div
@@ -466,14 +466,14 @@ export default function HomePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                  <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm px-5 py-2 text-sm mb-4 rounded-full">
+                  <Badge className="hidden md:inline-flex bg-white/20 text-white border-white/30 backdrop-blur-sm px-5 py-2 text-sm mb-4 rounded-full">
                     <Sparkles className="size-4 mr-2" />
                     Sistem Manajemen Hemodialisa #1
                   </Badge>
                 </motion.div>
 
                 <motion.h1
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
+                  className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
@@ -506,37 +506,37 @@ export default function HomePage() {
                 </motion.div>
  */}
                 <motion.p
-                  className="text-white/80 text-lg max-w-lg leading-relaxed"
+                  className="text-white/80 text-base md:text-lg max-w-lg leading-relaxed"
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
                   Platform digital terintegrasi untuk dokter, perawat, dan pasien.
-                  Terstruktur, aman, dan mudah digunakan. 
+                  Terstruktur, aman, dan mudah digunakan.
                 </motion.p>
 
                 <motion.div
-                  className="flex flex-wrap gap-4 pt-4"
+                  className="flex flex-col sm:flex-row gap-3 pt-4"
                   initial={{ opacity: 0, x: -30 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
                 >
                   <Link href="/sign-in">
-                    <Button className="bg-white text-sky-600 hover:bg-white/90 rounded-full px-8 py-6 text-base shadow-2xl shadow-sky-900/20 group font-semibold">
+                    <Button className="w-full sm:w-auto bg-white text-sky-600 hover:bg-white/90 rounded-full px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base shadow-2xl shadow-sky-900/20 group font-semibold">
                       Mulai Sekarang
-                      <ArrowUpRight className="ml-2 size-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                      <ArrowUpRight className="ml-2 size-4 sm:size-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                     </Button>
                   </Link>
                   <a href="#fitur">
-                    <Button variant="outline" className="border-2 border-white/50 text-white hover:bg-white/20 rounded-full px-8 py-6 text-base bg-transparent">
+                    <Button variant="outline" className="w-full sm:w-auto border-2 border-white/50 text-white hover:bg-white/20 rounded-full px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base bg-transparent">
                       Pelajari Lebih Lanjut
                     </Button>
                   </a>
                 </motion.div>
 
-                {/* Quick Stats */}
+                {/* Quick Stats - Hidden on mobile, shown on md+ */}
                 <motion.div
-                  className="flex gap-8 pt-6"
+                  className="hidden md:flex gap-8 pt-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 }}
@@ -768,10 +768,10 @@ export default function HomePage() {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-gray-50 -mt-px">
-        <div className="container mx-auto px-6">
+      <section className="py-10 md:py-16 bg-gray-50 -mt-px">
+        <div className="container mx-auto px-4 md:px-6">
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl mx-auto"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
@@ -779,16 +779,16 @@ export default function HomePage() {
             <StatCard value="10+" label="Tahun Pengalaman" icon={Award} color="bg-sky-500" index={0} />
             <StatCard value="500+" label="Pasien Aktif" icon={Users} color="bg-rose-400" index={1} />
             <StatCard value="50+" label="Tim Medis" icon={Stethoscope} color="bg-emerald-500" index={2} />
-            <StatCard value="99%" label="Tingkat Kepuasan" icon={Heart} color="bg-violet-500" index={3} />
+            <StatCard value="99%" label="Kepuasan" icon={Heart} color="bg-violet-500" index={3} />
           </motion.div>
         </div>
       </section>
 
       {/* Features Section */}
-      <section id="fitur" className="py-20 bg-white relative">
+      <section id="fitur" className="py-12 md:py-20 bg-white relative">
         {/* Top divider */}
         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="Fitur Unggulan"
             badgeIcon={Sparkles}
@@ -797,7 +797,7 @@ export default function HomePage() {
             subtitle="Fitur lengkap untuk mengelola layanan hemodialisa dengan efisien dan terstruktur."
           />
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 max-w-6xl mx-auto">
             {features.map((feature, index) => (
               <FeatureCard key={index} {...feature} index={index} />
             ))}
@@ -806,8 +806,8 @@ export default function HomePage() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20 bg-gradient-to-b from-sky-50 to-white relative">
-        <div className="container mx-auto px-6">
+      <section className="py-12 md:py-20 bg-gradient-to-b from-sky-50 to-white relative">
+        <div className="container mx-auto px-4 md:px-6">
           <SectionHeader
             badge="Kenapa RISKA HD?"
             badgeIcon={Layers}
@@ -816,7 +816,7 @@ export default function HomePage() {
             subtitle="Dipercaya oleh ratusan fasilitas kesehatan di Indonesia."
           />
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6 max-w-5xl mx-auto">
             {[
               {
                 icon: ClipboardList,
