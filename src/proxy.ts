@@ -9,6 +9,8 @@ const publicRoutes = [
   "/bantuan",
   "/sign-in",
   "/sign-up",
+  "/forgot-password",
+  "/reset-password",
   "/api/auth",
   "/api/public",
 ];
@@ -33,6 +35,20 @@ export default async function middleware(req: NextRequest) {
   );
 
   if (!session) {
+    // For API routes, return JSON error instead of redirect
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: "UNAUTHORIZED",
+            message: "Authentication required",
+          },
+        },
+        { status: 401 }
+      );
+    }
+    // For pages, redirect to login
     return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 

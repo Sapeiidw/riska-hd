@@ -25,6 +25,10 @@ import {
   Loader2,
   Eye,
   EyeOff,
+  Smartphone,
+  Monitor,
+  Trash2,
+  Globe,
 } from "lucide-react";
 
 import {
@@ -91,11 +95,88 @@ const roleLabels: Record<string, { label: string; color: string }> = {
   user: { label: "User", color: "bg-gray-100 text-gray-700" },
 };
 
+interface SessionData {
+  id: string;
+  createdAt: string;
+  expiresAt: string;
+  ipAddress: string | null;
+  userAgent: string | null;
+  isCurrent: boolean;
+}
+
+function redirectToLogin() {
+  if (typeof window !== "undefined") {
+    window.location.href = "/sign-in";
+  }
+}
+
 async function fetchProfile() {
   const res = await fetch("/api/profile");
-  if (!res.ok) throw new Error("Gagal memuat profil");
   const data = await res.json();
+  if (!res.ok) {
+    if (data.error?.code === "UNAUTHORIZED") {
+      redirectToLogin();
+      throw new Error("Authentication required");
+    }
+    throw new Error("Gagal memuat profil");
+  }
   return data.data;
+}
+
+async function fetchSessions(): Promise<SessionData[]> {
+  const res = await fetch("/api/profile/sessions");
+  const data = await res.json();
+  if (!res.ok) {
+    if (data.error?.code === "UNAUTHORIZED") {
+      redirectToLogin();
+      throw new Error("Authentication required");
+    }
+    throw new Error("Gagal memuat sesi");
+  }
+  return data.data;
+}
+
+async function deleteSession(sessionId: string) {
+  const res = await fetch(`/api/profile/sessions?sessionId=${sessionId}`, {
+    method: "DELETE",
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    if (data.error?.code === "UNAUTHORIZED") {
+      redirectToLogin();
+      throw new Error("Authentication required");
+    }
+    throw new Error(data.error?.message || "Gagal menghapus sesi");
+  }
+  return data;
+}
+
+function parseUserAgent(userAgent: string | null): { device: string; browser: string; os: string } {
+  if (!userAgent) return { device: "Unknown", browser: "Unknown", os: "Unknown" };
+
+  // Detect device type
+  let device = "Desktop";
+  if (/Mobile|Android|iPhone|iPad/i.test(userAgent)) {
+    device = /iPad/i.test(userAgent) ? "Tablet" : "Mobile";
+  }
+
+  // Detect browser
+  let browser = "Unknown";
+  if (/Chrome/i.test(userAgent) && !/Edg/i.test(userAgent)) browser = "Chrome";
+  else if (/Firefox/i.test(userAgent)) browser = "Firefox";
+  else if (/Safari/i.test(userAgent) && !/Chrome/i.test(userAgent)) browser = "Safari";
+  else if (/Edg/i.test(userAgent)) browser = "Edge";
+  else if (/Opera|OPR/i.test(userAgent)) browser = "Opera";
+
+  // Detect OS
+  let os = "Unknown";
+  if (/Windows/i.test(userAgent)) os = "Windows";
+  else if (/Mac OS/i.test(userAgent)) os = "macOS";
+  else if (/Linux/i.test(userAgent)) os = "Linux";
+  else if (/Android/i.test(userAgent)) os = "Android";
+  else if (/iOS|iPhone|iPad/i.test(userAgent)) os = "iOS";
+
+  return { device, browser, os };
 }
 
 async function updateProfile(data: ProfileFormData) {
@@ -254,6 +335,12 @@ export default function ProfilePage() {
     enabled: !!session?.user,
   });
 
+  const { data: sessions, isLoading: sessionsLoading } = useQuery({
+    queryKey: ["sessions"],
+    queryFn: fetchSessions,
+    enabled: !!session?.user,
+  });
+
   const {
     register,
     handleSubmit,
@@ -327,6 +414,17 @@ export default function ProfilePage() {
       setShowActivateDialog(false);
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       window.location.reload();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteSessionMutation = useMutation({
+    mutationFn: deleteSession,
+    onSuccess: () => {
+      toast.success("Sesi berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["sessions"] });
     },
     onError: (error: Error) => {
       toast.error(error.message);
@@ -714,6 +812,103 @@ export default function ProfilePage() {
                 </Button>
               )}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Session Management Card */}
+        <Card className="md:col-span-3">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5" />
+              Sesi Login Aktif
+            </CardTitle>
+            <CardDescription>
+              Kelola perangkat yang sedang login ke akun Anda. Anda dapat menghapus sesi dari perangkat lain jika diperlukan.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {sessionsLoading ? (
+              <div className="space-y-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-4 p-4 rounded-lg border">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-48" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : sessions && sessions.length > 0 ? (
+              <div className="space-y-3">
+                {sessions.map((s) => {
+                  const { device, browser, os } = parseUserAgent(s.userAgent);
+                  const DeviceIcon = device === "Mobile" ? Smartphone : Monitor;
+                  const isExpired = new Date(s.expiresAt) < new Date();
+
+                  return (
+                    <div
+                      key={s.id}
+                      className={`flex items-center gap-4 p-4 rounded-lg border ${
+                        s.isCurrent ? "border-sky-200 bg-sky-50/50" : ""
+                      } ${isExpired ? "opacity-50" : ""}`}
+                    >
+                      <div className={`p-2 rounded-full ${s.isCurrent ? "bg-sky-100" : "bg-muted"}`}>
+                        <DeviceIcon className={`h-5 w-5 ${s.isCurrent ? "text-sky-600" : "text-muted-foreground"}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-sm">
+                            {browser} di {os}
+                          </p>
+                          {s.isCurrent && (
+                            <Badge className="bg-sky-100 text-sky-700 text-xs">
+                              Sesi Ini
+                            </Badge>
+                          )}
+                          {isExpired && (
+                            <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">
+                              Kadaluarsa
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-1">
+                          <span>
+                            {s.ipAddress || "IP tidak diketahui"}
+                          </span>
+                          <span>
+                            Login: {format(new Date(s.createdAt), "dd MMM yyyy, HH:mm", { locale: localeId })}
+                          </span>
+                          <span>
+                            Berlaku sampai: {format(new Date(s.expiresAt), "dd MMM yyyy, HH:mm", { locale: localeId })}
+                          </span>
+                        </div>
+                      </div>
+                      {!s.isCurrent && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          onClick={() => deleteSessionMutation.mutate(s.id)}
+                          disabled={deleteSessionMutation.isPending}
+                        >
+                          {deleteSessionMutation.isPending ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Tidak ada sesi aktif</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

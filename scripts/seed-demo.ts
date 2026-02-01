@@ -24,19 +24,10 @@ import {
 } from "../src/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
+import { hashPassword } from "better-auth/crypto";
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql);
-
-// Helper untuk hash password sederhana (untuk demo saja)
-// Di production, gunakan bcrypt dari better-auth
-async function hashPassword(password: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-}
 
 // ==========================================
 // Data Seed

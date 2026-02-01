@@ -12,20 +12,40 @@ import { useState } from "react";
 export default function SignUpPage() {
   const router = useRouter();
   const [name, setName] = useState("");
+  const [nik, setNik] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const validateNik = (value: string) => {
+    if (!value) {
+      return "NIK wajib diisi";
+    }
+    if (!/^\d{16}$/.test(value)) {
+      return "NIK harus 16 digit angka";
+    }
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    // Validate NIK if provided
+    const nikError = validateNik(nik);
+    if (nikError) {
+      setError(nikError);
+      return;
+    }
+
     setLoading(true);
 
     const { error } = await signUp.email({
       name,
       email,
       password,
+      nik,
     });
 
     if (error) {
@@ -63,6 +83,24 @@ export default function SignUpPage() {
                 onChange={(e) => setName(e.target.value)}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="nik">NIK (Nomor Induk Kependudukan)</Label>
+              <Input
+                id="nik"
+                type="text"
+                placeholder="16 digit NIK"
+                value={nik}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 16);
+                  setNik(value);
+                }}
+                maxLength={16}
+                required
+              />
+              <p className="text-xs text-muted-foreground">
+                NIK diperlukan untuk verifikasi identitas
+              </p>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
