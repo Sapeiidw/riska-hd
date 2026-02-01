@@ -36,11 +36,27 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Masuk</CardTitle>
-          <CardDescription>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sky-50 via-white to-cyan-50">
+      <Card className="w-full max-w-md shadow-xl border-0">
+        <CardHeader className="text-center space-y-4 pb-2">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 via-sky-600 to-cyan-500 text-white font-bold text-xl shadow-lg shadow-sky-500/30">
+            RH
+          </div>
+          <div>
+            <CardTitle className="text-2xl font-bold bg-gradient-to-r from-sky-500 via-sky-600 to-cyan-500 bg-clip-text text-transparent">
+              RISKA HD
+            </CardTitle>
+            <p className="text-xs text-gray-500 mt-1">
+              <span className="font-semibold text-sky-600">R</span>uang{" "}
+              <span className="font-semibold text-sky-600">I</span>nformasi &{" "}
+              <span className="font-semibold text-sky-600">S</span>istem{" "}
+              <span className="font-semibold text-sky-600">K</span>elola{" "}
+              <span className="font-semibold text-sky-600">A</span>ktivitas{" "}
+              <span className="font-semibold text-sky-600">H</span>emo
+              <span className="font-semibold text-sky-600">d</span>ialisa
+            </p>
+          </div>
+          <CardDescription className="pt-2">
             Masuk ke akun Anda untuk melanjutkan
           </CardDescription>
         </CardHeader>
@@ -73,13 +89,17 @@ export default function SignInPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600"
+              disabled={loading}
+            >
               {loading ? "Memproses..." : "Masuk"}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
             Belum punya akun?{" "}
-            <Link href="/sign-up" className="text-purple-600 hover:underline">
+            <Link href="/sign-up" className="text-sky-600 hover:underline font-medium">
               Daftar
             </Link>
           </div>

@@ -68,7 +68,7 @@ export default function MainLayout({
           </div>
         </header>
         <CommandMenu />
-        <div className="grid grid-cols-12 gap-4 w-full p-4 bg-gray-100 min-h-screen content-start">
+        <div className="grid grid-cols-12 gap-4 w-full p-4 bg-gradient-to-br from-sky-50 via-white to-cyan-50 min-h-screen content-start">
           {children}
         </div>
       </SidebarInset>

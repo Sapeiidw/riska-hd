@@ -1,6 +1,24 @@
 "use client";
 
-import { Home, Settings, User } from "lucide-react";
+import {
+  Home,
+  Settings,
+  User,
+  Database,
+  Users,
+  Stethoscope,
+  Heart,
+  Building2,
+  MonitorCog,
+  Clock,
+  FileText,
+  Pill,
+  Activity,
+  AlertCircle,
+  Shield,
+  ScrollText,
+  CalendarDays,
+} from "lucide-react";
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
@@ -30,14 +48,19 @@ import { LogOut } from "lucide-react";
 
 const settingData = [
   {
-    name: "User",
-    url: "/user",
-    icon: User,
+    name: "Users",
+    url: "/settings/users",
+    icon: Users,
   },
   {
-    name: "Settings",
-    url: "/settings",
-    icon: Settings,
+    name: "Roles",
+    url: "/settings/roles",
+    icon: Shield,
+  },
+  {
+    name: "Audit Log",
+    url: "/settings/audit-log",
+    icon: ScrollText,
   },
 ];
 
@@ -46,8 +69,31 @@ const navItems = [
     title: "Dashboard",
     url: "/dashboard",
     icon: Home,
+    items: [{ title: "Overview", url: "/dashboard" }],
+  },
+  {
+    title: "Penjadwalan",
+    url: "/schedules",
+    icon: CalendarDays,
     items: [
-      { title: "Overview", url: "/dashboard" },
+      { title: "Jadwal Perawat", url: "/schedules/nurses" },
+      { title: "Jadwal Pasien", url: "/schedules/patients" },
+    ],
+  },
+  {
+    title: "Master Data",
+    url: "/master",
+    icon: Database,
+    items: [
+      { title: "Pasien", url: "/master/patients" },
+      { title: "Dokter", url: "/master/doctors" },
+      { title: "Perawat", url: "/master/nurses" },
+      { title: "Mesin HD", url: "/master/machines" },
+      { title: "Ruangan", url: "/master/rooms" },
+      { title: "Shift", url: "/master/shifts" },
+      { title: "Protokol HD", url: "/master/protocols" },
+      { title: "Diagnosa", url: "/master/diagnoses" },
+      { title: "Obat", url: "/master/medications" },
     ],
   },
 ];
@@ -75,17 +121,23 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-purple-50"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground hover:bg-sky-50"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white font-bold text-sm shadow-lg shadow-purple-500/30">
-                SA
+              <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 via-sky-600 to-cyan-500 text-white font-bold text-sm shadow-lg shadow-sky-500/30">
+                RH
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-bold bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent">
-                  Starter App
+                <span className="truncate font-bold bg-gradient-to-r from-sky-500 via-sky-600 to-cyan-500 bg-clip-text text-transparent">
+                  RISKA HD
                 </span>
-                <span className="truncate text-xs text-gray-500">
-                  Next.js + Better Auth
+                <span className="text-[10px] text-gray-500 leading-tight">
+                  <span className="font-semibold text-sky-600">R</span>uang{" "}
+                  <span className="font-semibold text-sky-600">I</span>nformasi &{" "}
+                  <span className="font-semibold text-sky-600">S</span>istem{" "}
+                  <span className="font-semibold text-sky-600">K</span>elola{" "}
+                  <span className="font-semibold text-sky-600">A</span>ktivitas{" "}
+                  <span className="font-semibold text-sky-600">H</span>emo
+                  <span className="font-semibold text-sky-600">d</span>ialisa
                 </span>
               </div>
             </SidebarMenuButton>
@@ -104,7 +156,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 className={cn(
                   "flex items-center gap-3 w-full rounded-xl transition-colors",
                   state === "expanded"
-                    ? "py-2 px-4 bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border border-purple-100"
+                    ? "py-2 px-4 bg-gradient-to-r from-sky-50 to-cyan-50 hover:from-sky-100 hover:to-cyan-100 border border-sky-100"
                     : "p-2 justify-center"
                 )}
               >

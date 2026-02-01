@@ -42,9 +42,9 @@ export function NavSetting({
       <SidebarMenu>
         {data.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild className="text-gray-700 hover:bg-purple-50 hover:text-purple-700">
+            <SidebarMenuButton asChild className="text-gray-700 hover:bg-sky-50 hover:text-sky-600">
               <a href={item.url}>
-                <item.icon className="text-purple-500" />
+                <item.icon className="text-sky-500" />
                 <span className="font-medium">{item.name}</span>
               </a>
             </SidebarMenuButton>
@@ -56,21 +56,21 @@ export function NavSetting({
                 </SidebarMenuAction>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-48 rounded-lg"
+                className="w-48 rounded-xl border-gray-100 shadow-lg"
                 side={isMobile ? "bottom" : "right"}
                 align={isMobile ? "end" : "start"}
               >
-                <DropdownMenuItem>
-                  <Folder className="text-muted-foreground" />
+                <DropdownMenuItem className="hover:bg-sky-50 hover:text-sky-600">
+                  <Folder className="text-gray-400" />
                   <span>View Project</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className="text-muted-foreground" />
+                <DropdownMenuItem className="hover:bg-sky-50 hover:text-sky-600">
+                  <Forward className="text-gray-400" />
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className="text-muted-foreground" />
+                <DropdownMenuItem className="hover:bg-rose-50 hover:text-rose-600">
+                  <Trash2 className="text-gray-400" />
                   <span>Delete Project</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -78,7 +78,7 @@ export function NavSetting({
           </SidebarMenuItem>
         ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className="text-gray-500 hover:bg-purple-50 hover:text-purple-700">
+          <SidebarMenuButton className="text-gray-500 hover:bg-sky-50 hover:text-sky-600">
             <MoreHorizontal className="text-gray-400" />
             <span>More</span>
           </SidebarMenuButton>

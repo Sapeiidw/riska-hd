@@ -341,7 +341,7 @@ export default function HomePage() {
     {
       question: "Apa itu RISKA HD?",
       answer:
-        "RISKA HD adalah platform digital untuk manajemen layanan hemodialisa di fasilitas kesehatan, mencakup pengelolaan pasien, penjadwalan, dokumentasi, dan edukasi.",
+        "RISKA HD adalah singkatan dari Ruang Informasi & Sistem Kelola Aktivitas Hemodialisa. Platform digital terintegrasi untuk manajemen layanan hemodialisa di fasilitas kesehatan, mencakup pengelolaan pasien, penjadwalan, dokumentasi, dan edukasi.",
     },
     {
       question: "Siapa saja yang dapat menggunakan sistem ini?",
@@ -484,6 +484,21 @@ export default function HomePage() {
                   <br />
                   <span className="bg-gradient-to-r from-white to-white/80 bg-clip-text">Lebih Mudah</span>
                 </motion.h1>
+
+                <motion.div
+                  className="text-white/70 text-sm max-w-lg"
+                  initial={{ opacity: 0, x: -30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 0.35 }}
+                >
+                  <span className="font-bold text-white">R</span>uang{" "}
+                  <span className="font-bold text-white">I</span>nformasi &{" "}
+                  <span className="font-bold text-white">S</span>istem{" "}
+                  <span className="font-bold text-white">K</span>elola{" "}
+                  <span className="font-bold text-white">A</span>ktivitas{" "}
+                  <span className="font-bold text-white">H</span>emo
+                  <span className="font-bold text-white">d</span>ialisa
+                </motion.div>
 
                 <motion.p
                   className="text-white/80 text-lg max-w-lg leading-relaxed"
@@ -1151,6 +1166,16 @@ export default function HomePage() {
               Lebih Baik?
             </h2>
 
+            <p className="text-white/60 text-sm mb-4">
+              <span className="font-bold text-white">R</span>uang{" "}
+              <span className="font-bold text-white">I</span>nformasi &{" "}
+              <span className="font-bold text-white">S</span>istem{" "}
+              <span className="font-bold text-white">K</span>elola{" "}
+              <span className="font-bold text-white">A</span>ktivitas{" "}
+              <span className="font-bold text-white">H</span>emo
+              <span className="font-bold text-white">d</span>ialisa
+            </p>
+
             <p className="text-white/80 mb-10 text-lg">
               Mulai gunakan RISKA HD sekarang dan rasakan kemudahan dalam
               mengelola layanan hemodialisa di fasilitas kesehatan Anda.
@@ -1181,7 +1206,16 @@ export default function HomePage() {
           <div className="grid md:grid-cols-4 gap-10 mb-12">
             {/* Brand */}
             <div className="md:col-span-1">
-              <Logo variant="light" size="md" className="mb-4" />
+              <Logo variant="light" size="md" className="mb-2" />
+              <p className="text-gray-500 text-xs mb-3">
+                <span className="font-semibold text-gray-300">R</span>uang{" "}
+                <span className="font-semibold text-gray-300">I</span>nformasi &{" "}
+                <span className="font-semibold text-gray-300">S</span>istem{" "}
+                <span className="font-semibold text-gray-300">K</span>elola{" "}
+                <span className="font-semibold text-gray-300">A</span>ktivitas{" "}
+                <span className="font-semibold text-gray-300">H</span>emo
+                <span className="font-semibold text-gray-300">d</span>ialisa
+              </p>
               <p className="text-gray-400 text-sm leading-relaxed mb-4">
                 Platform manajemen hemodialisa terintegrasi untuk fasilitas kesehatan di Indonesia.
               </p>

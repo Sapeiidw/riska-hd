@@ -50,9 +50,9 @@ export function NavMain({ items }: { items: NavItem[] }) {
               <CollapsibleTrigger asChild>
                 <SidebarMenuButton
                   tooltip={item.title}
-                  className="text-gray-700 hover:bg-purple-50 hover:text-purple-700 data-[active=true]:bg-purple-50 data-[active=true]:text-purple-700"
+                  className="text-gray-700 hover:bg-sky-50 hover:text-sky-600 data-[active=true]:bg-sky-50 data-[active=true]:text-sky-600"
                 >
-                  {item.icon && <item.icon className="text-purple-500" />}
+                  {item.icon && <item.icon className="text-sky-500" />}
                   <span className="font-medium">{item.title}</span>
                   {item.items && item.items.length > 0 && (
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 text-gray-400" />
@@ -61,13 +61,13 @@ export function NavMain({ items }: { items: NavItem[] }) {
               </CollapsibleTrigger>
               {item.items && item.items.length > 0 && (
                 <CollapsibleContent>
-                  <SidebarMenuSub className="border-l-purple-200">
+                  <SidebarMenuSub className="border-l-sky-200">
                     {item.items.map((subItem) => (
                       <SidebarMenuSubItem key={subItem.title}>
                         <SidebarMenuSubButton
                           asChild
                           isActive={subItem.isActive}
-                          className="text-gray-600 hover:text-purple-700 hover:bg-purple-50 data-[active=true]:bg-gradient-to-r data-[active=true]:from-violet-500 data-[active=true]:via-purple-500 data-[active=true]:to-fuchsia-500 data-[active=true]:text-white data-[active=true]:font-medium data-[active=true]:shadow-md data-[active=true]:shadow-purple-500/25"
+                          className="text-gray-600 hover:text-sky-600 hover:bg-sky-50 data-[active=true]:bg-gradient-to-r data-[active=true]:from-sky-500 data-[active=true]:via-sky-500 data-[active=true]:to-cyan-500 data-[active=true]:text-white data-[active=true]:font-medium data-[active=true]:shadow-md data-[active=true]:shadow-sky-500/25"
                         >
                           <a href={subItem.url}>
                             <span>{subItem.title}</span>
