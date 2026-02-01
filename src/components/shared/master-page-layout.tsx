@@ -23,6 +23,7 @@ interface MasterPageLayoutProps {
   onSearchChange?: (value: string) => void;
   addButtonLabel?: string;
   onAddClick?: () => void;
+  extraActions?: ReactNode;
   children: ReactNode;
 }
 
@@ -43,6 +44,7 @@ export function MasterPageLayout({
   onSearchChange,
   addButtonLabel = "Tambah Data",
   onAddClick,
+  extraActions,
   children,
 }: MasterPageLayoutProps) {
   return (
@@ -100,17 +102,20 @@ export function MasterPageLayout({
 
       {/* Content Card */}
       <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-        {onSearchChange && (
-          <div className="mb-6">
-            <div className="relative max-w-sm">
-              <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-              <Input
-                placeholder={searchPlaceholder}
-                value={searchValue}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="pl-11"
-              />
-            </div>
+        {(onSearchChange || extraActions) && (
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
+            {onSearchChange && (
+              <div className="relative max-w-sm flex-1">
+                <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder={searchPlaceholder}
+                  value={searchValue}
+                  onChange={(e) => onSearchChange(e.target.value)}
+                  className="pl-11"
+                />
+              </div>
+            )}
+            {extraActions && <div className="flex items-center gap-2">{extraActions}</div>}
           </div>
         )}
         {children}

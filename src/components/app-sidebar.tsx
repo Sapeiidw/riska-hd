@@ -18,6 +18,7 @@ import {
   Shield,
   ScrollText,
   CalendarDays,
+  Newspaper,
 } from "lucide-react";
 import * as React from "react";
 
@@ -70,6 +71,12 @@ const navItems = [
     url: "/dashboard",
     icon: Home,
     items: [{ title: "Overview", url: "/dashboard" }],
+  },
+  {
+    title: "Ruang Informasi",
+    url: "/master/ruang-informasi",
+    icon: Newspaper,
+    items: [{ title: "Kelola Konten", url: "/master/ruang-informasi" }],
   },
   {
     title: "Penjadwalan",

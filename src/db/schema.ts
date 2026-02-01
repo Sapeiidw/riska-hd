@@ -407,6 +407,31 @@ export const patientSchedule = pgTable(
 );
 
 // ==========================================
+// Ruang Informasi (Information / Educational Content)
+// ==========================================
+
+export const ruangInformasi = pgTable("ruang_informasi", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  title: text("title").notNull(),
+  slug: text("slug").unique().notNull(),
+  category: text("category").notNull(), // artikel, video, panduan, pengumuman
+  content: text("content").notNull(), // Rich text content (HTML/Markdown)
+  excerpt: text("excerpt"), // Short description/summary
+  imageUrl: text("image_url"), // Featured image URL
+  videoUrl: text("video_url"), // Embedded video URL (YouTube, etc.)
+  externalLinks: text("external_links"), // JSON array of external links
+  authorId: text("author_id").references(() => user.id),
+  publishedAt: timestamp("published_at"),
+  isPublished: boolean("is_published").default(false).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  viewCount: integer("view_count").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// ==========================================
 // Google Calendar Integration
 // ==========================================
 
