@@ -2,15 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import api from "@/lib/api/axios";
 import {
   Search,
   Calendar,
-  Eye,
-  User,
   Video,
   FileText,
   Megaphone,
@@ -20,21 +18,12 @@ import {
   X,
   Loader2,
   TrendingUp,
-  Share2,
-  Link2,
-  MessageCircle,
+  BookmarkPlus,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { RUANG_INFORMASI_CATEGORIES } from "@/lib/validations/ruang-informasi";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
@@ -69,12 +58,12 @@ const categoryIcons: Record<string, React.ElementType> = {
   pengumuman: Megaphone,
 };
 
-const categoryColors: Record<string, string> = {
-  artikel: "bg-blue-100 text-blue-700",
-  video: "bg-purple-100 text-purple-700",
-  panduan: "bg-green-100 text-green-700",
-  pengumuman: "bg-orange-100 text-orange-700",
-};
+// Calculate reading time (average 200 words per minute)
+function calculateReadingTime(excerpt: string | null): number {
+  if (!excerpt) return 3;
+  const words = excerpt.trim().split(/\s+/).length;
+  return Math.max(1, Math.ceil((words * 5) / 200)); // Estimate full article is 5x excerpt
+}
 
 function highlightMatch(text: string, query: string) {
   if (!query) return text;
@@ -98,7 +87,6 @@ function SearchAutocomplete({
   onSearch: (query: string) => void;
   initialValue?: string;
 }) {
-  const router = useRouter();
   const [query, setQuery] = useState(initialValue);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -115,7 +103,7 @@ function SearchAutocomplete({
       return res.data.data as Suggestion[];
     },
     enabled: query.length >= 2,
-    staleTime: 1000 * 60, // Cache for 1 minute
+    staleTime: 1000 * 60,
   });
 
   const handleSearch = useCallback(() => {
@@ -125,10 +113,10 @@ function SearchAutocomplete({
 
   const handleSelectSuggestion = useCallback(
     (suggestion: Suggestion) => {
-      router.push(`/informasi/${suggestion.slug}`);
+      window.location.href = `/informasi/${suggestion.slug}`;
       setIsOpen(false);
     },
-    [router]
+    []
   );
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -166,7 +154,6 @@ function SearchAutocomplete({
     }
   };
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -182,7 +169,6 @@ function SearchAutocomplete({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Reset selected index when suggestions change
   useEffect(() => {
     setSelectedIndex(-1);
   }, [suggestions]);
@@ -190,13 +176,13 @@ function SearchAutocomplete({
   const showDropdown = isOpen && query.length >= 2;
 
   return (
-    <div className="relative flex-1">
+    <div className="relative w-full max-w-xl mx-auto">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
         <Input
           ref={inputRef}
           type="text"
-          placeholder="Cari artikel, panduan, video..."
+          placeholder="Cari artikel..."
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -204,7 +190,7 @@ function SearchAutocomplete({
           }}
           onFocus={() => query.length >= 2 && setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          className="pl-10 pr-10"
+          className="w-full pl-12 pr-12 py-3 h-12 text-base rounded-full border-gray-200 focus:border-gray-300 focus:ring-0 bg-gray-50 focus:bg-white transition-colors"
           aria-label="Cari artikel"
           aria-expanded={showDropdown}
           aria-controls="search-suggestions"
@@ -220,39 +206,33 @@ function SearchAutocomplete({
               onSearch("");
               inputRef.current?.focus();
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-gray-600"
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
-            <X className="h-4 w-4" />
+            <X className="h-5 w-5" />
           </button>
         )}
       </div>
 
-      {/* Suggestions Dropdown */}
       {showDropdown && (
         <div
           ref={dropdownRef}
           id="search-suggestions"
-          className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border shadow-lg z-50 overflow-hidden"
+          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl border shadow-xl z-50 overflow-hidden"
           role="listbox"
         >
           {isLoadingSuggestions ? (
-            <div className="p-4 flex items-center justify-center gap-2 text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              <span className="text-sm">Mencari...</span>
+            <div className="p-6 flex items-center justify-center gap-2 text-gray-500">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <span>Mencari...</span>
             </div>
           ) : suggestions && suggestions.length > 0 ? (
-            <div className="py-2">
-              <div className="px-3 py-1.5 text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <TrendingUp className="h-3 w-3" />
+            <div className="py-3">
+              <div className="px-4 py-2 text-xs font-medium text-gray-500 flex items-center gap-1.5 uppercase tracking-wide">
+                <TrendingUp className="h-3.5 w-3.5" />
                 Rekomendasi
               </div>
               {suggestions.map((suggestion, index) => {
                 const Icon = categoryIcons[suggestion.category] || FileText;
-                const categoryLabel =
-                  RUANG_INFORMASI_CATEGORIES.find(
-                    (c) => c.value === suggestion.category
-                  )?.label || suggestion.category;
-
                 return (
                   <button
                     key={suggestion.id}
@@ -260,16 +240,14 @@ function SearchAutocomplete({
                     onClick={() => handleSelectSuggestion(suggestion)}
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={cn(
-                      "w-full px-3 py-2.5 flex items-start gap-3 text-left transition-colors",
-                      selectedIndex === index
-                        ? "bg-sky-50"
-                        : "hover:bg-gray-50"
+                      "w-full px-4 py-3 flex items-start gap-4 text-left transition-colors",
+                      selectedIndex === index ? "bg-gray-50" : "hover:bg-gray-50"
                     )}
                     role="option"
                     aria-selected={selectedIndex === index}
                   >
                     {suggestion.imageUrl ? (
-                      <div className="relative w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                      <div className="relative w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                         <Image
                           src={suggestion.imageUrl}
                           alt=""
@@ -278,61 +256,42 @@ function SearchAutocomplete({
                         />
                       </div>
                     ) : (
-                      <div
-                        className={cn(
-                          "w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0",
-                          categoryColors[suggestion.category]?.replace(
-                            "text-",
-                            "bg-"
-                          ) || "bg-gray-100"
-                        )}
-                      >
-                        <Icon className="h-5 w-5 text-white" />
+                      <div className="w-14 h-14 rounded-lg flex items-center justify-center flex-shrink-0 bg-gray-100">
+                        <Icon className="h-6 w-6 text-gray-400" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-gray-900 line-clamp-1">
+                      <div className="font-medium text-gray-900 line-clamp-2">
                         {highlightMatch(suggestion.title, query)}
                       </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <Badge
-                          variant="secondary"
-                          className={cn(
-                            "text-[10px] px-1.5 py-0 h-4",
-                            categoryColors[suggestion.category]
-                          )}
-                        >
-                          {categoryLabel}
-                        </Badge>
-                        {suggestion.excerpt && (
-                          <span className="text-xs text-muted-foreground line-clamp-1">
-                            {suggestion.excerpt.slice(0, 50)}...
-                          </span>
-                        )}
-                      </div>
+                      {suggestion.excerpt && (
+                        <p className="text-sm text-gray-500 line-clamp-1 mt-1">
+                          {suggestion.excerpt}
+                        </p>
+                      )}
                     </div>
                   </button>
                 );
               })}
-              <div className="border-t mt-2 pt-2 px-3 pb-2">
+              <div className="border-t mt-2 pt-2 px-4 pb-2">
                 <button
                   type="button"
                   onClick={handleSearch}
-                  className="w-full text-sm text-sky-600 hover:text-sky-700 flex items-center justify-center gap-1 py-1.5 rounded-lg hover:bg-sky-50 transition-colors"
+                  className="w-full text-sm text-emerald-600 hover:text-emerald-700 flex items-center justify-center gap-2 py-2 rounded-lg hover:bg-emerald-50 transition-colors font-medium"
                 >
-                  <Search className="h-3.5 w-3.5" />
+                  <Search className="h-4 w-4" />
                   Cari &quot;{query}&quot;
                 </button>
               </div>
             </div>
           ) : (
-            <div className="p-4 text-center text-sm text-muted-foreground">
-              <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p>Tidak ada hasil untuk &quot;{query}&quot;</p>
+            <div className="p-8 text-center">
+              <FileText className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+              <p className="text-gray-500">Tidak ada hasil untuk &quot;{query}&quot;</p>
               <button
                 type="button"
                 onClick={handleSearch}
-                className="mt-2 text-sky-600 hover:underline"
+                className="mt-3 text-sm text-emerald-600 hover:underline font-medium"
               >
                 Cari di semua artikel
               </button>
@@ -344,45 +303,155 @@ function SearchAutocomplete({
   );
 }
 
-function ContentCard({ item }: { item: RuangInformasi }) {
-  const [showShareMenu, setShowShareMenu] = useState(false);
+// Soft black color constants (matching Medium)
+const softBlack = "rgba(41, 41, 41, 1)";
+const softGray = "rgba(117, 117, 117, 1)";
+
+// Featured Article Card - Large, horizontal
+function FeaturedCard({ item }: { item: RuangInformasi }) {
   const Icon = categoryIcons[item.category] || FileText;
   const categoryLabel =
     RUANG_INFORMASI_CATEGORIES.find((c) => c.value === item.category)?.label ||
     item.category;
-
-  const articleUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/informasi/${item.slug}`
-    : `/informasi/${item.slug}`;
-
-  const handleShare = async (e: React.MouseEvent, type: "copy" | "whatsapp" | "twitter" | "facebook") => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const shareText = `${item.title} - RISKA HD`;
-
-    switch (type) {
-      case "copy":
-        await navigator.clipboard.writeText(articleUrl);
-        setShowShareMenu(false);
-        break;
-      case "whatsapp":
-        window.open(`https://wa.me/?text=${encodeURIComponent(shareText + "\n" + articleUrl)}`, "_blank");
-        break;
-      case "twitter":
-        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(articleUrl)}`, "_blank");
-        break;
-      case "facebook":
-        window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`, "_blank");
-        break;
-    }
-  };
+  const readingTime = calculateReadingTime(item.excerpt);
 
   return (
-    <div className="group bg-white rounded-2xl overflow-hidden shadow-sm border hover:shadow-lg transition-all duration-300 relative">
+    <Link
+      href={`/informasi/${item.slug}`}
+      className="group grid md:grid-cols-2 gap-6 md:gap-8 py-8 border-b border-gray-100"
+    >
       {/* Image */}
-      <Link href={`/informasi/${item.slug}`}>
-        <div className="relative aspect-[16/10] bg-gray-100 overflow-hidden">
+      <div className="relative aspect-[16/10] md:aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 order-1 md:order-2">
+        {item.imageUrl ? (
+          <Image
+            src={item.imageUrl}
+            alt={item.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50">
+            <Icon className="h-16 w-16 text-emerald-300" />
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col justify-center order-2 md:order-1">
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-[13px] font-medium text-emerald-600">{categoryLabel}</span>
+        </div>
+
+        <h2
+          className="text-[22px] md:text-[26px] font-bold leading-[1.3] mb-3 group-hover:text-emerald-600 transition-colors"
+          style={{ fontFamily: "'Georgia', serif", color: softBlack }}
+        >
+          {item.title}
+        </h2>
+
+        {item.excerpt && (
+          <p
+            className="text-[16px] md:text-[17px] leading-[1.6] line-clamp-3 mb-4"
+            style={{ fontFamily: "'Georgia', serif", color: softGray }}
+          >
+            {item.excerpt}
+          </p>
+        )}
+
+        <div className="flex items-center gap-3 text-[13px]" style={{ color: softGray }}>
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+              <span className="text-white text-xs font-medium">
+                {item.authorName?.charAt(0) || "R"}
+              </span>
+            </div>
+            <span style={{ color: softBlack }}>{item.authorName || "RISKA HD"}</span>
+          </div>
+          {item.publishedAt && (
+            <>
+              <span>·</span>
+              <span>
+                {formatDistanceToNow(new Date(item.publishedAt), {
+                  addSuffix: true,
+                  locale: id,
+                })}
+              </span>
+            </>
+          )}
+          <span>·</span>
+          <span>{readingTime} min read</span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// Regular Article Card - Medium style
+function ContentCard({ item }: { item: RuangInformasi }) {
+  const Icon = categoryIcons[item.category] || FileText;
+  const categoryLabel =
+    RUANG_INFORMASI_CATEGORIES.find((c) => c.value === item.category)?.label ||
+    item.category;
+  const readingTime = calculateReadingTime(item.excerpt);
+
+  return (
+    <article className="group flex gap-4 md:gap-6 py-6 border-b border-gray-100">
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+            <span className="text-white text-[10px] font-medium">
+              {item.authorName?.charAt(0) || "R"}
+            </span>
+          </div>
+          <span className="text-[13px]" style={{ color: softBlack }}>{item.authorName || "RISKA HD"}</span>
+        </div>
+
+        <Link href={`/informasi/${item.slug}`}>
+          <h2
+            className="text-[16px] md:text-[18px] font-bold leading-[1.4] mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors"
+            style={{ fontFamily: "'Georgia', serif", color: softBlack }}
+          >
+            {item.title}
+          </h2>
+        </Link>
+
+        {item.excerpt && (
+          <p className="hidden sm:block line-clamp-2 text-[14px] md:text-[15px] leading-[1.6] mb-3" style={{ color: softGray }}>
+            {item.excerpt}
+          </p>
+        )}
+
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[12px]" style={{ color: softGray }}>
+            {item.publishedAt && (
+              <time dateTime={item.publishedAt}>
+                {formatDistanceToNow(new Date(item.publishedAt), {
+                  addSuffix: true,
+                  locale: id,
+                })}
+              </time>
+            )}
+            <span>·</span>
+            <span>{readingTime} min read</span>
+            <span>·</span>
+            <Badge variant="secondary" className="text-[11px] px-2 py-0 h-5 bg-gray-100 font-normal" style={{ color: softGray }}>
+              {categoryLabel}
+            </Badge>
+          </div>
+
+          <button
+            onClick={(e) => e.preventDefault()}
+            className="p-2 rounded-full text-gray-300 hover:text-gray-500 hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
+          >
+            <BookmarkPlus className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Thumbnail */}
+      <Link href={`/informasi/${item.slug}`} className="flex-shrink-0">
+        <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100">
           {item.imageUrl ? (
             <Image
               src={item.imageUrl}
@@ -391,150 +460,42 @@ function ContentCard({ item }: { item: RuangInformasi }) {
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-sky-50 via-cyan-50 to-teal-50">
-              <div className="p-4 rounded-2xl bg-white/80 shadow-sm">
-                <Icon className="h-10 w-10 text-sky-500" />
-              </div>
+            <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50">
+              <Icon className="h-8 w-8 text-emerald-300" />
             </div>
           )}
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-black/0" />
-
-          {/* Category badge */}
-          <div className="absolute top-3 left-3">
-            <Badge className={`${categoryColors[item.category]} gap-1.5 border-0 shadow-sm px-2.5 py-1`}>
-              <Icon className="h-3 w-3" />
-              {categoryLabel}
-            </Badge>
-          </div>
-
-          {/* View count on image */}
-          <div className="absolute bottom-3 right-3 flex items-center gap-1 text-white/90 text-xs bg-black/30 backdrop-blur-sm rounded-full px-2 py-1">
-            <Eye className="h-3 w-3" />
-            {item.viewCount}
-          </div>
         </div>
       </Link>
-
-      {/* Content */}
-      <div className="p-4">
-        <Link href={`/informasi/${item.slug}`}>
-          <h2 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-sky-600 transition-colors leading-snug">
-            {item.title}
-          </h2>
-        </Link>
-
-        {item.excerpt && (
-          <p className="mt-2 text-sm text-gray-500 line-clamp-2 leading-relaxed">
-            {item.excerpt}
-          </p>
-        )}
-
-        {/* Footer */}
-        <div className="mt-4 pt-3 border-t flex items-center justify-between">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
-            {item.authorName && (
-              <div className="flex items-center gap-1">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-sky-400 to-cyan-500 flex items-center justify-center">
-                  <User className="h-3 w-3 text-white" />
-                </div>
-                <span className="text-gray-600 font-medium">{item.authorName}</span>
-              </div>
-            )}
-            {item.publishedAt && (
-              <div className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                <time dateTime={item.publishedAt}>
-                  {formatDistanceToNow(new Date(item.publishedAt), {
-                    addSuffix: true,
-                    locale: id,
-                  })}
-                </time>
-              </div>
-            )}
-          </div>
-
-          {/* Share button */}
-          <div className="relative">
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setShowShareMenu(!showShareMenu);
-              }}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
-              aria-label="Share artikel"
-            >
-              <Share2 className="h-4 w-4" />
-            </button>
-
-            {/* Share dropdown */}
-            {showShareMenu && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowShareMenu(false);
-                  }}
-                />
-                <div className="absolute bottom-full right-0 mb-2 bg-white rounded-xl shadow-lg border p-2 z-20 min-w-[140px]">
-                  <button
-                    onClick={(e) => handleShare(e, "copy")}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-                  >
-                    <Link2 className="h-4 w-4" />
-                    Salin Link
-                  </button>
-                  <button
-                    onClick={(e) => handleShare(e, "whatsapp")}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-lg transition-colors"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    WhatsApp
-                  </button>
-                  <button
-                    onClick={(e) => handleShare(e, "twitter")}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-600 rounded-lg transition-colors"
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                    </svg>
-                    Twitter
-                  </button>
-                  <button
-                    onClick={(e) => handleShare(e, "facebook")}
-                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors"
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    Facebook
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    </article>
   );
 }
 
 function ContentSkeleton() {
   return (
-    <div className="bg-white rounded-xl overflow-hidden shadow-sm border">
-      <Skeleton className="aspect-video" />
-      <div className="p-4 space-y-3">
-        <Skeleton className="h-5 w-3/4" />
+    <div className="flex gap-6 py-6 border-b border-gray-100">
+      <div className="flex-1 space-y-3">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        <Skeleton className="h-3 w-48" />
+      </div>
+      <Skeleton className="w-28 h-28 rounded-lg" />
+    </div>
+  );
+}
+
+function FeaturedSkeleton() {
+  return (
+    <div className="grid md:grid-cols-2 gap-8 py-8 border-b border-gray-100">
+      <div className="space-y-4 order-2 md:order-1">
+        <Skeleton className="h-4 w-24" />
+        <Skeleton className="h-8 w-full" />
+        <Skeleton className="h-8 w-3/4" />
         <Skeleton className="h-4 w-full" />
         <Skeleton className="h-4 w-2/3" />
-        <div className="flex gap-4 pt-2">
-          <Skeleton className="h-3 w-16" />
-          <Skeleton className="h-3 w-20" />
-        </div>
+        <Skeleton className="h-4 w-48" />
       </div>
+      <Skeleton className="aspect-[4/3] rounded-lg order-1 md:order-2" />
     </div>
   );
 }
@@ -545,7 +506,6 @@ export function InformasiList() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState<string>("");
 
-  // Read category from URL on mount
   useEffect(() => {
     const categoryParam = searchParams.get("category");
     if (categoryParam) {
@@ -556,7 +516,7 @@ export function InformasiList() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["public-ruang-informasi", page, search, category],
     queryFn: async () => {
-      const params = new URLSearchParams({ page: page.toString(), limit: "12" });
+      const params = new URLSearchParams({ page: page.toString(), limit: "10" });
       if (search) params.append("search", search);
       if (category) params.append("category", category);
       const res = await api.get(`/api/public/ruang-informasi?${params}`);
@@ -569,164 +529,189 @@ export function InformasiList() {
     setPage(1);
   }, []);
 
+  const firstItem = data?.data?.[0];
+  const restItems = data?.data?.slice(1) || [];
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Hero Section */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Ruang Informasi
-        </h1>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Temukan artikel, panduan, dan informasi terbaru seputar hemodialisis
-          untuk membantu perjalanan kesehatan Anda.
-        </p>
+    <div className="min-h-screen bg-white">
+      {/* Hero Section - Medium style */}
+      <div className="border-b border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 py-12 md:py-16 text-center">
+          <h1
+            className="text-[32px] md:text-[40px] font-bold mb-4 leading-[1.2]"
+            style={{ fontFamily: "'Georgia', serif", color: softBlack }}
+          >
+            Ruang Informasi
+          </h1>
+          <p className="text-[17px] md:text-[19px] leading-[1.5] mb-8 max-w-xl mx-auto" style={{ color: softGray }}>
+            Artikel, panduan, dan informasi terbaru seputar hemodialisis
+          </p>
+
+          {/* Search Bar */}
+          <SearchAutocomplete onSearch={handleSearch} initialValue={search} />
+
+          {/* Category Tabs */}
+          <div className="flex items-center justify-center gap-2 flex-wrap mt-8">
+            <button
+              onClick={() => {
+                setCategory("");
+                setPage(1);
+              }}
+              className={cn(
+                "px-4 py-2 rounded-full text-[13px] font-medium transition-colors",
+                !category
+                  ? "text-white"
+                  : "bg-gray-100 hover:bg-gray-200"
+              )}
+              style={!category ? { backgroundColor: softBlack } : { color: softBlack }}
+            >
+              Semua
+            </button>
+            {RUANG_INFORMASI_CATEGORIES.map((cat) => {
+              const Icon = categoryIcons[cat.value] || FileText;
+              return (
+                <button
+                  key={cat.value}
+                  onClick={() => {
+                    setCategory(cat.value);
+                    setPage(1);
+                  }}
+                  className={cn(
+                    "px-4 py-2 rounded-full text-[13px] font-medium transition-colors flex items-center gap-1.5",
+                    category === cat.value
+                      ? "text-white"
+                      : "bg-gray-100 hover:bg-gray-200"
+                  )}
+                  style={category === cat.value ? { backgroundColor: softBlack } : { color: softBlack }}
+                >
+                  <Icon className="h-4 w-4" />
+                  {cat.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
-      {/* Search & Filter */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border mb-8">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <SearchAutocomplete onSearch={handleSearch} initialValue={search} />
-          <Select
-            value={category || "all"}
-            onValueChange={(value) => {
-              setCategory(value === "all" ? "" : value);
-              setPage(1);
-            }}
-          >
-            <SelectTrigger
-              className="w-full sm:w-[180px]"
-              aria-label="Filter kategori"
-            >
-              <SelectValue placeholder="Semua Kategori" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Semua Kategori</SelectItem>
-              {RUANG_INFORMASI_CATEGORIES.map((cat) => (
-                <SelectItem key={cat.value} value={cat.value}>
-                  {cat.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Active filters */}
-        {(search || category) && (
-          <div className="flex items-center gap-2 mt-3 pt-3 border-t">
-            <span className="text-sm text-muted-foreground">Filter aktif:</span>
+      {/* Active Filters */}
+      {(search || category) && (
+        <div className="max-w-3xl mx-auto px-4 pt-6">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-gray-500">Filter:</span>
             {search && (
               <Badge
                 variant="secondary"
-                className="gap-1 cursor-pointer hover:bg-gray-200"
+                className="gap-1 cursor-pointer hover:bg-gray-200 bg-gray-100"
                 onClick={() => handleSearch("")}
               >
-                Pencarian: {search}
+                &quot;{search}&quot;
                 <X className="h-3 w-3" />
               </Badge>
             )}
             {category && (
               <Badge
                 variant="secondary"
-                className={cn(
-                  "gap-1 cursor-pointer",
-                  categoryColors[category]
-                )}
+                className="gap-1 cursor-pointer hover:bg-gray-200 bg-gray-100"
                 onClick={() => setCategory("")}
               >
-                {RUANG_INFORMASI_CATEGORIES.find((c) => c.value === category)
-                  ?.label || category}
+                {RUANG_INFORMASI_CATEGORIES.find((c) => c.value === category)?.label}
                 <X className="h-3 w-3" />
               </Badge>
             )}
           </div>
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="max-w-3xl mx-auto px-4 py-6">
+        {isLoading ? (
+          <>
+            <FeaturedSkeleton />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <ContentSkeleton key={i} />
+            ))}
+          </>
+        ) : error ? (
+          <div className="text-center py-16">
+            <p className="text-gray-500">Gagal memuat konten</p>
+          </div>
+        ) : data?.data?.length === 0 ? (
+          <div className="text-center py-16">
+            <FileText className="h-16 w-16 text-gray-200 mx-auto mb-4" />
+            <h3 className="text-[18px] font-medium mb-2" style={{ color: softBlack }}>
+              {search || category ? "Tidak ada hasil" : "Belum ada artikel"}
+            </h3>
+            <p className="text-[15px] mb-6" style={{ color: softGray }}>
+              {search || category
+                ? "Coba ubah kata kunci atau filter pencarian"
+                : "Artikel akan ditampilkan di sini"}
+            </p>
+            {(search || category) && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  handleSearch("");
+                  setCategory("");
+                }}
+              >
+                Reset Filter
+              </Button>
+            )}
+          </div>
+        ) : (
+          <>
+            {/* Results count */}
+            {data?.meta && (
+              <p className="text-[13px] mb-4" style={{ color: softGray }}>
+                {data.meta.total} artikel ditemukan
+              </p>
+            )}
+
+            {/* Featured Article */}
+            {firstItem && page === 1 && !search && (
+              <FeaturedCard item={firstItem} />
+            )}
+
+            {/* Article List */}
+            <div>
+              {(page === 1 && !search ? restItems : data?.data)?.map(
+                (item: RuangInformasi) => (
+                  <ContentCard key={item.id} item={item} />
+                )
+              )}
+            </div>
+
+            {/* Pagination - Medium style */}
+            {data?.meta && data.meta.totalPages > 1 && (
+              <nav className="flex items-center justify-center gap-4 mt-10 pt-8 border-t border-gray-100">
+                <Button
+                  variant="outline"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="gap-2 rounded-full text-[13px]"
+                  style={{ color: softBlack }}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Sebelumnya
+                </Button>
+                <span className="text-[13px]" style={{ color: softGray }}>
+                  {page} / {data.meta.totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))}
+                  disabled={page === data.meta.totalPages}
+                  className="gap-2 rounded-full text-[13px]"
+                  style={{ color: softBlack }}
+                >
+                  Selanjutnya
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </nav>
+            )}
+          </>
         )}
       </div>
-
-      {/* Content Grid */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <ContentSkeleton key={i} />
-          ))}
-        </div>
-      ) : error ? (
-        <div className="text-center py-12">
-          <p className="text-muted-foreground">Gagal memuat konten</p>
-        </div>
-      ) : data?.data?.length === 0 ? (
-        <div className="text-center py-12">
-          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-          <p className="text-muted-foreground">
-            {search || category
-              ? "Tidak ada konten yang sesuai dengan pencarian"
-              : "Belum ada konten yang dipublikasikan"}
-          </p>
-          {(search || category) && (
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={() => {
-                handleSearch("");
-                setCategory("");
-              }}
-            >
-              Reset Filter
-            </Button>
-          )}
-        </div>
-      ) : (
-        <>
-          {/* Results count */}
-          {data?.meta && (
-            <p className="text-sm text-muted-foreground mb-4">
-              Menampilkan {data.data.length} dari {data.meta.total} artikel
-            </p>
-          )}
-
-          <div
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            role="list"
-          >
-            {data?.data?.map((item: RuangInformasi) => (
-              <article key={item.id} role="listitem">
-                <ContentCard item={item} />
-              </article>
-            ))}
-          </div>
-
-          {/* Pagination */}
-          {data?.meta && data.meta.totalPages > 1 && (
-            <nav
-              className="flex items-center justify-center gap-2 mt-8"
-              aria-label="Pagination"
-            >
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
-                aria-label="Halaman sebelumnya"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <span className="text-sm text-muted-foreground px-4">
-                Halaman {page} dari {data.meta.totalPages}
-              </span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() =>
-                  setPage((p) => Math.min(data.meta.totalPages, p + 1))
-                }
-                disabled={page === data.meta.totalPages}
-                aria-label="Halaman berikutnya"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </nav>
-          )}
-        </>
-      )}
     </div>
   );
 }
