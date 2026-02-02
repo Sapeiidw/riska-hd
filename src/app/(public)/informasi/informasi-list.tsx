@@ -17,7 +17,8 @@ import {
   X,
   Loader2,
   TrendingUp,
-  BookmarkPlus,
+  Clock,
+  Eye,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -57,11 +58,17 @@ const categoryIcons: Record<string, React.ElementType> = {
   pengumuman: Megaphone,
 };
 
-// Calculate reading time (average 200 words per minute)
+const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
+  artikel: { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-100" },
+  video: { bg: "bg-red-50", text: "text-red-600", border: "border-red-100" },
+  panduan: { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-100" },
+  pengumuman: { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-100" },
+};
+
 function calculateReadingTime(excerpt: string | null): number {
   if (!excerpt) return 3;
   const words = excerpt.trim().split(/\s+/).length;
-  return Math.max(1, Math.ceil((words * 5) / 200)); // Estimate full article is 5x excerpt
+  return Math.max(1, Math.ceil((words * 5) / 200));
 }
 
 function highlightMatch(text: string, query: string) {
@@ -189,7 +196,7 @@ function SearchAutocomplete({
           }}
           onFocus={() => query.length >= 2 && setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          className="w-full pl-12 pr-12 py-3 h-12 text-base rounded-full border-gray-200 focus:border-gray-300 focus:ring-0 bg-gray-50 focus:bg-white transition-colors"
+          className="w-full pl-12 pr-12 py-3 h-12 text-base rounded-full border-gray-200 focus:border-emerald-300 focus:ring-emerald-200 bg-gray-50 focus:bg-white transition-colors"
           aria-label="Cari artikel"
           aria-expanded={showDropdown}
           aria-controls="search-suggestions"
@@ -302,25 +309,22 @@ function SearchAutocomplete({
   );
 }
 
-// Soft black color constants (matching Medium)
-const softBlack = "rgba(41, 41, 41, 1)";
-const softGray = "rgba(117, 117, 117, 1)";
-
-// Featured Article Card - Large, horizontal
+// Featured Article Card - dengan background & shadow jelas
 function FeaturedCard({ item }: { item: RuangInformasi }) {
   const Icon = categoryIcons[item.category] || FileText;
   const categoryLabel =
     RUANG_INFORMASI_CATEGORIES.find((c) => c.value === item.category)?.label ||
     item.category;
+  const colors = categoryColors[item.category] || categoryColors.artikel;
   const readingTime = calculateReadingTime(item.excerpt);
 
   return (
     <Link
       href={`/informasi/${item.slug}`}
-      className="group grid md:grid-cols-2 gap-6 md:gap-8 py-8 border-b border-gray-100"
+      className="group block overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all mb-6"
     >
-      {/* Image */}
-      <div className="relative aspect-[16/10] md:aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 order-1 md:order-2">
+      {/* Image - Full width di atas */}
+      <div className="relative aspect-[16/9] sm:aspect-[2/1] overflow-hidden bg-gray-100">
         {item.imageUrl ? (
           <Image
             src={item.imageUrl}
@@ -333,124 +337,73 @@ function FeaturedCard({ item }: { item: RuangInformasi }) {
             <Icon className="h-16 w-16 text-emerald-300" />
           </div>
         )}
+        {/* Category Badge di atas image */}
+        <div className="absolute top-3 left-3">
+          <Badge className={cn("font-medium", colors.bg, colors.text, "border", colors.border)}>
+            <Icon className="h-3 w-3 mr-1" />
+            {categoryLabel}
+          </Badge>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex flex-col justify-center order-2 md:order-1">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-[13px] font-medium text-emerald-600">{categoryLabel}</span>
-        </div>
-
-        <h2
-          className="text-[22px] md:text-[26px] font-bold leading-[1.3] mb-3 group-hover:text-emerald-600 transition-colors"
-          style={{ fontFamily: "'Georgia', serif", color: softBlack }}
-        >
+      <div className="p-4 sm:p-5">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
           {item.title}
         </h2>
 
         {item.excerpt && (
-          <p
-            className="text-[16px] md:text-[17px] leading-[1.6] line-clamp-3 mb-4"
-            style={{ fontFamily: "'Georgia', serif", color: softGray }}
-          >
+          <p className="text-sm sm:text-base text-gray-600 line-clamp-2 mb-4">
             {item.excerpt}
           </p>
         )}
 
-        <div className="flex items-center gap-3 text-[13px]" style={{ color: softGray }}>
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
               <span className="text-white text-xs font-medium">
                 {item.authorName?.charAt(0) || "R"}
               </span>
             </div>
-            <span style={{ color: softBlack }}>{item.authorName || "RISKA HD"}</span>
+            <span className="text-sm font-medium text-gray-700">{item.authorName || "RISKA HD"}</span>
           </div>
-          {item.publishedAt && (
-            <>
-              <span>·</span>
+          <div className="flex items-center gap-3 text-xs text-gray-500">
+            {item.publishedAt && (
               <span>
                 {formatDistanceToNow(new Date(item.publishedAt), {
                   addSuffix: true,
                   locale: id,
                 })}
               </span>
-            </>
-          )}
-          <span>·</span>
-          <span>{readingTime} min read</span>
+            )}
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              {readingTime} menit
+            </span>
+          </div>
         </div>
       </div>
     </Link>
   );
 }
 
-// Regular Article Card - Medium style
+// Regular Article Card - dengan background yang jelas
 function ContentCard({ item }: { item: RuangInformasi }) {
   const Icon = categoryIcons[item.category] || FileText;
   const categoryLabel =
     RUANG_INFORMASI_CATEGORIES.find((c) => c.value === item.category)?.label ||
     item.category;
+  const colors = categoryColors[item.category] || categoryColors.artikel;
   const readingTime = calculateReadingTime(item.excerpt);
 
   return (
-    <article className="group flex gap-4 md:gap-6 py-6 border-b border-gray-100">
-      {/* Content */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-2">
-          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
-            <span className="text-white text-[10px] font-medium">
-              {item.authorName?.charAt(0) || "R"}
-            </span>
-          </div>
-          <span className="text-[13px]" style={{ color: softBlack }}>{item.authorName || "RISKA HD"}</span>
-        </div>
-
-        <Link href={`/informasi/${item.slug}`}>
-          <h2
-            className="text-[16px] md:text-[18px] font-bold leading-[1.4] mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors"
-            style={{ fontFamily: "'Georgia', serif", color: softBlack }}
-          >
-            {item.title}
-          </h2>
-        </Link>
-
-        {item.excerpt && (
-          <p className="hidden sm:block line-clamp-2 text-[14px] md:text-[15px] leading-[1.6] mb-3" style={{ color: softGray }}>
-            {item.excerpt}
-          </p>
-        )}
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[12px]" style={{ color: softGray }}>
-            {item.publishedAt && (
-              <time dateTime={item.publishedAt}>
-                {formatDistanceToNow(new Date(item.publishedAt), {
-                  addSuffix: true,
-                  locale: id,
-                })}
-              </time>
-            )}
-            <span>·</span>
-            <span>{readingTime} min read</span>
-            <span>·</span>
-            <Badge variant="secondary" className="text-[11px] px-2 py-0 h-5 bg-gray-100 font-normal" style={{ color: softGray }}>
-              {categoryLabel}
-            </Badge>
-          </div>
-
-          <button
-            onClick={(e) => e.preventDefault()}
-            className="p-2 rounded-full text-gray-300 hover:text-gray-500 hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
-          >
-            <BookmarkPlus className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-
-      {/* Thumbnail */}
-      <Link href={`/informasi/${item.slug}`} className="flex-shrink-0">
-        <div className="relative w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-lg overflow-hidden bg-gray-100">
+    <Link
+      href={`/informasi/${item.slug}`}
+      className="group block overflow-hidden rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition-all"
+    >
+      <div className="flex gap-3 sm:gap-4 p-3 sm:p-4">
+        {/* Thumbnail */}
+        <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-lg overflow-hidden bg-gray-100 shrink-0">
           {item.imageUrl ? (
             <Image
               src={item.imageUrl}
@@ -464,37 +417,93 @@ function ContentCard({ item }: { item: RuangInformasi }) {
             </div>
           )}
         </div>
-      </Link>
-    </article>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Category Badge */}
+          <Badge className={cn("font-medium text-[10px] sm:text-xs w-fit mb-2", colors.bg, colors.text, "border", colors.border)}>
+            {categoryLabel}
+          </Badge>
+
+          {/* Title */}
+          <h3 className="text-sm sm:text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-emerald-600 transition-colors mb-1">
+            {item.title}
+          </h3>
+
+          {/* Excerpt - Hidden di mobile kecil */}
+          {item.excerpt && (
+            <p className="hidden sm:block text-sm text-gray-500 line-clamp-2 mb-auto">
+              {item.excerpt}
+            </p>
+          )}
+
+          {/* Meta - di bagian bawah */}
+          <div className="flex items-center gap-2 mt-auto pt-2 text-[10px] sm:text-xs text-gray-500">
+            <span className="font-medium text-gray-700">{item.authorName || "RISKA HD"}</span>
+            {item.publishedAt && (
+              <>
+                <span className="text-gray-300">|</span>
+                <span>
+                  {formatDistanceToNow(new Date(item.publishedAt), {
+                    addSuffix: true,
+                    locale: id,
+                  })}
+                </span>
+              </>
+            )}
+            <span className="text-gray-300">|</span>
+            <span className="flex items-center gap-0.5">
+              <Clock className="h-3 w-3" />
+              {readingTime}m
+            </span>
+            {item.viewCount > 0 && (
+              <>
+                <span className="text-gray-300">|</span>
+                <span className="flex items-center gap-0.5">
+                  <Eye className="h-3 w-3" />
+                  {item.viewCount}
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
 
 function ContentSkeleton() {
   return (
-    <div className="flex gap-6 py-6 border-b border-gray-100">
-      <div className="flex-1 space-y-3">
-        <Skeleton className="h-4 w-32" />
-        <Skeleton className="h-6 w-full" />
-        <Skeleton className="h-4 w-3/4" />
-        <Skeleton className="h-3 w-48" />
+    <div className="overflow-hidden rounded-xl bg-white border border-gray-200 shadow-sm">
+      <div className="flex gap-4 p-4">
+        <Skeleton className="w-32 h-32 rounded-lg shrink-0" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-3/4" />
+          <Skeleton className="h-4 w-48 mt-auto" />
+        </div>
       </div>
-      <Skeleton className="w-28 h-28 rounded-lg" />
     </div>
   );
 }
 
 function FeaturedSkeleton() {
   return (
-    <div className="grid md:grid-cols-2 gap-8 py-8 border-b border-gray-100">
-      <div className="space-y-4 order-2 md:order-1">
-        <Skeleton className="h-4 w-24" />
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-8 w-3/4" />
+    <div className="overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-sm mb-6">
+      <Skeleton className="aspect-[2/1]" />
+      <div className="p-5 space-y-3">
+        <Skeleton className="h-6 w-full" />
+        <Skeleton className="h-6 w-3/4" />
         <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-2/3" />
-        <Skeleton className="h-4 w-48" />
+        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-7 w-7 rounded-full" />
+            <Skeleton className="h-4 w-24" />
+          </div>
+          <Skeleton className="h-4 w-32" />
+        </div>
       </div>
-      <Skeleton className="aspect-[4/3] rounded-lg order-1 md:order-2" />
     </div>
   );
 }
@@ -532,17 +541,14 @@ export function InformasiList() {
   const restItems = data?.data?.slice(1) || [];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section - Medium style */}
-      <div className="border-b border-gray-100">
-        <div className="max-w-3xl mx-auto px-4 py-12 md:py-16 text-center">
-          <h1
-            className="text-[32px] md:text-[40px] font-bold mb-4 leading-[1.2]"
-            style={{ fontFamily: "'Georgia', serif", color: softBlack }}
-          >
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <div className="bg-white border-b border-gray-200">
+        <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12 text-center">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
             Ruang Informasi
           </h1>
-          <p className="text-[17px] md:text-[19px] leading-[1.5] mb-8 max-w-xl mx-auto" style={{ color: softGray }}>
+          <p className="text-sm sm:text-base text-gray-600 mb-6 max-w-lg mx-auto">
             Artikel, panduan, dan informasi terbaru seputar hemodialisis
           </p>
 
@@ -550,19 +556,18 @@ export function InformasiList() {
           <SearchAutocomplete onSearch={handleSearch} initialValue={search} />
 
           {/* Category Tabs */}
-          <div className="flex items-center justify-center gap-2 flex-wrap mt-8">
+          <div className="flex items-center justify-center gap-2 flex-wrap mt-6">
             <button
               onClick={() => {
                 setCategory("");
                 setPage(1);
               }}
               className={cn(
-                "px-4 py-2 rounded-full text-[13px] font-medium transition-colors",
+                "px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors",
                 !category
-                  ? "text-white"
-                  : "bg-gray-100 hover:bg-gray-200"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               )}
-              style={!category ? { backgroundColor: softBlack } : { color: softBlack }}
             >
               Semua
             </button>
@@ -576,14 +581,13 @@ export function InformasiList() {
                     setPage(1);
                   }}
                   className={cn(
-                    "px-4 py-2 rounded-full text-[13px] font-medium transition-colors flex items-center gap-1.5",
+                    "px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-colors flex items-center gap-1.5",
                     category === cat.value
-                      ? "text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
+                      ? "bg-emerald-600 text-white shadow-sm"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   )}
-                  style={category === cat.value ? { backgroundColor: softBlack } : { color: softBlack }}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className="h-3.5 w-3.5" />
                   {cat.label}
                 </button>
               );
@@ -594,13 +598,13 @@ export function InformasiList() {
 
       {/* Active Filters */}
       {(search || category) && (
-        <div className="max-w-3xl mx-auto px-4 pt-6">
+        <div className="max-w-3xl mx-auto px-4 pt-4">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-gray-500">Filter:</span>
+            <span className="text-xs text-gray-500">Filter:</span>
             {search && (
               <Badge
                 variant="secondary"
-                className="gap-1 cursor-pointer hover:bg-gray-200 bg-gray-100"
+                className="gap-1 cursor-pointer hover:bg-gray-200 bg-white border text-xs"
                 onClick={() => handleSearch("")}
               >
                 &quot;{search}&quot;
@@ -610,7 +614,7 @@ export function InformasiList() {
             {category && (
               <Badge
                 variant="secondary"
-                className="gap-1 cursor-pointer hover:bg-gray-200 bg-gray-100"
+                className="gap-1 cursor-pointer hover:bg-gray-200 bg-white border text-xs"
                 onClick={() => setCategory("")}
               >
                 {RUANG_INFORMASI_CATEGORIES.find((c) => c.value === category)?.label}
@@ -622,32 +626,35 @@ export function InformasiList() {
       )}
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto px-4 py-6">
+      <div className="max-w-3xl mx-auto px-4 py-4 sm:py-6">
         {isLoading ? (
           <>
             <FeaturedSkeleton />
-            {Array.from({ length: 4 }).map((_, i) => (
-              <ContentSkeleton key={i} />
-            ))}
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <ContentSkeleton key={i} />
+              ))}
+            </div>
           </>
         ) : error ? (
-          <div className="text-center py-16">
+          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
             <p className="text-gray-500">Gagal memuat konten</p>
           </div>
         ) : data?.data?.length === 0 ? (
-          <div className="text-center py-16">
-            <FileText className="h-16 w-16 text-gray-200 mx-auto mb-4" />
-            <h3 className="text-[18px] font-medium mb-2" style={{ color: softBlack }}>
+          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
+            <FileText className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+            <h3 className="text-base font-medium text-gray-900 mb-1">
               {search || category ? "Tidak ada hasil" : "Belum ada artikel"}
             </h3>
-            <p className="text-[15px] mb-6" style={{ color: softGray }}>
+            <p className="text-sm text-gray-500 mb-4">
               {search || category
-                ? "Coba ubah kata kunci atau filter pencarian"
+                ? "Coba ubah kata kunci atau filter"
                 : "Artikel akan ditampilkan di sini"}
             </p>
             {(search || category) && (
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => {
                   handleSearch("");
                   setCategory("");
@@ -661,7 +668,7 @@ export function InformasiList() {
           <>
             {/* Results count */}
             {data?.meta && (
-              <p className="text-[13px] mb-4" style={{ color: softGray }}>
+              <p className="text-xs text-gray-500 mb-4">
                 {data.meta.total} artikel ditemukan
               </p>
             )}
@@ -672,7 +679,7 @@ export function InformasiList() {
             )}
 
             {/* Article List */}
-            <div>
+            <div className="space-y-3">
               {(page === 1 && !search ? restItems : data?.data)?.map(
                 (item: RuangInformasi) => (
                   <ContentCard key={item.id} item={item} />
@@ -680,28 +687,28 @@ export function InformasiList() {
               )}
             </div>
 
-            {/* Pagination - Medium style */}
+            {/* Pagination */}
             {data?.meta && data.meta.totalPages > 1 && (
-              <nav className="flex items-center justify-center gap-4 mt-10 pt-8 border-t border-gray-100">
+              <nav className="flex items-center justify-center gap-3 mt-8 pt-6 border-t border-gray-200">
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="gap-2 rounded-full text-[13px]"
-                  style={{ color: softBlack }}
+                  className="gap-1.5 rounded-full text-xs"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Sebelumnya
                 </Button>
-                <span className="text-[13px]" style={{ color: softGray }}>
+                <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1.5 rounded-full">
                   {page} / {data.meta.totalPages}
                 </span>
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => setPage((p) => Math.min(data.meta.totalPages, p + 1))}
                   disabled={page === data.meta.totalPages}
-                  className="gap-2 rounded-full text-[13px]"
-                  style={{ color: softBlack }}
+                  className="gap-1.5 rounded-full text-xs"
                 >
                   Selanjutnya
                   <ChevronRight className="h-4 w-4" />
