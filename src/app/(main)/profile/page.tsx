@@ -123,13 +123,11 @@ async function deleteSession(sessionId: string) {
 function parseUserAgent(userAgent: string | null): { device: string; browser: string; os: string } {
   if (!userAgent) return { device: "Unknown", browser: "Unknown", os: "Unknown" };
 
-  // Detect device type
   let device = "Desktop";
   if (/Mobile|Android|iPhone|iPad/i.test(userAgent)) {
     device = /iPad/i.test(userAgent) ? "Tablet" : "Mobile";
   }
 
-  // Detect browser
   let browser = "Unknown";
   if (/Chrome/i.test(userAgent) && !/Edg/i.test(userAgent)) browser = "Chrome";
   else if (/Firefox/i.test(userAgent)) browser = "Firefox";
@@ -137,7 +135,6 @@ function parseUserAgent(userAgent: string | null): { device: string; browser: st
   else if (/Edg/i.test(userAgent)) browser = "Edge";
   else if (/Opera|OPR/i.test(userAgent)) browser = "Opera";
 
-  // Detect OS
   let os = "Unknown";
   if (/Windows/i.test(userAgent)) os = "Windows";
   else if (/Mac OS/i.test(userAgent)) os = "macOS";
@@ -172,7 +169,6 @@ async function activateAccount(data: ActivateFormData) {
   return res;
 }
 
-// Compress image using canvas
 async function compressImage(
   file: File,
   maxWidth = 400,
@@ -226,32 +222,10 @@ async function compressImage(
 
 function ProfileSkeleton() {
   return (
-    <div className="col-span-12 space-y-6">
-      <div>
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-4 w-64 mt-2" />
-      </div>
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-1">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center space-y-4">
-              <Skeleton className="h-24 w-24 rounded-full" />
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-24" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <Skeleton className="h-6 w-40" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-10 w-full" />
-          </CardContent>
-        </Card>
-      </div>
+    <div className="col-span-12 space-y-4">
+      <Skeleton className="h-32 w-full rounded-2xl" />
+      <Skeleton className="h-48 w-full rounded-xl" />
+      <Skeleton className="h-48 w-full rounded-xl" />
     </div>
   );
 }
@@ -445,515 +419,411 @@ export default function ProfilePage() {
   const isActivated = profile?.isActivated ?? false;
 
   return (
-    <div className="col-span-12 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Profil Saya</h1>
-        <p className="text-muted-foreground">
-          Lihat dan kelola informasi profil Anda
-        </p>
+    <div className="col-span-12 space-y-4">
+      {/* Header dengan Profil - Compact di Mobile */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-sky-50 via-cyan-50 to-white border border-sky-100 shadow-sm">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiLz48cGF0aCBkPSJNMjAgMjBjMC0xMS4wNDYgOC45NTQtMjAgMjAtMjB2NDBoLTQwYzExLjA0NiAwIDIwLTguOTU0IDIwLTIweiIgZmlsbD0iIzBFQTVFOSIgZmlsbC1vcGFjaXR5PSIuMDMiLz48L2c+PC9zdmc+')] opacity-50" />
+        <div className="relative p-4 sm:p-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            {/* Avatar */}
+            <div className="relative group shrink-0">
+              <Avatar className="h-14 w-14 sm:h-16 sm:w-16 ring-2 ring-white shadow-md">
+                <AvatarImage src={userData.image || undefined} alt={userData.name} />
+                <AvatarFallback className="text-lg sm:text-xl bg-gradient-to-br from-sky-500 to-cyan-500 text-white font-semibold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadMutation.isPending}
+                className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              >
+                {uploadMutation.isPending ? (
+                  <Loader2 className="h-5 w-5 text-white animate-spin" />
+                ) : (
+                  <Camera className="h-5 w-5 text-white" />
+                )}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+            </div>
+
+            {/* Name & Badges */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-base sm:text-xl font-bold text-gray-800 truncate">
+                {userData.name}
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-500 truncate mb-1.5">
+                {userData.email}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                <Badge className={`${roleInfo.color} text-[10px] sm:text-xs`}>{roleInfo.label}</Badge>
+                {isActivated ? (
+                  <Badge className="bg-emerald-100 text-emerald-700 text-[10px] sm:text-xs">Aktif</Badge>
+                ) : (
+                  <Badge variant="outline" className="text-amber-600 border-amber-300 text-[10px] sm:text-xs">
+                    Belum Aktif
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Activation Banner */}
+      {/* Activation Banner - Compact */}
       {!isActivated && (
-        <Card className="border-amber-200 bg-amber-50">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-4">
-              <AlertCircle className="h-6 w-6 text-amber-600 shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-amber-800">
-                  Akun Belum Diaktivasi
-                </h3>
-                <p className="text-sm text-amber-700 mt-1">
-                  Untuk menggunakan fitur lengkap RISKA HD (jadwal HD, monitoring, dll),
-                  Anda perlu mengaktivasi akun dengan mengisi NIK.
-                  Tanpa aktivasi, Anda hanya dapat melihat artikel informasi.
-                </p>
-                <Button
-                  className="mt-3"
-                  size="sm"
-                  onClick={() => setShowActivateDialog(true)}
-                >
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Aktivasi Sekarang
-                </Button>
-              </div>
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 sm:p-4">
+          <div className="flex gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-amber-800">Akun Belum Diaktivasi</p>
+              <p className="text-xs text-amber-700 mt-0.5 mb-2">
+                Aktivasi dengan NIK untuk fitur lengkap
+              </p>
+              <Button
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() => setShowActivateDialog(true)}
+              >
+                <CreditCard className="h-3.5 w-3.5 mr-1.5" />
+                Aktivasi
+              </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-3">
-        {/* Profile Card */}
-        <Card className="md:col-span-1">
-          <CardContent className="pt-6">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative group">
-                <Avatar className="h-24 w-24">
-                  <AvatarImage src={userData.image || undefined} alt={userData.name} />
-                  <AvatarFallback className="text-2xl bg-gradient-to-br from-sky-500 to-cyan-500 text-white">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadMutation.isPending}
-                  className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                >
-                  {uploadMutation.isPending ? (
-                    <Loader2 className="h-6 w-6 text-white animate-spin" />
-                  ) : (
-                    <Camera className="h-6 w-6 text-white" />
-                  )}
-                </button>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Klik foto untuk mengubah
-              </p>
-              <div className="text-center space-y-1">
-                <h2 className="text-xl font-semibold">{userData.name}</h2>
-                <div className="flex items-center justify-center gap-2">
-                  <Badge className={roleInfo.color}>{roleInfo.label}</Badge>
-                  {isActivated ? (
-                    <Badge className="bg-emerald-100 text-emerald-700">Aktif</Badge>
-                  ) : (
-                    <Badge variant="outline" className="text-amber-600 border-amber-300">
-                      Belum Aktif
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              <Separator />
-              <div className="w-full space-y-3">
-                <div className="flex items-center gap-3 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground truncate">
-                    {userData.email}
-                  </span>
-                </div>
-                {profile?.nik && (
-                  <div className="flex items-center gap-3 text-sm">
-                    <CreditCard className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">
-                      NIK: {profile.nik.slice(0, 4)}****{profile.nik.slice(-4)}
-                    </span>
-                  </div>
-                )}
-                <div className="flex items-center gap-3 text-sm">
-                  {userData.emailVerified ? (
-                    <>
-                      <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                      <span className="text-emerald-600">Email Terverifikasi</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="h-4 w-4 text-amber-500" />
-                      <span className="text-amber-600">Email Belum Terverifikasi</span>
-                    </>
-                  )}
-                </div>
-                <div className="flex items-center gap-3 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-muted-foreground">
-                    Bergabung{" "}
-                    {format(new Date(userData.createdAt), "dd MMMM yyyy", {
-                      locale: localeId,
-                    })}
-                  </span>
-                </div>
-              </div>
+      {/* Informasi Akun Card */}
+      <Card>
+        <CardHeader className="p-4 pb-3 sm:p-6 sm:pb-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <User className="h-4 w-4 sm:h-5 sm:w-5 text-sky-600" />
+              <CardTitle className="text-sm sm:text-base">Informasi Akun</CardTitle>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Edit Profile Card */}
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  Informasi Akun
-                </CardTitle>
-                <CardDescription>
-                  Kelola informasi dasar akun Anda
-                </CardDescription>
+            {!isEditing && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-xs"
+                onClick={() => {
+                  reset({ name: userData.name });
+                  setIsEditing(true);
+                }}
+              >
+                <Pencil className="h-3.5 w-3.5 mr-1" />
+                Edit
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+            {/* Info Grid di Mobile */}
+            <div className="space-y-2.5">
+              <div className="flex items-center gap-2.5 text-sm">
+                <Mail className="h-4 w-4 text-gray-400 shrink-0" />
+                <span className="text-gray-600 truncate">{userData.email}</span>
               </div>
-              {!isEditing && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    reset({ name: userData.name });
-                    setIsEditing(true);
-                  }}
-                >
-                  <Pencil className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
+              {profile?.nik && (
+                <div className="flex items-center gap-2.5 text-sm">
+                  <CreditCard className="h-4 w-4 text-gray-400 shrink-0" />
+                  <span className="text-gray-600">NIK: {profile.nik.slice(0, 4)}****{profile.nik.slice(-4)}</span>
+                </div>
               )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nama Lengkap</Label>
-                {isEditing ? (
-                  <div>
-                    <Input
-                      id="name"
-                      {...register("name")}
-                      placeholder="Masukkan nama lengkap"
-                    />
-                    {errors.name && (
-                      <p className="text-sm text-destructive mt-1">
-                        {errors.name.message}
-                      </p>
-                    )}
-                  </div>
+              <div className="flex items-center gap-2.5 text-sm">
+                {userData.emailVerified ? (
+                  <>
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <span className="text-emerald-600">Email Terverifikasi</span>
+                  </>
                 ) : (
-                  <div className="flex items-center h-10 px-3 rounded-md border bg-muted/50">
-                    <span>{userData.name}</span>
-                  </div>
+                  <>
+                    <AlertCircle className="h-4 w-4 text-amber-500 shrink-0" />
+                    <span className="text-amber-600">Email Belum Terverifikasi</span>
+                  </>
                 )}
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="flex items-center h-10 px-3 rounded-md border bg-muted/50">
-                  <span className="text-muted-foreground">{userData.email}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Email tidak dapat diubah
-                </p>
+              <div className="flex items-center gap-2.5 text-sm">
+                <Calendar className="h-4 w-4 text-gray-400 shrink-0" />
+                <span className="text-gray-600">
+                  Bergabung {format(new Date(userData.createdAt), "dd MMM yyyy", { locale: localeId })}
+                </span>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label>NIK</Label>
-                <div className="flex items-center h-10 px-3 rounded-md border bg-muted/50">
-                  {profile?.nik ? (
-                    <span className="text-muted-foreground">
-                      {profile.nik.slice(0, 4)}****{profile.nik.slice(-4)}
-                    </span>
-                  ) : (
-                    <span className="text-muted-foreground italic">Belum diisi</span>
+            {isEditing && (
+              <>
+                <Separator className="my-3" />
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-xs">Nama Lengkap</Label>
+                  <Input
+                    id="name"
+                    {...register("name")}
+                    placeholder="Masukkan nama lengkap"
+                    className="h-9 text-sm"
+                  />
+                  {errors.name && (
+                    <p className="text-xs text-destructive">{errors.name.message}</p>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  NIK diperlukan untuk aktivasi akun
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Role</Label>
-                <div className="flex items-center h-10 px-3 rounded-md border bg-muted/50">
-                  <Badge className={roleInfo.color}>{roleInfo.label}</Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Role diatur oleh administrator
-                </p>
-              </div>
-
-              {isEditing && (
-                <div className="flex justify-end gap-2 pt-4">
+                <div className="flex gap-2 pt-2">
                   <Button
                     type="button"
                     variant="outline"
+                    size="sm"
+                    className="flex-1 h-8 text-xs"
                     onClick={handleCancel}
                     disabled={updateMutation.isPending}
                   >
-                    <X className="h-4 w-4 mr-2" />
+                    <X className="h-3.5 w-3.5 mr-1" />
                     Batal
                   </Button>
-                  <Button type="submit" disabled={updateMutation.isPending}>
-                    <Save className="h-4 w-4 mr-2" />
+                  <Button type="submit" size="sm" className="flex-1 h-8 text-xs" disabled={updateMutation.isPending}>
+                    <Save className="h-3.5 w-3.5 mr-1" />
                     {updateMutation.isPending ? "Menyimpan..." : "Simpan"}
                   </Button>
                 </div>
-              )}
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Security Card */}
-        <Card className="md:col-span-3">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Keamanan Akun
-            </CardTitle>
-            <CardDescription>
-              Kelola keamanan dan akses akun Anda
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="p-4 rounded-lg border bg-muted/30">
-                <h3 className="font-medium mb-2">Status Verifikasi Email</h3>
-                <div className="flex items-center gap-2">
-                  {userData.emailVerified ? (
-                    <>
-                      <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                      <span className="text-emerald-600">Terverifikasi</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="h-5 w-5 text-amber-500" />
-                      <span className="text-amber-600">Belum Terverifikasi</span>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="p-4 rounded-lg border bg-muted/30">
-                <h3 className="font-medium mb-2">Status Aktivasi</h3>
-                <div className="flex items-center gap-2">
-                  {isActivated ? (
-                    <>
-                      <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                      <span className="text-emerald-600">Aktif</span>
-                    </>
-                  ) : (
-                    <>
-                      <AlertCircle className="h-5 w-5 text-amber-500" />
-                      <span className="text-amber-600">Belum Aktif</span>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="p-4 rounded-lg border bg-muted/30">
-                <h3 className="font-medium mb-2">Terakhir Diperbarui</h3>
-                <p className="text-muted-foreground">
-                  {format(new Date(userData.updatedAt), "dd MMMM yyyy, HH:mm", {
-                    locale: localeId,
-                  })}
-                </p>
-              </div>
-            </div>
-            <Separator className="my-4" />
-            <div className="flex flex-wrap gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setShowPasswordDialog(true)}
-              >
-                <Key className="h-4 w-4 mr-2" />
-                Ganti Password
-              </Button>
-              {!isActivated && (
-                <Button onClick={() => setShowActivateDialog(true)}>
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  Aktivasi Akun
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Session Management Card */}
-        <Card className="md:col-span-3">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Globe className="h-5 w-5" />
-              Sesi Login Aktif
-            </CardTitle>
-            <CardDescription>
-              Kelola perangkat yang sedang login ke akun Anda. Anda dapat menghapus sesi dari perangkat lain jika diperlukan.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {sessionsLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="flex items-center gap-4 p-4 rounded-lg border">
-                    <Skeleton className="h-10 w-10 rounded-full" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-3 w-48" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : sessions && sessions.length > 0 ? (
-              <div className="space-y-3">
-                {sessions.map((s) => {
-                  const { device, browser, os } = parseUserAgent(s.userAgent);
-                  const DeviceIcon = device === "Mobile" ? Smartphone : Monitor;
-                  const isExpired = new Date(s.expiresAt) < new Date();
-
-                  return (
-                    <div
-                      key={s.id}
-                      className={`flex items-center gap-4 p-4 rounded-lg border ${
-                        s.isCurrent ? "border-sky-200 bg-sky-50/50" : ""
-                      } ${isExpired ? "opacity-50" : ""}`}
-                    >
-                      <div className={`p-2 rounded-full ${s.isCurrent ? "bg-sky-100" : "bg-muted"}`}>
-                        <DeviceIcon className={`h-5 w-5 ${s.isCurrent ? "text-sky-600" : "text-muted-foreground"}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-sm">
-                            {browser} di {os}
-                          </p>
-                          {s.isCurrent && (
-                            <Badge className="bg-sky-100 text-sky-700 text-xs">
-                              Sesi Ini
-                            </Badge>
-                          )}
-                          {isExpired && (
-                            <Badge variant="outline" className="text-xs text-amber-600 border-amber-300">
-                              Kadaluarsa
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-1">
-                          <span>
-                            {s.ipAddress || "IP tidak diketahui"}
-                          </span>
-                          <span>
-                            Login: {format(new Date(s.createdAt), "dd MMM yyyy, HH:mm", { locale: localeId })}
-                          </span>
-                          <span>
-                            Berlaku sampai: {format(new Date(s.expiresAt), "dd MMM yyyy, HH:mm", { locale: localeId })}
-                          </span>
-                        </div>
-                      </div>
-                      {!s.isCurrent && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => deleteSessionMutation.mutate(s.id)}
-                          disabled={deleteSessionMutation.isPending}
-                        >
-                          {deleteSessionMutation.isPending ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-4 w-4" />
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <Globe className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>Tidak ada sesi aktif</p>
-              </div>
+              </>
             )}
-          </CardContent>
-        </Card>
-      </div>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Keamanan Card */}
+      <Card>
+        <CardHeader className="p-4 pb-3 sm:p-6 sm:pb-4">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-sky-600" />
+            <CardTitle className="text-sm sm:text-base">Keamanan</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <div className="p-2.5 rounded-lg bg-gray-50 border">
+              <p className="text-[10px] sm:text-xs text-gray-500 mb-1">Email</p>
+              <div className="flex items-center gap-1.5">
+                {userData.emailVerified ? (
+                  <>
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    <span className="text-xs font-medium text-emerald-600">Verified</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                    <span className="text-xs font-medium text-amber-600">Pending</span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="p-2.5 rounded-lg bg-gray-50 border">
+              <p className="text-[10px] sm:text-xs text-gray-500 mb-1">Status</p>
+              <div className="flex items-center gap-1.5">
+                {isActivated ? (
+                  <>
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                    <span className="text-xs font-medium text-emerald-600">Aktif</span>
+                  </>
+                ) : (
+                  <>
+                    <AlertCircle className="h-3.5 w-3.5 text-amber-500" />
+                    <span className="text-xs font-medium text-amber-600">Pending</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs flex-1"
+              onClick={() => setShowPasswordDialog(true)}
+            >
+              <Key className="h-3.5 w-3.5 mr-1.5" />
+              Ganti Password
+            </Button>
+            {!isActivated && (
+              <Button size="sm" className="h-8 text-xs flex-1" onClick={() => setShowActivateDialog(true)}>
+                <CreditCard className="h-3.5 w-3.5 mr-1.5" />
+                Aktivasi Akun
+              </Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Session Card */}
+      <Card>
+        <CardHeader className="p-4 pb-3 sm:p-6 sm:pb-4">
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-sky-600" />
+            <CardTitle className="text-sm sm:text-base">Sesi Login</CardTitle>
+          </div>
+          <CardDescription className="text-xs mt-1">
+            Perangkat yang sedang login
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+          {sessionsLoading ? (
+            <div className="space-y-2">
+              {[1, 2].map((i) => (
+                <div key={i} className="flex items-center gap-3 p-2.5 rounded-lg border">
+                  <Skeleton className="h-8 w-8 rounded-full shrink-0" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-3.5 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : sessions && sessions.length > 0 ? (
+            <div className="space-y-2">
+              {sessions.map((s) => {
+                const { browser, os } = parseUserAgent(s.userAgent);
+                const DeviceIcon = s.userAgent && /Mobile|Android|iPhone/i.test(s.userAgent) ? Smartphone : Monitor;
+                const isExpired = new Date(s.expiresAt) < new Date();
+
+                return (
+                  <div
+                    key={s.id}
+                    className={`flex items-center gap-2.5 p-2.5 rounded-lg border ${
+                      s.isCurrent ? "border-sky-200 bg-sky-50/50" : ""
+                    } ${isExpired ? "opacity-50" : ""}`}
+                  >
+                    <div className={`p-1.5 rounded-full shrink-0 ${s.isCurrent ? "bg-sky-100" : "bg-gray-100"}`}>
+                      <DeviceIcon className={`h-4 w-4 ${s.isCurrent ? "text-sky-600" : "text-gray-500"}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-xs font-medium">{browser} - {os}</p>
+                        {s.isCurrent && (
+                          <Badge className="bg-sky-100 text-sky-700 text-[10px] px-1.5 py-0">
+                            Sesi Ini
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-gray-500 mt-0.5">
+                        {s.ipAddress || "IP tidak diketahui"} • {format(new Date(s.createdAt), "dd MMM, HH:mm", { locale: localeId })}
+                      </p>
+                    </div>
+                    {!s.isCurrent && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0"
+                        onClick={() => deleteSessionMutation.mutate(s.id)}
+                        disabled={deleteSessionMutation.isPending}
+                      >
+                        {deleteSessionMutation.isPending ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5" />
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-6 text-gray-400">
+              <Globe className="h-8 w-8 mx-auto mb-2 opacity-50" />
+              <p className="text-xs">Tidak ada sesi aktif</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Change Password Dialog */}
       <Dialog open={showPasswordDialog} onOpenChange={setShowPasswordDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md rounded-xl">
           <DialogHeader>
-            <DialogTitle>Ganti Password</DialogTitle>
-            <DialogDescription>
-              Masukkan password lama dan password baru Anda
+            <DialogTitle className="text-base">Ganti Password</DialogTitle>
+            <DialogDescription className="text-xs">
+              Masukkan password lama dan baru
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmitPassword(onSubmitPassword)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="currentPassword">Password Saat Ini</Label>
+          <form onSubmit={handleSubmitPassword(onSubmitPassword)} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="currentPassword" className="text-xs">Password Saat Ini</Label>
               <div className="relative">
                 <Input
                   id="currentPassword"
                   type={showPassword.current ? "text" : "password"}
                   {...registerPassword("currentPassword")}
-                  placeholder="Masukkan password saat ini"
+                  placeholder="Password saat ini"
+                  className="h-9 text-sm pr-9"
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword((p) => ({ ...p, current: !p.current }))
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword((p) => ({ ...p, current: !p.current }))}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword.current ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword.current ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {passwordErrors.currentPassword && (
-                <p className="text-sm text-destructive">
-                  {passwordErrors.currentPassword.message}
-                </p>
+                <p className="text-xs text-destructive">{passwordErrors.currentPassword.message}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="newPassword">Password Baru</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="newPassword" className="text-xs">Password Baru</Label>
               <div className="relative">
                 <Input
                   id="newPassword"
                   type={showPassword.new ? "text" : "password"}
                   {...registerPassword("newPassword")}
-                  placeholder="Masukkan password baru"
+                  placeholder="Password baru (min 8 karakter)"
+                  className="h-9 text-sm pr-9"
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword((p) => ({ ...p, new: !p.new }))
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword((p) => ({ ...p, new: !p.new }))}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword.new ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword.new ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {passwordErrors.newPassword && (
-                <p className="text-sm text-destructive">
-                  {passwordErrors.newPassword.message}
-                </p>
+                <p className="text-xs text-destructive">{passwordErrors.newPassword.message}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Konfirmasi Password Baru</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="confirmPassword" className="text-xs">Konfirmasi Password</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
                   type={showPassword.confirm ? "text" : "password"}
                   {...registerPassword("confirmPassword")}
-                  placeholder="Masukkan ulang password baru"
+                  placeholder="Ulangi password baru"
+                  className="h-9 text-sm pr-9"
                 />
                 <button
                   type="button"
-                  onClick={() =>
-                    setShowPassword((p) => ({ ...p, confirm: !p.confirm }))
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  onClick={() => setShowPassword((p) => ({ ...p, confirm: !p.confirm }))}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
-                  {showPassword.confirm ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
+                  {showPassword.confirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {passwordErrors.confirmPassword && (
-                <p className="text-sm text-destructive">
-                  {passwordErrors.confirmPassword.message}
-                </p>
+                <p className="text-xs text-destructive">{passwordErrors.confirmPassword.message}</p>
               )}
             </div>
-            <div className="flex justify-end gap-2 pt-4">
+            <div className="flex gap-2 pt-2">
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
+                className="flex-1 h-8 text-xs"
                 onClick={() => {
                   setShowPasswordDialog(false);
                   resetPassword();
@@ -962,10 +832,10 @@ export default function ProfilePage() {
               >
                 Batal
               </Button>
-              <Button type="submit" disabled={passwordMutation.isPending}>
+              <Button type="submit" size="sm" className="flex-1 h-8 text-xs" disabled={passwordMutation.isPending}>
                 {passwordMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
                     Menyimpan...
                   </>
                 ) : (
@@ -979,43 +849,43 @@ export default function ProfilePage() {
 
       {/* Activate Account Dialog */}
       <AlertDialog open={showActivateDialog} onOpenChange={setShowActivateDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-md rounded-xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>Aktivasi Akun</AlertDialogTitle>
-            <AlertDialogDescription>
-              Masukkan NIK (Nomor Induk Kependudukan) Anda untuk mengaktivasi akun.
-              NIK diperlukan untuk verifikasi identitas dan mengakses fitur lengkap RISKA HD.
+            <AlertDialogTitle className="text-base">Aktivasi Akun</AlertDialogTitle>
+            <AlertDialogDescription className="text-xs">
+              Masukkan NIK untuk verifikasi identitas
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <form onSubmit={handleSubmitActivate(onSubmitActivate)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="nik">NIK (16 digit)</Label>
+          <form onSubmit={handleSubmitActivate(onSubmitActivate)} className="space-y-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="nik" className="text-xs">NIK (16 digit)</Label>
               <Input
                 id="nik"
                 {...registerActivate("nik")}
                 placeholder="Masukkan 16 digit NIK"
                 maxLength={16}
+                className="h-9 text-sm"
               />
               {activateErrors.nik && (
-                <p className="text-sm text-destructive">
-                  {activateErrors.nik.message}
-                </p>
+                <p className="text-xs text-destructive">{activateErrors.nik.message}</p>
               )}
             </div>
-            <div className="flex justify-end gap-2 pt-4">
+            <div className="flex gap-2 pt-2">
               <Button
                 type="button"
                 variant="outline"
+                size="sm"
+                className="flex-1 h-8 text-xs"
                 onClick={() => setShowActivateDialog(false)}
                 disabled={activateMutation.isPending}
               >
                 Batal
               </Button>
-              <Button type="submit" disabled={activateMutation.isPending}>
+              <Button type="submit" size="sm" className="flex-1 h-8 text-xs" disabled={activateMutation.isPending}>
                 {activateMutation.isPending ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Mengaktivasi...
+                    <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+                    Aktivasi...
                   </>
                 ) : (
                   "Aktivasi"
