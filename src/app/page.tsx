@@ -7,6 +7,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useEffect } from "react";
+import { useSession } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 import {
   Activity,
   Calendar,
@@ -317,11 +319,20 @@ export default function HomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openFAQ, setOpenFAQ] = useState<number | null>(0);
+  const { data: session, isPending } = useSession();
+  const router = useRouter();
 
   // Parallax for big typography
   const { scrollY } = useScroll();
   const bigTextY = useTransform(scrollY, [0, 500], [0, 150]);
   const bigTextOpacity = useTransform(scrollY, [0, 400], [1, 0]);
+
+  // Redirect to dashboard if already logged in
+  useEffect(() => {
+    if (!isPending && session) {
+      router.replace("/dashboard");
+    }
+  }, [session, isPending, router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -422,6 +433,17 @@ export default function HomePage() {
     { icon: Video, title: "Edukasi Pasien", description: "Materi edukasi berupa video, PDF, dan quiz untuk meningkatkan pemahaman pasien.", bgColor: "bg-amber-500" },
     { icon: FileText, title: "Laporan Otomatis", description: "Generate laporan lengkap secara otomatis untuk evaluasi dan dokumentasi medis.", bgColor: "bg-cyan-500" },
   ];
+
+  // Show loading while checking session or redirecting
+  if (isPending || session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-400 via-sky-500 to-cyan-500">
+        <div className="text-center">
+          <LogoIcon variant="light" size="xl" className="mx-auto animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen overflow-hidden bg-gray-50">

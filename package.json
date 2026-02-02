@@ -9,7 +9,9 @@
     "start": "next start",
     "lint": "eslint",
     "seed:permissions": "bun scripts/seed-permissions.ts",
-    "seed:demo": "bun scripts/seed-demo.ts"
+    "seed:demo": "bun scripts/seed-demo.ts",
+    "reset": "bun scripts/reset-data.ts",
+    "reset:seed": "bun scripts/reset-data.ts && bun scripts/seed-permissions.ts && bun scripts/seed-demo.ts"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",

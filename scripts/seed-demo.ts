@@ -21,6 +21,8 @@ import {
   nurseSchedule,
   patientSchedule,
   ruangInformasi,
+  hdSession,
+  patientLabResult,
 } from "../src/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
@@ -1173,6 +1175,227 @@ async function seedPatientUsers() {
   return createdCount;
 }
 
+async function seedHdSessions() {
+  console.log("\n💉 Seeding HD sessions...");
+
+  // Get all completed patient schedules from the past
+  const allPatients = await db.select().from(patient).where(eq(patient.isActive, true));
+  const allNurses = await db.select().from(nurse).where(eq(nurse.isActive, true));
+  const allMachines = await db.select().from(hdMachine).where(eq(hdMachine.isActive, true));
+  const allProtocols = await db.select().from(hdProtocol).where(eq(hdProtocol.isActive, true));
+
+  if (allPatients.length === 0 || allNurses.length === 0) {
+    console.log("  ⚠️ No patients or nurses found, skipping HD sessions");
+    return 0;
+  }
+
+  let sessionCount = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Get past patient schedules
+  const pastSchedules = await db
+    .select()
+    .from(patientSchedule)
+    .where(eq(patientSchedule.status, "completed"));
+
+  // If no completed schedules, create sessions for past dates
+  if (pastSchedules.length === 0) {
+    console.log("  Creating HD sessions for past 30 days...");
+
+    for (const p of allPatients) {
+      // Each patient gets ~12 sessions (3x/week for 4 weeks)
+      const sessionsPerPatient = 12;
+      const patientIndex = allPatients.indexOf(p);
+      const isMWF = patientIndex % 2 === 0;
+
+      for (let i = 0; i < sessionsPerPatient; i++) {
+        // Calculate session date (going back in time)
+        const daysBack = Math.floor(i / 3) * 7 + (i % 3) * (isMWF ? 2 : 2);
+        const sessionDate = new Date(today);
+        sessionDate.setDate(sessionDate.getDate() - daysBack - 1);
+
+        // Skip if it's in the future
+        if (sessionDate >= today) continue;
+
+        // Random nurse and machine
+        const selectedNurse = allNurses[i % allNurses.length];
+        const selectedMachine = allMachines.length > 0 ? allMachines[i % allMachines.length] : null;
+        const selectedProtocol = allProtocols.length > 0 ? allProtocols[Math.floor(Math.random() * allProtocols.length)] : null;
+
+        // Generate realistic vital signs
+        const dryWeight = p.dryWeight || 55000; // in grams
+        const preWeight = dryWeight + Math.floor(Math.random() * 3000) + 1000; // 1-4kg above dry weight
+        const postWeight = dryWeight + Math.floor(Math.random() * 500); // close to dry weight
+
+        const preSystolic = 140 + Math.floor(Math.random() * 40); // 140-180
+        const preDiastolic = 80 + Math.floor(Math.random() * 20); // 80-100
+        const postSystolic = 110 + Math.floor(Math.random() * 30); // 110-140
+        const postDiastolic = 70 + Math.floor(Math.random() * 15); // 70-85
+
+        const prePulse = 70 + Math.floor(Math.random() * 20); // 70-90
+        const postPulse = 65 + Math.floor(Math.random() * 20); // 65-85
+
+        const preTemperature = 365 + Math.floor(Math.random() * 10); // 36.5-37.5
+
+        // Session times
+        const startTime = new Date(sessionDate);
+        startTime.setHours(6 + (i % 3) * 5, 0, 0, 0); // 6am, 11am, or 4pm
+
+        const endTime = new Date(startTime);
+        endTime.setHours(endTime.getHours() + 4); // 4 hour session
+
+        const ufGoal = preWeight - dryWeight;
+        const actualUf = ufGoal - Math.floor(Math.random() * 300); // within 300ml of goal
+
+        // Create a dummy schedule ID (since we may not have actual schedules)
+        const scheduleId = createId();
+
+        // First create a patient schedule entry
+        try {
+          await db.insert(patientSchedule).values({
+            id: scheduleId,
+            patientId: p.id,
+            shiftId: (await db.select().from(shift).limit(1))[0]?.id || createId(),
+            scheduleDate: sessionDate,
+            machineId: selectedMachine?.id || null,
+            nurseId: selectedNurse.id,
+            status: "completed",
+          });
+        } catch {
+          // Schedule might already exist, continue
+        }
+
+        try {
+          await db.insert(hdSession).values({
+            id: createId(),
+            patientScheduleId: scheduleId,
+            patientId: p.id,
+            sessionDate,
+            startTime,
+            endTime,
+            preWeight,
+            preSystolic,
+            preDiastolic,
+            prePulse,
+            preTemperature,
+            preComplaints: Math.random() > 0.7 ? "Sedikit lemas" : null,
+            ufGoal,
+            bloodFlow: 250 + Math.floor(Math.random() * 100), // 250-350
+            dialysateFlow: 500,
+            duration: 240, // 4 hours
+            vascularAccess: p.vascularAccessType || "avf",
+            vascularAccessSite: p.vascularAccessSite || "Left Forearm",
+            dialyzerType: selectedProtocol?.dialyzerType || "High-Flux",
+            dialyzerReuse: Math.floor(Math.random() * 5),
+            anticoagulant: "Heparin",
+            anticoagulantDose: "5000 IU",
+            machineId: selectedMachine?.id || null,
+            hdProtocolId: selectedProtocol?.id || null,
+            postWeight,
+            postSystolic,
+            postDiastolic,
+            postPulse,
+            actualUf,
+            postNotes: Math.random() > 0.8 ? "Sesi berjalan lancar" : null,
+            status: "completed",
+            recordedByNurseId: selectedNurse.id,
+          });
+          sessionCount++;
+        } catch {
+          // Session might already exist
+        }
+      }
+    }
+  }
+
+  console.log(`✅ HD Sessions seeded: ${sessionCount}`);
+  return sessionCount;
+}
+
+async function seedLabResults() {
+  console.log("\n🧪 Seeding lab results...");
+
+  const allPatients = await db.select().from(patient).where(eq(patient.isActive, true));
+  const adminUser = await db.select().from(user).where(eq(user.email, "admin@test.com")).limit(1);
+
+  if (allPatients.length === 0) {
+    console.log("  ⚠️ No patients found, skipping lab results");
+    return 0;
+  }
+
+  let labCount = 0;
+  const today = new Date();
+
+  for (const p of allPatients) {
+    // Each patient gets 3-4 lab results over the past 3 months
+    const labsPerPatient = 3 + Math.floor(Math.random() * 2);
+
+    for (let i = 0; i < labsPerPatient; i++) {
+      const testDate = new Date(today);
+      testDate.setDate(testDate.getDate() - (i * 30) - Math.floor(Math.random() * 7)); // roughly monthly
+
+      // Generate realistic lab values (stored as integers with scaling)
+      // Hb: 8-12 g/dL (stored x10: 80-120)
+      const hemoglobin = 80 + Math.floor(Math.random() * 40);
+
+      // Ureum: 80-200 mg/dL
+      const ureum = 80 + Math.floor(Math.random() * 120);
+
+      // Creatinine: 5-15 mg/dL (stored x10: 50-150)
+      const creatinine = 50 + Math.floor(Math.random() * 100);
+
+      // Potassium: 3.5-6.0 mEq/L (stored x10: 35-60)
+      const potassium = 35 + Math.floor(Math.random() * 25);
+
+      // Sodium: 130-145 mEq/L
+      const sodium = 130 + Math.floor(Math.random() * 15);
+
+      // Calcium: 8-10.5 mg/dL (stored x10: 80-105)
+      const calcium = 80 + Math.floor(Math.random() * 25);
+
+      // Phosphorus: 3-7 mg/dL (stored x10: 30-70)
+      const phosphorus = 30 + Math.floor(Math.random() * 40);
+
+      // Albumin: 3-4.5 g/dL (stored x10: 30-45)
+      const albumin = 30 + Math.floor(Math.random() * 15);
+
+      // Kt/V: 1.0-1.8 (stored x100: 100-180)
+      const ktv = 100 + Math.floor(Math.random() * 80);
+
+      // URR: 60-80% (stored x10: 600-800)
+      const urr = 600 + Math.floor(Math.random() * 200);
+
+      try {
+        await db.insert(patientLabResult).values({
+          id: createId(),
+          patientId: p.id,
+          testDate,
+          reportDate: new Date(testDate.getTime() + 24 * 60 * 60 * 1000), // 1 day after test
+          hemoglobin,
+          ureum,
+          creatinine,
+          potassium,
+          sodium,
+          calcium,
+          phosphorus,
+          albumin,
+          ktv,
+          urr,
+          labSource: "Lab RS Demo",
+          enteredById: adminUser[0]?.id || null,
+        });
+        labCount++;
+      } catch {
+        // Lab result might already exist
+      }
+    }
+  }
+
+  console.log(`✅ Lab results seeded: ${labCount}`);
+  return labCount;
+}
+
 async function main() {
   console.log("🚀 Starting RISKA HD Demo Seeder...\n");
   console.log("=".repeat(50));
@@ -1204,6 +1427,12 @@ async function main() {
     // Seed schedules for nurses and patients
     const scheduleStats = await seedSchedules();
 
+    // Seed HD sessions (riwayat sesi)
+    const hdSessionCount = await seedHdSessions();
+
+    // Seed lab results
+    const labResultCount = await seedLabResults();
+
     console.log("\n" + "=".repeat(50));
     console.log("🎉 Demo seeding completed successfully!\n");
 
@@ -1220,6 +1449,8 @@ async function main() {
     console.log(`   - Ruang Informasi: ${RUANG_INFORMASI_DATA.length}`);
     console.log(`   - Nurse Schedules: ${scheduleStats.nurseScheduleCount}`);
     console.log(`   - Patient Schedules: ${scheduleStats.patientScheduleCount}`);
+    console.log(`   - HD Sessions: ${hdSessionCount}`);
+    console.log(`   - Lab Results: ${labResultCount}`);
 
     console.log("\n🔐 Demo Login Accounts (Password: test123):");
     console.log("   ┌─────────────┬──────────────────────────┐");

@@ -18,6 +18,18 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Demo Accounts
+
+| Role     | Email                    | Password |
+|----------|--------------------------|----------|
+| Admin    | admin@test.com           | test123  |
+| Dokter   | dr.ahmad@test.com        | test123  |
+| Perawat  | ns.ratna@test.com        | test123  |
+| Edukator | edukator@test.com        | test123  |
+| Pasien   | siti.aminah@test.com     | test123  |
+| Pasien   | ahmad.wijaya@test.com    | test123  |
+| Pasien   | dewi.lestari@test.com    | test123  |
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
