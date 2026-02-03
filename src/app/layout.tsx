@@ -15,7 +15,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || "https://riska-hd.vercel.app
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    default: "RISKA HD - Sistem Manajemen Hemodialisis Terpadu",
+    default: "RISKA HD - Ruang Informasi & Sistem Kelola Aktivitas Hemodialisa",
     template: "%s | RISKA HD",
   },
   description:
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     locale: "id_ID",
     url: BASE_URL,
     siteName: "RISKA HD",
-    title: "RISKA HD - Sistem Manajemen Hemodialisis Terpadu",
+    title: "RISKA HD - Ruang Informasi & Sistem Kelola Aktivitas Hemodialisa",
     description:
       "Platform digital terintegrasi untuk manajemen layanan hemodialisis. Kelola pasien, jadwal, dokumentasi, dan edukasi dalam satu sistem.",
     images: [
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "RISKA HD - Sistem Manajemen Hemodialisis Terpadu",
+    title: "RISKA HD - Ruang Informasi & Sistem Kelola Aktivitas Hemodialisa",
     description:
       "Platform digital terintegrasi untuk manajemen layanan hemodialisis.",
     images: ["/og-image.png"],
