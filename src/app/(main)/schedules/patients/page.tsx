@@ -46,7 +46,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { PatientScheduleForm } from "./patient-schedule-form";
 import { ColumnDef } from "@tanstack/react-table";
@@ -422,12 +422,12 @@ export default function PatientSchedulesPage() {
           setIsFormOpen(true);
         }}
       >
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div className="flex flex-wrap items-end gap-4">
+        <div className="mb-6 flex flex-col gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <Label>Rentang Waktu</Label>
               <Select value={dateRange} onValueChange={handleDateRangeChange}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -442,20 +442,16 @@ export default function PatientSchedulesPage() {
               <>
                 <div className="space-y-2">
                   <Label>Dari Tanggal</Label>
-                  <Input
-                    type="date"
+                  <DatePicker
                     value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-[180px]"
+                    onChange={(v) => setStartDate(v)}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>Sampai Tanggal</Label>
-                  <Input
-                    type="date"
+                  <DatePicker
                     value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-[180px]"
+                    onChange={(v) => setEndDate(v)}
                   />
                 </div>
               </>
@@ -467,7 +463,7 @@ export default function PatientSchedulesPage() {
                 value={shiftFilter || "_all"}
                 onValueChange={(v) => setShiftFilter(v === "_all" ? "" : v)}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger>
                   <SelectValue placeholder="Semua Shift" />
                 </SelectTrigger>
                 <SelectContent>
@@ -487,7 +483,7 @@ export default function PatientSchedulesPage() {
                 value={statusFilter || "_all"}
                 onValueChange={(v) => setStatusFilter(v === "_all" ? "" : v)}
               >
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger>
                   <SelectValue placeholder="Semua Status" />
                 </SelectTrigger>
                 <SelectContent>

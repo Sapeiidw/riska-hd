@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { createDoctorSchema, CreateDoctorInput } from "@/lib/validations/staff";
 
 interface DoctorFormProps {
@@ -187,7 +188,7 @@ export function DoctorForm({ doctor, onSuccess }: DoctorFormProps) {
             <FormItem>
               <FormLabel>Masa Berlaku SIP</FormLabel>
               <FormControl>
-                <Input type="date" {...field} value={field.value || ""} />
+                <DatePicker value={field.value || ""} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

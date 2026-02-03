@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { PatientLabForm } from "./components/patient-lab-form";
 import { ColumnDef } from "@tanstack/react-table";
@@ -227,7 +228,7 @@ export default function PatientLabsPage() {
         }}
       >
         {/* Filters */}
-        <div className="mb-6 flex flex-wrap items-end gap-4">
+        <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label>Pasien</Label>
             <Select
@@ -237,7 +238,7 @@ export default function PatientLabsPage() {
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-[250px]">
+              <SelectTrigger>
                 <SelectValue placeholder="Semua Pasien" />
               </SelectTrigger>
               <SelectContent>
@@ -252,26 +253,22 @@ export default function PatientLabsPage() {
           </div>
           <div className="space-y-2">
             <Label>Dari Tanggal</Label>
-            <Input
-              type="date"
+            <DatePicker
               value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
+              onChange={(v) => {
+                setStartDate(v);
                 setPage(1);
               }}
-              className="w-[180px]"
             />
           </div>
           <div className="space-y-2">
             <Label>Sampai Tanggal</Label>
-            <Input
-              type="date"
+            <DatePicker
               value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
+              onChange={(v) => {
+                setEndDate(v);
                 setPage(1);
               }}
-              className="w-[180px]"
             />
           </div>
         </div>

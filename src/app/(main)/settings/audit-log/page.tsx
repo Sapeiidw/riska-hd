@@ -207,7 +207,7 @@ export default function AuditLogPage() {
         description="Pantau semua aktivitas pengguna di sistem"
       />
 
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-4">
         <Select
           value={action}
           onValueChange={(value) => {
@@ -215,7 +215,7 @@ export default function AuditLogPage() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="sm:w-[180px]">
             <SelectValue placeholder="Semua Aksi" />
           </SelectTrigger>
           <SelectContent>
@@ -236,7 +236,7 @@ export default function AuditLogPage() {
             setPage(1);
           }}
         >
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="sm:w-[180px]">
             <SelectValue placeholder="Semua Resource" />
           </SelectTrigger>
           <SelectContent>

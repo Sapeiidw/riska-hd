@@ -10,6 +10,7 @@ import api from "@/lib/api/axios";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -204,7 +205,10 @@ export function PatientLabForm({
         </div>
         <div className="space-y-2">
           <Label htmlFor="testDate">Tanggal Tes *</Label>
-          <Input type="date" {...register("testDate")} />
+          <DatePicker
+            value={watch("testDate")}
+            onChange={(v) => setValue("testDate", v, { shouldValidate: true })}
+          />
           {errors.testDate && (
             <p className="text-sm text-destructive">{errors.testDate.message}</p>
           )}
@@ -353,7 +357,10 @@ export function PatientLabForm({
           </div>
           <div className="space-y-2">
             <Label htmlFor="reportDate">Tanggal Laporan</Label>
-            <Input type="date" {...register("reportDate")} />
+            <DatePicker
+              value={watch("reportDate") || ""}
+              onChange={(v) => setValue("reportDate", v)}
+            />
           </div>
         </div>
         <div className="space-y-2">

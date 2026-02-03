@@ -15,7 +15,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import {
   Select,
   SelectContent,
@@ -241,7 +241,7 @@ export function NurseScheduleForm({
             <FormItem>
               <FormLabel>Tanggal</FormLabel>
               <FormControl>
-                <Input type="date" {...field} />
+                <DatePicker value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

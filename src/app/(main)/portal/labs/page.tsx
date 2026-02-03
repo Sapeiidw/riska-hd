@@ -24,6 +24,7 @@ import api from "@/lib/api/axios";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@/components/ui/label";
 import {
   Card,
@@ -385,26 +386,22 @@ export default function PatientLabsPage() {
             <div className="flex flex-col sm:flex-row gap-3 flex-1">
               <div className="space-y-1.5">
                 <Label className="text-xs text-gray-500">Dari Tanggal</Label>
-                <Input
-                  type="date"
+                <DatePicker
                   value={startDate}
-                  onChange={(e) => {
-                    setStartDate(e.target.value);
+                  onChange={(v) => {
+                    setStartDate(v);
                     setPage(1);
                   }}
-                  className="w-full sm:w-[160px] border-gray-200 focus:border-sky-300 focus:ring-sky-200"
                 />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs text-gray-500">Sampai Tanggal</Label>
-                <Input
-                  type="date"
+                <DatePicker
                   value={endDate}
-                  onChange={(e) => {
-                    setEndDate(e.target.value);
+                  onChange={(v) => {
+                    setEndDate(v);
                     setPage(1);
                   }}
-                  className="w-full sm:w-[160px] border-gray-200 focus:border-sky-300 focus:ring-sky-200"
                 />
               </div>
               {(startDate || endDate || search) && (

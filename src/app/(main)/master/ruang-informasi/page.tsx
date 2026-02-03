@@ -247,7 +247,7 @@ export default function RuangInformasiPage() {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="sm:w-[180px]">
               <SelectValue placeholder="Semua Kategori" />
             </SelectTrigger>
             <SelectContent>

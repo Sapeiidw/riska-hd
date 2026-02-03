@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { DatePicker } from "@/components/ui/date-picker";
 import { createNurseSchema, CreateNurseInput } from "@/lib/validations/staff";
 
 interface NurseFormProps {
@@ -187,7 +188,7 @@ export function NurseForm({ nurse, onSuccess }: NurseFormProps) {
             <FormItem>
               <FormLabel>Masa Berlaku Sertifikasi</FormLabel>
               <FormControl>
-                <Input type="date" {...field} value={field.value || ""} />
+                <DatePicker value={field.value || ""} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
