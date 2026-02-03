@@ -50,21 +50,21 @@ export function MasterPageLayout({
   return (
     <div className="col-span-12 space-y-6">
       {/* Header Card */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
+      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             {Icon && (
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-cyan-500 shadow-lg shadow-sky-500/30">
-                <Icon className="h-6 w-6 text-white" />
+              <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-400 to-cyan-500 shadow-lg shadow-sky-500/30 shrink-0">
+                <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             )}
-            <div>
-              <h1 className="text-xl font-bold text-gray-800">{title}</h1>
-              <p className="text-sm text-gray-500 mt-0.5">{description}</p>
+            <div className="min-w-0">
+              <h1 className="text-lg sm:text-xl font-bold text-gray-800 truncate">{title}</h1>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5 line-clamp-2">{description}</p>
             </div>
           </div>
           {onAddClick && (
-            <Button onClick={onAddClick}>
+            <Button onClick={onAddClick} className="w-full sm:w-auto shrink-0" size="sm">
               <Plus className="mr-2 h-4 w-4" />
               {addButtonLabel}
             </Button>
@@ -74,24 +74,24 @@ export function MasterPageLayout({
 
       {/* Stats Cards */}
       {stats && stats.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
           {stats.map((stat, index) => (
             <div
               key={index}
-              className="bg-white rounded-2xl p-5 shadow-lg border border-gray-100 hover:shadow-xl transition-all group"
+              className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-lg border border-gray-100 hover:shadow-xl transition-all group"
             >
               <div className="flex items-start justify-between">
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-gray-500 truncate">
+                  <p className="text-xs sm:text-sm font-medium text-gray-500 truncate">
                     {stat.label}
                   </p>
-                  <p className="text-3xl font-bold text-gray-800 mt-2 tabular-nums">
+                  <p className="text-2xl sm:text-3xl font-bold text-gray-800 mt-1 sm:mt-2 tabular-nums">
                     {stat.value}
                   </p>
                 </div>
                 {stat.icon && (
-                  <div className={`flex h-11 w-11 items-center justify-center rounded-xl group-hover:scale-110 transition-transform ${colorClasses[stat.color || "default"]}`}>
-                    <stat.icon className="h-5 w-5" />
+                  <div className={`flex h-8 w-8 sm:h-11 sm:w-11 shrink-0 aspect-square items-center justify-center rounded-lg sm:rounded-xl group-hover:scale-110 transition-transform ${colorClasses[stat.color || "default"]}`}>
+                    <stat.icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                 )}
               </div>
@@ -101,7 +101,7 @@ export function MasterPageLayout({
       )}
 
       {/* Content Card */}
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-6 shadow-lg border border-gray-100">
         {(onSearchChange || extraActions) && (
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
             {onSearchChange && (

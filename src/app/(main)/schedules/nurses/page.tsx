@@ -13,7 +13,6 @@ import {
   Users,
   List,
   CalendarDays,
-  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -22,7 +21,6 @@ import {
   endOfWeek,
   startOfMonth,
   endOfMonth,
-  parseISO,
   addMonths,
   subMonths,
 } from "date-fns";
@@ -390,11 +388,12 @@ export default function NurseSchedulesPage() {
         }}
       >
         <div className="mb-6 flex flex-col gap-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="space-y-2">
-              <Label>Rentang Waktu</Label>
+          {/* Filters */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-4 sm:gap-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs sm:text-sm">Rentang Waktu</Label>
               <Select value={dateRange} onValueChange={handleDateRangeChange}>
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-xs sm:text-sm">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -405,32 +404,13 @@ export default function NurseSchedulesPage() {
               </Select>
             </div>
 
-            {dateRange === "custom" && (
-              <>
-                <div className="space-y-2">
-                  <Label>Dari Tanggal</Label>
-                  <DatePicker
-                    value={startDate}
-                    onChange={(v) => setStartDate(v)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Sampai Tanggal</Label>
-                  <DatePicker
-                    value={endDate}
-                    onChange={(v) => setEndDate(v)}
-                  />
-                </div>
-              </>
-            )}
-
-            <div className="space-y-2">
-              <Label>Shift</Label>
+            <div className="space-y-1.5">
+              <Label className="text-xs sm:text-sm">Shift</Label>
               <Select
                 value={shiftFilter || "_all"}
                 onValueChange={(v) => setShiftFilter(v === "_all" ? "" : v)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-9 text-xs sm:text-sm">
                   <SelectValue placeholder="Semua Shift" />
                 </SelectTrigger>
                 <SelectContent>
@@ -443,27 +423,47 @@ export default function NurseSchedulesPage() {
                 </SelectContent>
               </Select>
             </div>
+
+            {dateRange === "custom" && (
+              <>
+                <div className="space-y-1.5">
+                  <Label className="text-xs sm:text-sm">Dari Tanggal</Label>
+                  <DatePicker
+                    value={startDate}
+                    onChange={(v) => setStartDate(v)}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs sm:text-sm">Sampai Tanggal</Label>
+                  <DatePicker
+                    value={endDate}
+                    onChange={(v) => setEndDate(v)}
+                  />
+                </div>
+              </>
+            )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <GoogleSyncButton type="nurse" />
+          {/* View toggle & sync */}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "calendar" | "table")}>
               <TabsList>
-                <TabsTrigger value="calendar" className="gap-2">
-                  <CalendarDays className="h-4 w-4" />
+                <TabsTrigger value="calendar" className="gap-1.5 text-xs sm:text-sm">
+                  <CalendarDays className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   Kalender
                 </TabsTrigger>
-                <TabsTrigger value="table" className="gap-2">
-                  <List className="h-4 w-4" />
+                <TabsTrigger value="table" className="gap-1.5 text-xs sm:text-sm">
+                  <List className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   Tabel
                 </TabsTrigger>
               </TabsList>
             </Tabs>
+            <GoogleSyncButton type="nurse" />
           </div>
         </div>
 
         {isLoading ? (
-          <div className="h-[600px] animate-pulse bg-gray-100 rounded-xl" />
+          <div className="h-[400px] sm:h-[600px] animate-pulse bg-gray-100 rounded-xl" />
         ) : error ? (
           <EmptyState
             title="Gagal memuat data"
@@ -475,7 +475,7 @@ export default function NurseSchedulesPage() {
             onEventDrop={handleEventDrop}
             onDateSelect={handleDateSelect}
             onEventClick={handleEventClick}
-            height={600}
+
             editable={true}
           />
         ) : data?.data?.length === 0 ? (
@@ -503,7 +503,7 @@ export default function NurseSchedulesPage() {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingSchedule ? "Edit Jadwal Perawat" : "Tambah Jadwal Perawat"}
