@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Input } from "../ui/input";
 import { DataTableViewOptions } from "./column-toggle";
 import {
@@ -395,9 +395,33 @@ export function DataTable<TData, TValue>({
     };
   }, []);
 
+  const rowNumberColumn: ColumnDef<TData, TValue> = useMemo(
+    () => ({
+      id: "_rowNumber",
+      header: "No",
+      cell: ({ row }) => {
+        const offset = meta ? ((meta.page || 1) - 1) * (meta.limit || 10) : 0;
+        return (
+          <span className="text-sm text-muted-foreground font-medium">
+            {offset + row.index + 1}
+          </span>
+        );
+      },
+      enableSorting: false,
+      enableHiding: false,
+      size: 50,
+    }),
+    [meta]
+  );
+
+  const columnsWithRowNumber = useMemo(
+    () => [rowNumberColumn, ...columns],
+    [rowNumberColumn, columns]
+  );
+
   const table = useReactTable({
     data,
-    columns,
+    columns: columnsWithRowNumber,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -461,7 +485,7 @@ export function DataTable<TData, TValue>({
               {loading ? (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={columnsWithRowNumber.length}
                     className="h-24 text-center"
                   >
                     <div className="flex items-center justify-center gap-2 text-muted-foreground">
@@ -490,7 +514,7 @@ export function DataTable<TData, TValue>({
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={columnsWithRowNumber.length}
                     className="h-24 text-center text-gray-400"
                   >
                     Tidak ada data
