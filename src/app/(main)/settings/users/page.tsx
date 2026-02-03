@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, Users, UserCheck, UserX, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -19,7 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { UserForm } from "./user-form";
+import dynamic from "next/dynamic";
+const UserForm = dynamic(() => import("./user-form").then(m => m.UserForm));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -88,7 +89,7 @@ export default function UsersPage() {
     },
   });
 
-  const columns: ColumnDef<User>[] = [
+  const columns: ColumnDef<User>[] = useMemo(() => [
     {
       accessorKey: "name",
       header: "Nama",
@@ -181,7 +182,7 @@ export default function UsersPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const stats = data?.meta ? [
     {

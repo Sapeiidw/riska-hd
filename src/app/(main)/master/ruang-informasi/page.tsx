@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api/axios";
 import {
@@ -103,7 +103,7 @@ export default function RuangInformasiPage() {
     onError: () => toast.error("Gagal menghapus konten"),
   });
 
-  const columns: ColumnDef<RuangInformasi>[] = [
+  const columns: ColumnDef<RuangInformasi>[] = useMemo(() => [
     {
       accessorKey: "title",
       header: "Judul",
@@ -205,7 +205,7 @@ export default function RuangInformasiPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const stats = data?.meta
     ? [

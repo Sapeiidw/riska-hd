@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, Clock, CheckCircle, XCircle, Users } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api/axios";
@@ -16,7 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ShiftForm } from "./shift-form";
+import dynamic from "next/dynamic";
+const ShiftForm = dynamic(() => import("./shift-form").then(m => m.ShiftForm));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 
@@ -64,7 +65,7 @@ export default function ShiftsPage() {
     },
   });
 
-  const columns: ColumnDef<Shift>[] = [
+  const columns: ColumnDef<Shift>[] = useMemo(() => [
     {
       accessorKey: "name",
       header: "Nama Shift",
@@ -142,7 +143,7 @@ export default function ShiftsPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const stats = data?.meta ? [
     {

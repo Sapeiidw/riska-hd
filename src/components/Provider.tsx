@@ -21,8 +21,10 @@ export function Provider({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
+            staleTime: 1000 * 60 * 5, // 5 menit
+            gcTime: 1000 * 60 * 10, // 10 menit
+            refetchOnWindowFocus: false,
             retry: (failureCount, error) => {
-              // Don't retry on auth errors
               if (isAuthError(error)) {
                 return false;
               }

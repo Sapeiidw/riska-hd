@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, Cpu, CheckCircle, Play, Wrench, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api/axios";
@@ -10,7 +10,8 @@ import { MasterPageLayout, TableSkeleton, EmptyState, ConfirmDialog } from "@/co
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table/data-table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MachineForm } from "./machine-form";
+import dynamic from "next/dynamic";
+const MachineForm = dynamic(() => import("./machine-form").then(m => m.MachineForm));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -70,7 +71,7 @@ export default function MachinesPage() {
     onError: () => toast.error("Gagal menghapus mesin"),
   });
 
-  const columns: ColumnDef<Machine>[] = [
+  const columns: ColumnDef<Machine>[] = useMemo(() => [
     {
       accessorKey: "serialNumber",
       header: "Mesin",
@@ -151,7 +152,7 @@ export default function MachinesPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const stats = data?.meta ? [
     {

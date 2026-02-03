@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, HeartPulse, UserCheck, UserX, AlertCircle, Award } from "lucide-react";
 import { toast } from "sonner";
 import { format, isBefore, addMonths } from "date-fns";
@@ -19,7 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { NurseForm } from "./nurse-form";
+import dynamic from "next/dynamic";
+const NurseForm = dynamic(() => import("./nurse-form").then(m => m.NurseForm));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -83,7 +84,7 @@ export default function NursesPage() {
     },
   });
 
-  const columns: ColumnDef<Nurse>[] = [
+  const columns: ColumnDef<Nurse>[] = useMemo(() => [
     {
       accessorKey: "name",
       header: "Perawat",
@@ -198,7 +199,7 @@ export default function NursesPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const certExpiringSoon = data?.data?.filter((n: Nurse) => {
     if (!n.certificationExpiry) return false;

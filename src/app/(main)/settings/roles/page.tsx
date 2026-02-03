@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, Shield, Eye, Key, Users } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -19,8 +19,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { RoleForm } from "./role-form";
-import { RoleDetail } from "./role-detail";
+import dynamic from "next/dynamic";
+const RoleForm = dynamic(() => import("./role-form").then(m => m.RoleForm));
+const RoleDetail = dynamic(() => import("./role-detail").then(m => m.RoleDetail));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -83,7 +84,7 @@ export default function RolesPage() {
     },
   });
 
-  const columns: ColumnDef<Role>[] = [
+  const columns: ColumnDef<Role>[] = useMemo(() => [
     {
       accessorKey: "displayName",
       header: "Role",
@@ -190,7 +191,7 @@ export default function RolesPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const totalPermissions = data?.data?.reduce((acc: number, role: Role) => acc + (role.permissionCount || 0), 0) || 0;
 

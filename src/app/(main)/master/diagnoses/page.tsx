@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, ClipboardList, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api/axios";
@@ -16,7 +16,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DiagnosisForm } from "./diagnosis-form";
+import dynamic from "next/dynamic";
+const DiagnosisForm = dynamic(() => import("./diagnosis-form").then(m => m.DiagnosisForm));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 
@@ -62,7 +63,7 @@ export default function DiagnosesPage() {
     onError: () => toast.error("Gagal menghapus diagnosa"),
   });
 
-  const columns: ColumnDef<Diagnosis>[] = [
+  const columns: ColumnDef<Diagnosis>[] = useMemo(() => [
     {
       accessorKey: "icdCode",
       header: "Kode ICD",
@@ -107,7 +108,7 @@ export default function DiagnosesPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const stats = data?.meta ? [
     {

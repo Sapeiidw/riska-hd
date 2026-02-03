@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, Stethoscope, UserCheck, UserX, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { format, isBefore, addMonths } from "date-fns";
@@ -19,7 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DoctorForm } from "./doctor-form";
+import dynamic from "next/dynamic";
+const DoctorForm = dynamic(() => import("./doctor-form").then(m => m.DoctorForm));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -83,7 +84,7 @@ export default function DoctorsPage() {
     },
   });
 
-  const columns: ColumnDef<Doctor>[] = [
+  const columns: ColumnDef<Doctor>[] = useMemo(() => [
     {
       accessorKey: "name",
       header: "Dokter",
@@ -195,7 +196,7 @@ export default function DoctorsPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const expiringSoon = data?.data?.filter((d: Doctor) => {
     if (!d.licenseExpiry) return false;

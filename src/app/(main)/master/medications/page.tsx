@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pencil, Trash2, Pill, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import api from "@/lib/api/axios";
@@ -11,7 +11,8 @@ import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/data-table/data-table";
 import { EmptyState, ConfirmDialog } from "@/components/shared";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MedicationForm } from "./medication-form";
+import dynamic from "next/dynamic";
+const MedicationForm = dynamic(() => import("./medication-form").then(m => m.MedicationForm));
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 
@@ -60,7 +61,7 @@ export default function MedicationsPage() {
     onError: () => toast.error("Gagal menghapus obat"),
   });
 
-  const columns: ColumnDef<Medication>[] = [
+  const columns: ColumnDef<Medication>[] = useMemo(() => [
     {
       accessorKey: "name",
       header: "Nama Obat",
@@ -112,7 +113,7 @@ export default function MedicationsPage() {
         </div>
       ),
     },
-  ];
+  ], []);
 
   const stats = data?.meta ? [
     {

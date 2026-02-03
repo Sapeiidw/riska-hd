@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Search,
   ScrollText,
@@ -112,7 +112,7 @@ export default function AuditLogPage() {
     placeholderData: keepPreviousData,
   });
 
-  const columns: ColumnDef<AuditLog>[] = [
+  const columns: ColumnDef<AuditLog>[] = useMemo(() => [
     {
       accessorKey: "createdAt",
       header: "Waktu",
@@ -198,7 +198,7 @@ export default function AuditLogPage() {
         </Button>
       ),
     },
-  ];
+  ], []);
 
   return (
     <div className="col-span-12 space-y-6">
