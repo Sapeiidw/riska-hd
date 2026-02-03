@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import { Pencil, Trash2, Pill, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "sonner";
@@ -36,7 +36,7 @@ export default function MedicationsPage() {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["medications", page, search],
     queryFn: async () => {
       const params = new URLSearchParams({ page: page.toString(), limit: "10" });
@@ -44,6 +44,7 @@ export default function MedicationsPage() {
       const res = await api.get(`/api/master/medications?${params}`);
       return res.data;
     },
+    placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation({
@@ -141,25 +142,27 @@ export default function MedicationsPage() {
         description="Kelola master data obat"
         icon={Pill}
         stats={stats}
-        searchPlaceholder="Cari nama obat..."
-        searchValue={search}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
         addButtonLabel="Tambah Obat"
         onAddClick={() => setIsFormOpen(true)}
       >
-        {isLoading ? (
+        {isLoading && !data ? (
           <TableSkeleton rows={5} columns={7} />
-        ) : error ? (
+        ) : error && !data ? (
           <EmptyState title="Gagal memuat data" />
-        ) : data?.data?.length === 0 ? (
-          <EmptyState title="Belum ada obat">
-            <Button onClick={() => setIsFormOpen(true)}>Tambah Obat</Button>
-          </EmptyState>
         ) : (
-          <DataTable columns={columns} data={data?.data || []} meta={data?.meta} onPageChange={setPage} />
+          <DataTable
+            columns={columns}
+            data={data?.data || []}
+            meta={data?.meta}
+            onPageChange={setPage}
+            onSearch={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            searchValue={search}
+            searchPlaceholder="Cari nama obat..."
+            loading={isFetching}
+          />
         )}
       </MasterPageLayout>
 

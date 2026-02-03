@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import { Users, UserCheck, UserX, Activity } from "lucide-react";
 import Link from "next/link";
@@ -31,9 +31,10 @@ export default function PatientsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["patients", page, search],
     queryFn: () => fetchPatients(page, search),
+    placeholderData: keepPreviousData,
   });
 
   const stats = data?.meta ? [
@@ -69,37 +70,29 @@ export default function PatientsPage() {
       description="Kelola data pasien hemodialisa"
       icon={Users}
       stats={stats}
-      searchPlaceholder="Cari nama, RM, atau NIK..."
-      searchValue={search}
-      onSearchChange={(value) => {
-        setSearch(value);
-        setPage(1);
-      }}
       addButtonLabel="Tambah Pasien"
       onAddClick={() => window.location.href = "/master/patients/new"}
     >
-      {isLoading ? (
+      {isLoading && !data ? (
         <TableSkeleton rows={5} columns={7} />
-      ) : error ? (
+      ) : error && !data ? (
         <EmptyState
           title="Gagal memuat data"
           description="Terjadi kesalahan saat memuat data pasien"
         />
-      ) : data?.data?.length === 0 ? (
-        <EmptyState
-          title="Belum ada pasien"
-          description="Mulai dengan menambahkan pasien baru"
-        >
-          <Link href="/master/patients/new">
-            <Button>Tambah Pasien</Button>
-          </Link>
-        </EmptyState>
       ) : (
         <DataTable
           columns={columns}
           data={data?.data || []}
           meta={data?.meta}
           onPageChange={setPage}
+          onSearch={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
+          searchValue={search}
+          searchPlaceholder="Cari nama, RM, atau NIK..."
+          loading={isFetching}
         />
       )}
     </MasterPageLayout>

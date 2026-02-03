@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import { Pencil, Trash2, HeartPulse, UserCheck, UserX, AlertCircle, Award } from "lucide-react";
 import { toast } from "sonner";
@@ -65,9 +65,10 @@ export default function NursesPage() {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["nurses", page, search],
     queryFn: () => fetchNurses(page, search),
+    placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation({
@@ -244,26 +245,15 @@ export default function NursesPage() {
         description="Kelola data perawat hemodialisis"
         icon={HeartPulse}
         stats={stats}
-        searchPlaceholder="Cari nama, email, NIP, atau SIP..."
-        searchValue={search}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
         addButtonLabel="Tambah Perawat"
         onAddClick={() => setIsFormOpen(true)}
       >
-        {isLoading ? (
+        {isLoading && !data ? (
           <TableSkeleton rows={5} columns={6} />
-        ) : error ? (
+        ) : error && !data ? (
           <EmptyState
             title="Gagal memuat data"
             description="Terjadi kesalahan saat memuat data perawat"
-          />
-        ) : data?.data?.length === 0 ? (
-          <EmptyState
-            title="Belum ada perawat"
-            description="Mulai dengan menambahkan perawat baru"
           />
         ) : (
           <DataTable
@@ -271,6 +261,13 @@ export default function NursesPage() {
             data={data?.data || []}
             meta={data?.meta}
             onPageChange={setPage}
+            onSearch={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            searchValue={search}
+            searchPlaceholder="Cari nama, email, NIP, atau SIP..."
+            loading={isFetching}
           />
         )}
       </MasterPageLayout>

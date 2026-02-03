@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import {
   Search,
@@ -106,9 +106,10 @@ export default function AuditLogPage() {
   const [resource, setResource] = useState("");
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["audit-logs", page, search, action, resource],
     queryFn: () => fetchAuditLogs(page, search, action, resource),
+    placeholderData: keepPreviousData,
   });
 
   const columns: ColumnDef<AuditLog>[] = [
@@ -207,19 +208,6 @@ export default function AuditLogPage() {
       />
 
       <div className="flex flex-wrap items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Cari..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            className="pl-9"
-          />
-        </div>
-
         <Select
           value={action}
           onValueChange={(value) => {
@@ -276,18 +264,12 @@ export default function AuditLogPage() {
         )}
       </div>
 
-      {isLoading ? (
+      {isLoading && !data ? (
         <LoadingState message="Memuat audit log..." />
-      ) : error ? (
+      ) : error && !data ? (
         <EmptyState
           title="Gagal memuat data"
           description="Terjadi kesalahan saat memuat audit log"
-        />
-      ) : data?.data?.length === 0 ? (
-        <EmptyState
-          icon={ScrollText}
-          title="Belum ada aktivitas"
-          description="Log aktivitas akan muncul di sini"
         />
       ) : (
         <DataTable
@@ -295,6 +277,13 @@ export default function AuditLogPage() {
           data={data?.data || []}
           meta={data?.meta}
           onPageChange={setPage}
+          onSearch={(value) => {
+            setSearch(value);
+            setPage(1);
+          }}
+          searchValue={search}
+          searchPlaceholder="Cari..."
+          loading={isFetching}
         />
       )}
 

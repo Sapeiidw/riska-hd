@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import { Pencil, Trash2, DoorOpen, CheckCircle, XCircle, Bed, Building } from "lucide-react";
 import { toast } from "sonner";
@@ -61,9 +61,10 @@ export default function RoomsPage() {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["rooms", page, search],
     queryFn: () => fetchRooms(page, search),
+    placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation({
@@ -211,26 +212,15 @@ export default function RoomsPage() {
         description="Kelola data ruangan HD"
         icon={DoorOpen}
         stats={stats}
-        searchPlaceholder="Cari nama atau kode ruangan..."
-        searchValue={search}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
         addButtonLabel="Tambah Ruangan"
         onAddClick={() => setIsFormOpen(true)}
       >
-        {isLoading ? (
+        {isLoading && !data ? (
           <TableSkeleton rows={5} columns={5} />
-        ) : error ? (
+        ) : error && !data ? (
           <EmptyState
             title="Gagal memuat data"
             description="Terjadi kesalahan saat memuat data ruangan"
-          />
-        ) : data?.data?.length === 0 ? (
-          <EmptyState
-            title="Belum ada ruangan"
-            description="Mulai dengan menambahkan ruangan baru"
           />
         ) : (
           <DataTable
@@ -238,6 +228,13 @@ export default function RoomsPage() {
             data={data?.data || []}
             meta={data?.meta}
             onPageChange={setPage}
+            onSearch={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            searchValue={search}
+            searchPlaceholder="Cari nama atau kode ruangan..."
+            loading={isFetching}
           />
         )}
       </MasterPageLayout>

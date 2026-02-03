@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import { Pencil, Trash2, Shield, Eye, Key, Users } from "lucide-react";
 import { toast } from "sonner";
@@ -65,9 +65,10 @@ export default function RolesPage() {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["roles", page, search],
     queryFn: () => fetchRoles(page, search),
+    placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation({
@@ -227,27 +228,15 @@ export default function RolesPage() {
         description="Kelola role dan hak akses pengguna"
         icon={Shield}
         stats={stats}
-        searchPlaceholder="Cari nama role..."
-        searchValue={search}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
         addButtonLabel="Tambah Role"
         onAddClick={() => setIsFormOpen(true)}
       >
-        {isLoading ? (
+        {isLoading && !data ? (
           <TableSkeleton rows={5} columns={5} />
-        ) : error ? (
+        ) : error && !data ? (
           <EmptyState
             title="Gagal memuat data"
             description="Terjadi kesalahan saat memuat data role"
-          />
-        ) : data?.data?.length === 0 ? (
-          <EmptyState
-            icon={Shield}
-            title="Belum ada role"
-            description="Mulai dengan menambahkan role baru"
           />
         ) : (
           <DataTable
@@ -255,6 +244,13 @@ export default function RolesPage() {
             data={data?.data || []}
             meta={data?.meta}
             onPageChange={setPage}
+            onSearch={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            searchValue={search}
+            searchPlaceholder="Cari nama role..."
+            loading={isFetching}
           />
         )}
       </MasterPageLayout>

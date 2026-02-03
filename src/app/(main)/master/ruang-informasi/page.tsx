@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api/axios";
@@ -78,7 +78,7 @@ export default function RuangInformasiPage() {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isFetching, error } = useQuery({
     queryKey: ["ruang-informasi", page, search, categoryFilter],
     queryFn: async () => {
       const params = new URLSearchParams({ page: page.toString(), limit: "10" });
@@ -87,6 +87,7 @@ export default function RuangInformasiPage() {
       const res = await api.get(`/api/master/ruang-informasi?${params}`);
       return res.data;
     },
+    placeholderData: keepPreviousData,
   });
 
   const deleteMutation = useMutation({
@@ -236,12 +237,6 @@ export default function RuangInformasiPage() {
         description="Kelola konten informasi dan edukasi"
         icon={Newspaper}
         stats={stats}
-        searchPlaceholder="Cari judul atau konten..."
-        searchValue={search}
-        onSearchChange={(value) => {
-          setSearch(value);
-          setPage(1);
-        }}
         addButtonLabel="Tambah Konten"
         onAddClick={() => router.push("/master/ruang-informasi/tambah")}
         extraActions={
@@ -266,22 +261,23 @@ export default function RuangInformasiPage() {
           </Select>
         }
       >
-        {isLoading ? (
+        {isLoading && !data ? (
           <TableSkeleton rows={5} columns={6} />
-        ) : error ? (
+        ) : error && !data ? (
           <EmptyState title="Gagal memuat data" />
-        ) : data?.data?.length === 0 ? (
-          <EmptyState title="Belum ada konten">
-            <Button onClick={() => router.push("/master/ruang-informasi/tambah")}>
-              Tambah Konten
-            </Button>
-          </EmptyState>
         ) : (
           <DataTable
             columns={columns}
             data={data?.data || []}
             meta={data?.meta}
             onPageChange={setPage}
+            onSearch={(value) => {
+              setSearch(value);
+              setPage(1);
+            }}
+            searchValue={search}
+            searchPlaceholder="Cari judul atau konten..."
+            loading={isFetching}
           />
         )}
       </MasterPageLayout>
